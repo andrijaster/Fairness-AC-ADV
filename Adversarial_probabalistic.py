@@ -97,7 +97,7 @@ def evaluate(model, x_test, y_test, A_test, no_samples = 100):
 
 def training(model, x_train, y_train, A_train, max_epoch = 1000, mini_batch_size = 50, alpha = 1):
     model.train()
-    nll_criterion =F.binary_cross_entropy
+    nll_criterion = F.binary_cross_entropy
     list_z = list(model.fc1.parameters())+list(model.bn1.parameters())+list(model.fc21.parameters())+list(model.fc22.parameters())
     list_1 = list(model.fc31.parameters())+list(model.fc32.parameters())+list_z
     list_2 = list(model.fc41.parameters())+list(model.fc42.parameters())
