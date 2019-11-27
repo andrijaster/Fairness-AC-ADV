@@ -29,17 +29,21 @@ from sklearn.preprocessing import StandardScaler
 class FairClass(nn.Module):
     def __init__(self):
         super(FairClass, self).__init__()
-        self.fc1 = nn.Linear(56,20)
-        self.bn1 = nn.BatchNorm1d(num_features=20)
+        self.fc1 = nn.Sequential(nn.Linear(56,20),
+                nn.BatchNorm1d(num_features=20),
+                nn.ReLU())
+        
         self.fc21 = nn.Linear(20,10)
         self.fc22 = nn.Linear(20,10)
-        self.fc31 = nn.Linear(10,5)
-        self.fc32 = nn.Linear(5,1)
-        self.fc41 = nn.Linear(10,5)
-        self.fc42 = nn.Linear(5,1)
         
+        self.fc31 = nn.Sequential(nn.Linear(10,5),
+                                  nn.ReLU(),
+                                  nn.Linear(5,1))
+        self.fc41 = nn.Sequential(nn.Linear(10,5),
+                                  nn.ReLU(),
+                                  nn.Linear(5,1))        
     def P_zx(self, x):
-        h1 = F.relu(self.bn1(self.fc1(x)))
+        h1 = self.fc1(x)
         return self.fc21(h1), self.fc22(h1)
     
     def reparameterize(self, mu, logvar, no_samples):
@@ -50,13 +54,11 @@ class FairClass(nn.Module):
         return mu + eps*std
 
     def P_yz(self, z):
-        h3 = F.relu(self.fc31(z))
-        y = torch.sigmoid(self.fc32(h3))
+        y = torch.sigmoid(self.fc31(z))
         return torch.mean(y, dim=0)
     
     def P_Az(self, z):
-        h4 = F.relu(self.fc41(z))
-        A = torch.sigmoid(self.fc42(h4))
+        A = torch.sigmoid(self.fc41(z))
         return torch.mean(A, dim=0)
         
 
@@ -88,21 +90,21 @@ def german_dataset(name_prot=['age']):
 
 atribute, sensitive, output = german_dataset()
 
-def evaluate(model, x_test, y_test, A_test, no_samples = 100):
+def evaluate(model, x_test, y_test, A_test, no_samples = 10):
     model.eval()
     y_calc, A_calc = model(x_test, no_samples)
     ACC_1 = accuracy_score(y_test, np.round(y_calc.data))
     ACC_2 = accuracy_score(A_test, np.round(A_calc.data))
     return ACC_1, ACC_2
 
-def training(model, x_train, y_train, A_train, max_epoch = 1000, mini_batch_size = 50, alpha = 1):
+def training(model, x_train, y_train, A_train, max_epoch = 100, mini_batch_size = 50, alpha = 1):
     model.train()
     nll_criterion = F.binary_cross_entropy
-    list_z = list(model.fc1.parameters())+list(model.bn1.parameters())+list(model.fc21.parameters())+list(model.fc22.parameters())
-    list_1 = list(model.fc31.parameters())+list(model.fc32.parameters())+list_z
-    list_2 = list(model.fc41.parameters())+list(model.fc42.parameters())
-    optimizer_1 = torch.optim.Adam(list_1, lr = 0.0005)
-    optimizer_2 = torch.optim.Adam(list_2, lr = 0.0005)
+    list_z = list(model.fc1.parameters())+list(model.fc21.parameters())+list(model.fc22.parameters())
+    list_1 = list(model.fc31.parameters())+list_z
+    list_2 = list(model.fc41.parameters())
+    optimizer_1 = torch.optim.Adam(list_1, lr = 0.001)
+    optimizer_2 = torch.optim.Adam(list_2, lr = 0.001)
     for e in range(max_epoch):
         for i in range(0,x_train.size()[0], mini_batch_size):     
             batch_x, batch_y, batch_A = (x_train[i:i+mini_batch_size], y_train[i:i+mini_batch_size], 
@@ -116,9 +118,9 @@ def training(model, x_train, y_train, A_train, max_epoch = 1000, mini_batch_size
             optimizer_1.zero_grad()
             loss1.backward()
             optimizer_1.step()
-        if e%10 == 0:
-            out_1, out_2 = model(x_train)
-            print(nll_criterion(out_2, A_train).data, nll_criterion(out_1, y_train).data)
+#        if e%10 == 0:
+#            out_1, out_2 = model(x_train)
+#            print(nll_criterion(out_2, A_train).data, nll_criterion(out_1, y_train).data)
 
                          
     return model
@@ -142,10 +144,10 @@ for train_index,test_index in skf.split(atribute, output):
     
     x_train = torch.tensor(x_train).type('torch.FloatTensor')
     x_test = torch.tensor(x_test).type('torch.FloatTensor')
-    y_train = torch.tensor(y_train.values).type('torch.FloatTensor')
-    y_test = torch.tensor(y_test.values).type('torch.FloatTensor')
-    A_train = torch.tensor(A_train.values).type('torch.FloatTensor')
-    A_test = torch.tensor(A_test.values).type('torch.FloatTensor') 
+    y_train = torch.tensor(y_train.values).type('torch.FloatTensor').reshape(-1,1)
+    y_test = torch.tensor(y_test.values).type('torch.FloatTensor').reshape(-1,1)
+    A_train = torch.tensor(A_train.values).type('torch.FloatTensor').reshape(-1,1)
+    A_test = torch.tensor(A_test.values).type('torch.FloatTensor').reshape(-1,1)
     
     model = training(model, x_train, y_train, A_train)
     print(evaluate(model,x_test, y_test, A_test))

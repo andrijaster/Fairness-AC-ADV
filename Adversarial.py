@@ -22,13 +22,14 @@ from sklearn.preprocessing import StandardScaler
 class FairClass(nn.Module):
     def __init__(self):
         super(FairClass, self).__init__()
-        self.fc1 = nn.Linear(56,20)
-        self.bn1 = nn.BatchNorm1d(num_features=20)
+        self.fc1 = nn.Sequential(nn.Linear(56,20),
+                        nn.BatchNorm1d(num_features=20),
+                        nn.ReLU())
         self.fc2 = nn.Linear(20,1)
         self.fc3 = nn.Linear(20,1)
         
     def forward(self, x):
-        z = F.relu(self.bn1(self.fc1(x)))
+        z = self.fc1(x)
         y = F.sigmoid(self.fc2(z))
         A = F.sigmoid(self.fc3(z))
         return y, A
@@ -60,10 +61,10 @@ def evaluate(model, x_test, y_test, A_test):
     ACC_2 = accuracy_score(A_test, np.round(A_calc.data))
     return ACC_1, ACC_2
 
-def training(model, x_train, y_train, A_train, max_epoch = 1000, mini_batch_size = 50, alpha = 1):
+def training(model, x_train, y_train, A_train, max_epoch = 300, mini_batch_size = 50, alpha = 1):
     model.train()
     nll_criterion =F.binary_cross_entropy
-    list_1 = list(model.fc1.parameters())+list(model.fc2.parameters())+list(model.bn1.parameters())
+    list_1 = list(model.fc1.parameters())+list(model.fc2.parameters())
     list_2 = list(model.fc3.parameters())
     optimizer_1 = torch.optim.Adam(list_1, lr = 0.001)
     optimizer_2 = torch.optim.Adam(list_2, lr = 0.001)
@@ -106,10 +107,10 @@ for train_index,test_index in skf.split(atribute, output):
     
     x_train = torch.tensor(x_train).type('torch.FloatTensor')
     x_test = torch.tensor(x_test).type('torch.FloatTensor')
-    y_train = torch.tensor(y_train.values).type('torch.FloatTensor')
-    y_test = torch.tensor(y_test.values).type('torch.FloatTensor')
-    A_train = torch.tensor(A_train.values).type('torch.FloatTensor')
-    A_test = torch.tensor(A_test.values).type('torch.FloatTensor') 
+    y_train = torch.tensor(y_train.values).type('torch.FloatTensor').reshape(-1,1)
+    y_test = torch.tensor(y_test.values).type('torch.FloatTensor').reshape(-1,1)
+    A_train = torch.tensor(A_train.values).type('torch.FloatTensor').reshape(-1,1)
+    A_test = torch.tensor(A_test.values).type('torch.FloatTensor').reshape(-1,1)
     
     model = training(model, x_train, y_train, A_train)
     print(evaluate(model,x_test, y_test, A_test))

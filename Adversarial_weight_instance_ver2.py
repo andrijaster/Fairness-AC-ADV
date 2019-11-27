@@ -14,33 +14,49 @@ from sklearn.model_selection import KFold
 from aif360.datasets import GermanDataset
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import StandardScaler
-from torch.optim.lr_scheduler import StepLR
 
-
-class Fair_classifier(nn.Module):
+class Output_class(nn.Module):
     def __init__(self):
-        super(Fair_classifier, self).__init__()
+        super(Output_class, self).__init__()
         
         self.fc1 = nn.Sequential(nn.Linear(56,20),
-        nn.BatchNorm1d(num_features=20),
-        nn.ReLU(),
-        nn.Linear(20,1))    
-        
-        self.fc2 = nn.Sequential(nn.Linear(56,20),
-        nn.BatchNorm1d(num_features=20),
-        nn.ReLU(),
-        nn.Linear(20,1))  
-
-        self.fc3 = nn.Sequential(nn.Linear(56,20),
         nn.BatchNorm1d(num_features=20),
         nn.ReLU(),
         nn.Linear(20,1))        
 
     def forward(self, x):
         output_y = torch.sigmoid(self.fc1(x))
-        output_A = torch.sigmoid(self.fc2(x))
+        return output_y
+    
+    
+class Atribute_class(nn.Module):
+    def __init__(self):
+        super(Atribute_class, self).__init__()
+        
+        self.fc2 = nn.Sequential(nn.Linear(56,20),
+        nn.BatchNorm1d(num_features=20),
+        nn.ReLU(),
+        nn.Linear(20,1))        
+
+    def forward(self, x):
+        u = self.fc2(x)
+        output_A = torch.sigmoid(u)
+        return output_A    
+    
+class weight_class(nn.Module):
+    def __init__(self):
+        super(weight_class, self).__init__()      
+        self.fc3 = nn.Sequential(nn.Linear(56,20),
+        nn.BatchNorm1d(num_features=20),
+        nn.ReLU(),
+        nn.Linear(20,1))       
+        
+    def forward(self, x):
         output_w = torch.sigmoid(self.fc3(x))
-        return output_y, output_A, output_w
+        return output_w    
+    
+
+
 
 
 def german_dataset(name_prot=['age']):
@@ -61,68 +77,72 @@ def german_dataset(name_prot=['age']):
     return data, sensitive, output
 
 
-def loss(output, target, weights):
+def loss_2(output, target, weights):
     output = torch.clamp(output, 1e-5, 1 - 1e-5)
     weights = torch.clamp(weights, 1e-5, 1 - 1e-5)
     ML =  weights*(target*torch.log(output) + (1-target)*torch.log(1-output))
-    return torch.neg(torch.mean(ML))
+    return torch.neg(torch.sum(ML))
+
+def loss_1(output, target, weights):
+    output = torch.clamp(output, 1e-5, 1 - 1e-5)
+    weights = torch.clamp(weights, 1e-5, 1 - 1e-5)
+    ML = weights*(target*torch.log(output) + (1-target)*torch.log(1-output))
+    return torch.neg(torch.sum(ML))
 
 
-def training(model, x_train, y_train, A_train, max_epoch = 300, mini_batch_size = 50, alpha = 1.1, beta = 0):
+def training(model_y, model_A, model_w, x_train, y_train, A_train, max_epoch = 100, mini_batch_size = 50, alpha = 2, beta = 0):
     
-    model.train()
-    nll_criterion =F.binary_cross_entropy
-    list_0 = list(model.fc1.parameters())
-    list_1 = list(model.fc3.parameters())
-    list_2 = list(model.fc2.parameters())
+    model_y.train()
+    model_A.train()
+    model_w.train()
+#    nll_criterion =F.binary_cross_entropy
+    list_1 = list(model_y.parameters()) + list(model_w.parameters())
+    list_2 = list(model_A.fc2.parameters())
+    optimizer_1 = torch.optim.Adam(list_1, lr = 0.001)
+    optimizer_2 = torch.optim.Adam(list_2, lr = 0.001)
     
-    optimizer_0 = torch.optim.Adam(list_0, lr = 0.0001)
-    optimizer_1 = torch.optim.Adam(list_1, lr = 0.0001)
-    optimizer_2 = torch.optim.Adam(list_2, lr = 0.0001)
-    
-#    scheduler_1 = StepLR(optimizer_1, step_size=1, gamma=1)
-#    scheduler_2 = StepLR(optimizer_1, step_size=1, gamma=1)
-
     for e in range(max_epoch):
         for i in range(0,x_train.size()[0], mini_batch_size):     
             batch_x, batch_y, batch_A = (x_train[i:i+mini_batch_size], y_train[i:i+mini_batch_size], 
                                         A_train[i:i+mini_batch_size])
-            y, A, w = model(batch_x)
-            loss0 = loss(y, batch_y, w) 
-            optimizer_0.zero_grad()
-            loss0.backward(retain_graph = True)
-            optimizer_0.step()
+            A = model_A(batch_x)
+            y = model_y(batch_x)
+            w = model_w(batch_x)
+            optimizer_1.zero_grad()
+            optimizer_2.zero_grad()
+            loss2 = loss_2(A, batch_A, w)
             if e%1 == 0:
-                loss2 = loss(A, batch_A, w)
-                optimizer_2.zero_grad()
                 loss2.backward(retain_graph = True)
                 optimizer_2.step()
-                loss1 = loss(y, batch_y, w) - alpha*loss(A, batch_A, w) - beta*torch.norm(w,1)
-                optimizer_1.zero_grad()
-                loss1.backward()
-                optimizer_1.step()
-
+            loss1 = loss_1(y, batch_y, w) - alpha*loss_2(A, batch_A, w) + beta*torch.norm(w)
+            loss1.backward()
+            optimizer_1.step()
+#            for p in model_w.parameters(): print(p.data)
+#            print(w)
             
-        if e%10 == 0:
-            y, A, w = model(x_train)
-            print(min(w.data),max(w.data),torch.mean(w).data,torch.sum(w).data)
-            print(nll_criterion(A, A_train).data, nll_criterion(y, y_train).data)
-#            print(loss_2(A, A_train, w).data, (loss_1(y, y_train, w) - alpha*loss_2(A, A_train, w)).data)
-#        scheduler_1.step()
-#        scheduler_2.step()
-    return model
+#        if e%1 == 0:
+#            y = model_y(x_train)
+#            A = model_A(x_train)
+#            print(nll_criterion(A, A_train).data, nll_criterion(y, y_train).data)
+#            print(min(w.data),max(w.data),torch.mean(w).data,torch.sum(w))
 
 
-def evaluate(model, x_test, y_test):
-    model.eval()
-    y,_,_= model(x_test)
-    ACC_1 = accuracy_score(y_test, np.round(y.data))
+                         
+    return model_y
+
+
+def evaluate(model_y, x_test, y_test):
+    model_y.eval()
+    y_calc = model_y(x_test)
+    ACC_1 = accuracy_score(y_test, np.round(y_calc.data))
     return ACC_1
 
 
 
 atribute, sensitive, output = german_dataset()
-
+model_y = Output_class()
+model_A = Atribute_class()
+model_w = weight_class()
 
 skf = KFold(n_splits = 10)
 skf.get_n_splits(atribute, output)
@@ -146,6 +166,5 @@ for train_index,test_index in skf.split(atribute, output):
     A_train = torch.tensor(A_train.values).type('torch.FloatTensor').reshape(-1,1)
     A_test = torch.tensor(A_test.values).type('torch.FloatTensor').reshape(-1,1)
     
-    model = Fair_classifier()
-    model = training(model, x_train, y_train, A_train)
-    print(evaluate(model, x_test, y_test))
+    model_y = training(model_y, model_A, model_w, x_train, y_train, A_train)
+    print(evaluate(model_y, x_test, y_test))
