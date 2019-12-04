@@ -6,7 +6,6 @@ Created on Fri Nov 29 11:31:36 2019
 """
 
 import torch
-
 from sklearn.preprocessing import StandardScaler
 from aif360.datasets import GermanDataset
 from sklearn.model_selection import KFold
@@ -64,7 +63,7 @@ for train_index,test_index in skf.split(atribute, output):
     model_weight_hard.fit(x_train, y_train, A_train)
     model_weight_beta.fit(x_train, y_train, A_train)
     model_weight_class.fit(x_train, y_train, A_train)
-    model_ADV_prob.fit(x_train, y_train, A_train, max_epoch = 100, no_sample = 100)
+    model_ADV_prob.fit(x_train, y_train, A_train, max_epoch = 110, no_sample = 100)
     model_ADV.fit(x_train, y_train, A_train, max_epoch = 100)
     print(model_weight_class.predict(x_test))
     print(model_ADV.predict(x_test))
