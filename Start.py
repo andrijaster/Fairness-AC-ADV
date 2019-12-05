@@ -43,6 +43,7 @@ for train_index,test_index in skf.split(atribute, output):
     model_weight_beta = models.Adversarial_weight_soft_class()
     model_weight_hard = models.Adversarial_weight_hard_class()
     model_weight_beta_reparam = models.Adversarial_weight_soft_r_class()
+    model_ADV_prob_nf = models.Adversarial_prob_nf_class(flow_length = 2, no_sample = 50)
     
     x_train, x_test = atribute.iloc[train_index,:], atribute.iloc[test_index,:]
     y_train, y_test = output.iloc[train_index], output.iloc[test_index] 
@@ -59,13 +60,14 @@ for train_index,test_index in skf.split(atribute, output):
     A_train = torch.tensor(A_train.values).type('torch.FloatTensor').reshape(-1,1)
     A_test = torch.tensor(A_test.values).type('torch.FloatTensor').reshape(-1,1)
     
-    model_weight_beta_reparam.fit(x_train, y_train, A_train)
-    model_weight_hard.fit(x_train, y_train, A_train)
-    model_weight_beta.fit(x_train, y_train, A_train)
-    model_weight_class.fit(x_train, y_train, A_train)
-    model_ADV_prob.fit(x_train, y_train, A_train, max_epoch = 110, no_sample = 100)
-    model_ADV.fit(x_train, y_train, A_train, max_epoch = 100)
-    print(model_weight_class.predict(x_test))
-    print(model_ADV.predict(x_test))
-    print(model_ADV.predict_proba(x_test))
+    model_ADV_prob_nf.fit(x_train, y_train, A_train, max_epoch= 300, log_epoch = 10)
+#    model_weight_beta_reparam.fit(x_train, y_train, A_train)
+#    model_weight_hard.fit(x_train, y_train, A_train)
+#    model_weight_beta.fit(x_train, y_train, A_train)
+#    model_weight_class.fit(x_train, y_train, A_train)
+#    model_ADV_prob.fit(x_train, y_train, A_train, max_epoch = 110, no_sample = 100)
+#    model_ADV.fit(x_train, y_train, A_train, max_epoch = 100)
+#    print(model_weight_class.predict(x_test))
+#    print(model_ADV.predict(x_test))
+#    print(model_ADV.predict_proba(x_test))
     
