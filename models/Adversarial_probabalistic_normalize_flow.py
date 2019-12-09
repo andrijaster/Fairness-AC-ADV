@@ -29,16 +29,16 @@ class Adversarial_prob_nf_class():
     class Flow_transform(nn.Module): 
         def __init__(self, no_sample = 1):    
             super(Adversarial_prob_nf_class.Flow_transform, self).__init__()
-            self.block = nn.Sequential(nn.Linear(10,10), nn.Tanh())
+            self.block = nn.Sequential(nn.Linear(10,10), nn.Sigmoid())
         
         def forward(self, x):
             y = self.block(x)
             return y
     
     class Affine_transform(nn.Module):    
-        def __init__(self, no_sample):
+        def __init__(self, no_sample, input_size):
             super(Adversarial_prob_nf_class.Affine_transform, self).__init__()
-            self.fc1 = nn.Sequential(nn.Linear(56,20),
+            self.fc1 = nn.Sequential(nn.Linear(input_size, 20),
                     nn.BatchNorm1d(num_features=20),
                     nn.ReLU())
             self.fc21 = nn.Linear(20,10)
@@ -88,10 +88,10 @@ class Adversarial_prob_nf_class():
             return torch.mean(A, dim=0)
                         
     
-    def __init__(self, flow_length, no_sample):
+    def __init__(self, flow_length, no_sample, input_size):
         self.model_y = Adversarial_prob_nf_class.Y_output()
         self.model_A = Adversarial_prob_nf_class.A_output()
-        self.Transform = nn.Sequential(Adversarial_prob_nf_class.Affine_transform(no_sample), 
+        self.Transform = nn.Sequential(Adversarial_prob_nf_class.Affine_transform(no_sample, input_size), 
                                        *[Adversarial_prob_nf_class.Flow_transform() 
                                        for _ in range(flow_length)])
 
@@ -138,22 +138,22 @@ class Adversarial_prob_nf_class():
                 print(nll_criterion(out_2, A_train).data, nll_criterion(out_1, y_train).data)
 
    
-    def predict(self, x_test, no_sample = 100):
+    def predict(self, x_test):
         self.model_y.eval()
         self.model_A.eval()
         self.Transform.eval()
-        z = self.Transform(x_test, no_sample)
+        z = self.Transform(x_test)
         y = self.model_y(z)
         A = self.model_A(z)
         y = np.round(y.data)
         A = np.round(A.data)
         return y, A
     
-    def predict_proba(self, x_test, no_sample = 100):
+    def predict_proba(self, x_test):
         self.model_y.eval()
         self.model_A.eval()
         self.Transform.eval()
-        z = self.Transform(x_test, no_sample)
+        z = self.Transform(x_test)
         y = self.model_y(z)
         A = self.model_A(z)
         y = y.data

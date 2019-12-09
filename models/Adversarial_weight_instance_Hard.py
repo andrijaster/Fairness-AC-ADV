@@ -14,10 +14,10 @@ from torch import nn
 class Adversarial_weight_hard_class():
 
     class Output_class(nn.Module):
-        def __init__(self):
+        def __init__(self, input_size):
             super(Adversarial_weight_hard_class.Output_class, self).__init__()
             
-            self.fc1 = nn.Sequential(nn.Linear(56,20),
+            self.fc1 = nn.Sequential(nn.Linear(input_size,20),
             nn.BatchNorm1d(num_features=20),
             nn.ReLU(),
             nn.Linear(20,1))        
@@ -28,10 +28,10 @@ class Adversarial_weight_hard_class():
         
         
     class Atribute_class(nn.Module):
-        def __init__(self):
+        def __init__(self, input_size):
             super(Adversarial_weight_hard_class.Atribute_class, self).__init__()
             
-            self.fc2 = nn.Sequential(nn.Linear(56,20),
+            self.fc2 = nn.Sequential(nn.Linear(input_size,20),
             nn.BatchNorm1d(num_features=20),
             nn.ReLU(),
             nn.Linear(20,1))        
@@ -42,9 +42,9 @@ class Adversarial_weight_hard_class():
             return output_A    
         
     class weight_class(nn.Module):
-        def __init__(self):
+        def __init__(self, input_size):
             super(Adversarial_weight_hard_class.weight_class, self).__init__()      
-            self.fc3 = nn.Sequential(nn.Linear(56,20),
+            self.fc3 = nn.Sequential(nn.Linear(input_size,20),
             nn.BatchNorm1d(num_features=20),
             nn.ReLU(),
             nn.Linear(20,1))       
@@ -54,10 +54,10 @@ class Adversarial_weight_hard_class():
             return output_w    
     
 
-    def __init__(self):
-        self.model_y = Adversarial_weight_hard_class.Output_class()
-        self.model_A = Adversarial_weight_hard_class.Atribute_class()
-        self.model_w = Adversarial_weight_hard_class.weight_class()
+    def __init__(self, input_size):
+        self.model_y = Adversarial_weight_hard_class.Output_class(input_size)
+        self.model_A = Adversarial_weight_hard_class.Atribute_class(input_size)
+        self.model_w = Adversarial_weight_hard_class.weight_class(input_size)
 
 
     def fit(self, x_train, y_train, A_train, max_epoch = 200, 

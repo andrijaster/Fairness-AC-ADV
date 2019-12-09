@@ -29,9 +29,9 @@ from sklearn.preprocessing import StandardScaler
 class Adversarial_prob_class():
     
     class FairClass(nn.Module):
-        def __init__(self):
+        def __init__(self, input_size):
             super(Adversarial_prob_class.FairClass, self).__init__()
-            self.fc1 = nn.Sequential(nn.Linear(56,20),
+            self.fc1 = nn.Sequential(nn.Linear(input_size,20),
                     nn.BatchNorm1d(num_features=20),
                     nn.ReLU())
             
@@ -71,8 +71,8 @@ class Adversarial_prob_class():
             output_A = self.P_Az(z)
             return output_y, output_A
     
-    def __init__(self):
-        self.model = Adversarial_prob_class.FairClass()
+    def __init__(self, input_size):
+        self.model = Adversarial_prob_class.FairClass(input_size)
 
     def fit(self, x_train, y_train, A_train, max_epoch = 100, mini_batch_size = 50, alpha = 1,
             log_epoch = 1, log = 1, no_sample = 1):
@@ -112,9 +112,9 @@ class Adversarial_prob_class():
         A = np.round(A.data)
         return y, A
     
-    def predict_proba(self, x_test):
+    def predict_proba(self, x_test, no_samples = 100):
         self.model.eval()
-        y, A = self.model(x_test, no_samples = 100)
+        y, A = self.model(x_test, no_samples)
         y = y.data
         A = A.data
         return y, A

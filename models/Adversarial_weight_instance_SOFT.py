@@ -13,25 +13,25 @@ from torch.nn import functional as F
 
 class Adversarial_weight_soft_class():
     class Fair_classifier(nn.Module):
-        def __init__(self):
+        def __init__(self, input_size):
             super(Adversarial_weight_soft_class.Fair_classifier, self).__init__()
             
-            self.fc1 = nn.Sequential(nn.Linear(56,20),
+            self.fc1 = nn.Sequential(nn.Linear(input_size,20),
             nn.BatchNorm1d(num_features=20),
             nn.ReLU(),
             nn.Linear(20,1))    
             
-            self.fc2 = nn.Sequential(nn.Linear(56,20),
+            self.fc2 = nn.Sequential(nn.Linear(input_size,20),
             nn.BatchNorm1d(num_features=20),
             nn.ReLU(),
             nn.Linear(20,1))  
     
-            self.fc3 = nn.Sequential(nn.Linear(56,20),
+            self.fc3 = nn.Sequential(nn.Linear(input_size,20),
             nn.BatchNorm1d(num_features=20),
             nn.ReLU(),
             nn.Linear(20,1))        
             
-            self.fc4 = nn.Sequential(nn.Linear(56,20),
+            self.fc4 = nn.Sequential(nn.Linear(input_size,20),
             nn.BatchNorm1d(num_features=20),
             nn.ReLU(),
             nn.Linear(20,1))        
@@ -44,8 +44,8 @@ class Adversarial_weight_soft_class():
             output_beta = torch.max(torch.ones(len(x),1)*1e-5, torch.exp(self.fc4(x)))
             return output_y, output_A, output_alfa, output_beta
 
-    def __init__(self):
-        self.model = Adversarial_weight_soft_class.Fair_classifier()
+    def __init__(self, input_size):
+        self.model = Adversarial_weight_soft_class.Fair_classifier(input_size)
 
 
     def fit(self, x_train, y_train, A_train, max_epoch = 300, mini_batch_size = 50, 

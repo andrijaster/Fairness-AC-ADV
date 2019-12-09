@@ -28,14 +28,14 @@ from sklearn.preprocessing import StandardScaler
 
 class Adversarial_class():
     
-    def __init__(self):
-        self.model = Adversarial_class.FairClass()
+    def __init__(self, input_size):
+        self.model = Adversarial_class.FairClass(input_size)
         
     
     class FairClass(nn.Module):
-        def __init__(self):
+        def __init__(self, input_size):
             super(Adversarial_class.FairClass, self).__init__()
-            self.fc1 = nn.Sequential(nn.Linear(56,20),
+            self.fc1 = nn.Sequential(nn.Linear(input_size,20),
                             nn.BatchNorm1d(num_features=20),
                             nn.ReLU())
             self.fc2 = nn.Linear(20,1)
