@@ -1,14 +1,9 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Nov 30 20:39:24 2019
+from .FAD import FAD_class
+from .FAD_prob_AF import FAD_prob_AF_class
+from .FAIR_scalar import FAIR_scalar_class
+from .FAIR_Bernoulli import FAIR_Bernoulli_class
+from .FAIR_betaSF import FAIR_betaSF_class
+from .FAIR_betaREP import FAIR_betaREP_class
+from .FAD_prob import FAD_prob_class
+from .Reweighing_RF import Fair_rew_RF
 
-@author: Andri
-"""
-
-from .Adversarial import Adversarial_class
-from .Adversarial_probabalistic import Adversarial_prob_class
-from .Adversarial_weight_instance import Adversarial_weight_class
-from .Adversarial_weight_instance_Hard import Adversarial_weight_hard_class
-from .Adversarial_weight_instance_SOFT import Adversarial_weight_soft_class
-from .Adversarial_weight_instance_SOFT_reparam import Adversarial_weight_soft_r_class
-from .Adversarial_probabalistic_normalize_flow import Adversarial_prob_nf_class

@@ -1,45 +1,48 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Oct 14 09:49:48 2019
-
-@author: Andri
-"""
-
-
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Oct 14 09:49:48 2019
-
-@author: Andri
-"""
-
-
 import torch
 import torch.utils.data
 import numpy as np
 from torch import nn, optim
 from torch.nn import functional as F
-from sklearn.model_selection import KFold
-from aif360.datasets import GermanDataset
-from sklearn.metrics import accuracy_score
-from sklearn.preprocessing import StandardScaler
 
 
 
-class Adversarial_class():
+class FAD_class():
     
-    def __init__(self, input_size):
-        self.model = Adversarial_class.FairClass(input_size)
+    def __init__(self, input_size, num_layers_z, num_layers_y, step_z, step_y):
+        self.model = FAD_class.FairClass(input_size, 
+                                                 num_layers_z, num_layers_y, 
+                                                 step_z, step_y)
         
     
     class FairClass(nn.Module):
-        def __init__(self, input_size):
-            super(Adversarial_class.FairClass, self).__init__()
-            self.fc1 = nn.Sequential(nn.Linear(input_size,20),
-                            nn.BatchNorm1d(num_features=20),
-                            nn.ReLU())
-            self.fc2 = nn.Linear(20,1)
-            self.fc3 = nn.Linear(20,1)
+        def __init__(self, inp_size, num_layers_z, num_layers_y,  step_z, step_y):                
+            super(FAD_class.FairClass, self).__init__()
+            
+            lst_z = nn.ModuleList()
+            lst_1 = nn.ModuleList()
+            out_size = inp_size
+            
+            for i in range(num_layers_z):
+                inp_size = out_size
+                out_size = int(inp_size//step_z)
+                block = nn.Sequential(nn.Linear(inp_size, out_size), 
+                                  nn.BatchNorm1d(num_features = out_size),
+                                  nn.ReLU())
+                lst_z.append(block)
+            
+            for i in range(num_layers_y):
+                inp_size = out_size
+                out_size = int(inp_size//step_y)
+                if i == num_layers_y-1:
+                    block = nn.Linear(inp_size, 1)
+                else:
+                    block = nn.Sequential(nn.Linear(inp_size, out_size), 
+                                      nn.BatchNorm1d(num_features = out_size),nn.ReLU())
+                lst_1.append(block)
+            
+            self.fc1 = nn.Sequential(*lst_z)
+            self.fc2 = nn.Sequential(*lst_1)
+            self.fc3 = nn.Sequential(*lst_1)
             
         def forward(self, x):
             z = self.fc1(x)

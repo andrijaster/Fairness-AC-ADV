@@ -1,13 +1,5 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Nov 29 11:31:36 2019
-
-@author: Andri
-"""
-
 import torch
 import os
-import xlwt 
 import numpy as np
 import pandas as pd
 import models
@@ -16,9 +8,8 @@ from sklearn.preprocessing import StandardScaler
 from aif360.metrics import ClassificationMetric
 from aif360.datasets import BinaryLabelDataset
 from aif360.datasets import MEPSDataset19
-from sklearn.model_selection import KFold
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score
-from collections import defaultdict
 from xlwt import Workbook 
 
 
@@ -34,6 +25,7 @@ def medical_dataset(name_prot = 'RACE'):
     sensitive = data[name_prot]
     output = dataset_orig.labels
     atribute = data.drop(name_prot, axis = 1, inplace = False) 
+    atribute.drop(['UTILIZATION'], axis =1, inplace =True)
     out = pd.DataFrame(output, columns = ["label"])
     data = pd.concat([data,out],axis = 1, join = 'inner')
     return data, atribute, sensitive, output, privileged_groups, unprivileged_groups
@@ -80,30 +72,13 @@ saver_dir_res = 'Results'
 file_name = os.path.join(saver_dir_res, 'Results_MEPS19.xls')
 model_no = 7
 metrics = np.zeros([model_no,8])
-lst = []
+epochs = 500
 
 if not os.path.exists(saver_dir_res):
     os.mkdir(saver_dir_res)
-
-
-wb = Workbook()
-sheet1 = wb.add_sheet('Results') 
-
-for i in range(model_no):
-    sheet1.write(i+1,0,'model_{}'.format(i))
-
-
-columns = ["AUC_y", "AUC_A", 'bal_acc', 'avg_odds_diff', 
-           'disp_imp','stat_par_diff', 'eq_opp_diff', 'theil_ind']
-
-k = 1
-for i in columns:
-    sheet1.write(0,k,i)
-    k+=1
+    
 
 data, atribute, sensitive, output, pr_gr, un_gr = medical_dataset()
-skf = KFold(n_splits = 10)
-skf.get_n_splits(atribute, output)
 
 std_scl = 1
 AUC_y = np.zeros(model_no)
@@ -111,25 +86,51 @@ AUC_A = np.zeros(model_no)
 #threshold = np.linspace(0.01, 1, 100)
 threshold = [0.5]
 inp = atribute.shape[1]
-epochs = 400
 
-for train_index,test_index in skf.split(atribute, output):
+wb = Workbook()
+
+
+columns = ["AUC_y", "AUC_A", 'bal_acc', 'avg_odds_diff', 
+           'disp_imp','stat_par_diff', 'eq_opp_diff', 'theil_ind']
+
+
+alpha = np.linspace(2.42, 3, 2)
+
+sheets = [wb.add_sheet('{}'.format(i)) for i in alpha]
+
+ind = 0
+for a in alpha:
     
- 
-    lst = [models.Adversarial_prob_class(input_size = inp),
-        models.Adversarial_class(input_size = inp),
-        models.Adversarial_weight_class(input_size = inp),
-        models.Adversarial_weight_soft_class(input_size = inp),
-        models.Adversarial_weight_hard_class(input_size = inp),
-        models.Adversarial_weight_soft_r_class(input_size = inp),
-        models.Adversarial_prob_nf_class(flow_length = 3, no_sample = 50,
-                                         input_size = inp)]
+    metrics = np.zeros([model_no,8])
+    k = 1
+    for i in columns:
+        sheets[ind].write(0,k,i)
+        k+=1   
+        
+    for mod in range(model_no):
+        sheets[ind].write(mod+1,0,'model_{}'.format(mod))
+
+        
+    lst = [models.FAD_prob_AF_class(input_size = inp, 
+                                         num_layers_z = 2, num_layers_y = 1, 
+                                         step_z = 2, step_y = 2),
+        models.FAD_class(input_size = inp, num_layers_z = 3, num_layers_y = 2, 
+                                  step_z = 2, step_y = 2),
+        models.FAIR_scalar_class(input_size = inp, num_layers_w = 2, step_w = 2, 
+                 num_layers_A = 2, step_A = 2, num_layers_y = 3, step_y = 2),
+        models.FAIR_betaSF_class(input_size = inp, num_layers_w = 2, step_w = 2, 
+                 num_layers_A = 2, step_A = 2, num_layers_y = 3, step_y = 2),
+        models.FAIR_Bernoulli_class(input_size = inp, num_layers_w = 2, step_w = 2, 
+                 num_layers_A = 2, step_A = 2, num_layers_y = 3, step_y = 2),
+        models.FAIR_betaREP_class(input_size = inp, num_layers_w = 2, step_w = 2, 
+                 num_layers_A = 2, step_A = 2, num_layers_y = 3, step_y = 2),
+        models.FAD_prob_class(flow_length = 2, no_sample = 1,
+                                         input_size = inp, num_layers_y = 3, 
+                                         step_y = 2, step_z = 2)]
     
-    x_train, x_test = atribute.iloc[train_index,:], atribute.iloc[test_index,:]
-    y_train, y_test = output[train_index], output[test_index] 
-    A_train, A_test = sensitive.iloc[train_index], sensitive.iloc[test_index]  
-    data_train, data_test = data.iloc[train_index,:], data.iloc[test_index,:]
-    
+    x_train, x_test, y_train, y_test, A_train, A_test, data_train, data_test = train_test_split(
+                atribute, output, sensitive, data, test_size=0.2, random_state=42)
+   
     if std_scl == 1:
         std_scl = StandardScaler()
         std_scl.fit(x_train)
@@ -150,17 +151,18 @@ for train_index,test_index in skf.split(atribute, output):
     k = 0
     for i in lst: 
         if k == 0:
-            i.fit(x_train_t, y_train_t, A_train_t, max_epoch= epochs, log = 0, no_sample = 50)   
+            i.fit(x_train_t, y_train_t, A_train_t, max_epoch= epochs, log = 0, no_sample = 1, alpha = a)   
         else:
-            i.fit(x_train_t, y_train_t, A_train_t, max_epoch= epochs, log = 0)
+            i.fit(x_train_t, y_train_t, A_train_t, max_epoch= epochs, log = 0, alpha = a)
 
         metrics[k,:] += test(data_test, i, x_test_t, threshold, un_gr, pr_gr)
         k+=1
-
-metrics = np.round(metrics/10,4)
-for row in range(model_no):    
-    for column,_ in enumerate(columns):  
-        sheet1.write(row+1, column+1 , metrics[row,column])
-
-wb.save(file_name) 
+        
+    for row in range(model_no):    
+        for column,_ in enumerate(columns):  
+            sheets[ind].write(row+1, column+1 , metrics[row,column])
+   
+    wb.save(file_name) 
+    ind += 1
+    
 

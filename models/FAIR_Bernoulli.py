@@ -1,26 +1,29 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Nov 27 10:32:12 2019
-
-@author: Andri
-"""
-
 import torch
 import torch.utils.data
 import numpy as np
 from torch.nn import functional as F
 from torch import nn
 
-class Adversarial_weight_hard_class():
+class FAIR_Bernoulli_class():
 
     class Output_class(nn.Module):
-        def __init__(self, input_size):
-            super(Adversarial_weight_hard_class.Output_class, self).__init__()
+        def __init__(self, input_size, num_layers_y,
+                     step_y):
+            super(FAIR_Bernoulli_class.Output_class, self).__init__()    
+            out_size_y = input_size
+            lst_y = nn.ModuleList()
             
-            self.fc1 = nn.Sequential(nn.Linear(input_size,20),
-            nn.BatchNorm1d(num_features=20),
-            nn.ReLU(),
-            nn.Linear(20,1))        
+            for i in range(num_layers_y):
+                inp_size = out_size_y
+                out_size_y = int(inp_size//step_y)
+                if i == num_layers_y-1:
+                    block = nn.Linear(inp_size, 1)
+                else:
+                    block = nn.Sequential(nn.Linear(inp_size, out_size_y), 
+                                      nn.BatchNorm1d(num_features = out_size_y),nn.ReLU())
+                lst_y.append(block)
+            
+            self.fc1 = nn.Sequential(*lst_y)       
     
         def forward(self, x):
             output_y = torch.sigmoid(self.fc1(x))
@@ -28,36 +31,62 @@ class Adversarial_weight_hard_class():
         
         
     class Atribute_class(nn.Module):
-        def __init__(self, input_size):
-            super(Adversarial_weight_hard_class.Atribute_class, self).__init__()
+        def __init__(self, input_size, num_layers_A,
+                     step_A):
+            super(FAIR_Bernoulli_class.Atribute_class, self).__init__()
             
-            self.fc2 = nn.Sequential(nn.Linear(input_size,20),
-            nn.BatchNorm1d(num_features=20),
-            nn.ReLU(),
-            nn.Linear(20,1))        
-    
+            out_size_A = input_size
+            lst_A = nn.ModuleList()
+            
+            for i in range(num_layers_A):
+                inp_size = out_size_A
+                out_size_A = int(inp_size//step_A)
+                if i == num_layers_A-1:
+                    block = nn.Linear(inp_size, 1)
+                else:
+                    block = nn.Sequential(nn.Linear(inp_size, out_size_A), 
+                                      nn.BatchNorm1d(num_features = out_size_A),nn.ReLU())
+                lst_A.append(block)
+            
+            self.fc2 = nn.Sequential(*lst_A)   
+            
         def forward(self, x):
             u = self.fc2(x)
             output_A = torch.sigmoid(u)
             return output_A    
         
     class weight_class(nn.Module):
-        def __init__(self, input_size):
-            super(Adversarial_weight_hard_class.weight_class, self).__init__()      
-            self.fc3 = nn.Sequential(nn.Linear(input_size,20),
-            nn.BatchNorm1d(num_features=20),
-            nn.ReLU(),
-            nn.Linear(20,1))       
+        def __init__(self, input_size, num_layers_w,
+                     step_w):
+            super(FAIR_Bernoulli_class.weight_class, self).__init__()      
+            out_size_w = input_size
+            lst_w = nn.ModuleList()
+            
+            for i in range(num_layers_w):
+                inp_size = out_size_w
+                out_size_w = int(inp_size//step_w)
+                if i == num_layers_w-1:
+                    block = nn.Linear(inp_size, 1)
+                else:
+                    block = nn.Sequential(nn.Linear(inp_size, out_size_w), 
+                                      nn.BatchNorm1d(num_features = out_size_w),nn.ReLU())
+                lst_w.append(block)
+            self.fc3 = nn.Sequential(*lst_w)          
             
         def forward(self, x):
             output_w = torch.sigmoid(self.fc3(x))
             return output_w    
     
 
-    def __init__(self, input_size):
-        self.model_y = Adversarial_weight_hard_class.Output_class(input_size)
-        self.model_A = Adversarial_weight_hard_class.Atribute_class(input_size)
-        self.model_w = Adversarial_weight_hard_class.weight_class(input_size)
+    def __init__(self, input_size, num_layers_w,
+                     step_w, num_layers_A, step_A,
+                      num_layers_y, step_y):
+        self.model_y = FAIR_Bernoulli_class.Output_class(input_size,num_layers_y,
+                     step_y)
+        self.model_A = FAIR_Bernoulli_class.Atribute_class(input_size,num_layers_A,
+                     step_A)
+        self.model_w = FAIR_Bernoulli_class.weight_class(input_size,num_layers_w,
+                     step_w)
 
 
     def fit(self, x_train, y_train, A_train, max_epoch = 200, 

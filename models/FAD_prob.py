@@ -1,50 +1,32 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Nov 21 10:33:01 2019
-
-@author: Andri
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Oct 14 09:49:48 2019
-
-@author: Andri
-"""
-
-
 import torch
 import torch.utils.data
 import numpy as np
 from torch import nn
 from torch.nn import functional as F
 
-
-
-
-
-class Adversarial_prob_nf_class():
+class FAD_prob_class():
     
     
     class Flow_transform(nn.Module): 
-        def __init__(self, no_sample = 1):    
-            super(Adversarial_prob_nf_class.Flow_transform, self).__init__()
-            self.block = nn.Sequential(nn.Linear(10,10), nn.Sigmoid())
+        def __init__(self, step_z, no_sample, input_size):    
+            super(FAD_prob_class.Flow_transform, self).__init__()
+            self.block = nn.Sequential(nn.Linear(input_size, input_size), nn.ReLU())
         
         def forward(self, x):
             y = self.block(x)
             return y
     
     class Affine_transform(nn.Module):    
-        def __init__(self, no_sample, input_size):
-            super(Adversarial_prob_nf_class.Affine_transform, self).__init__()
-            self.fc1 = nn.Sequential(nn.Linear(input_size, 20),
-                    nn.BatchNorm1d(num_features=20),
+        def __init__(self, input_size, step_z, no_sample):
+            super(FAD_prob_class.Affine_transform, self).__init__()
+            output = int(input_size//step_z)
+            self.fc1 = nn.Sequential(nn.Linear(input_size, output),
+                    nn.BatchNorm1d(num_features=output),
                     nn.ReLU())
-            self.fc21 = nn.Linear(20,10)
-            self.fc22 = nn.Linear(20,10)
+            self.fc21 = nn.Linear(output, int(input_size//step_z**2))
+            self.fc22 = nn.Linear(output, int(input_size//step_z**2))
             self.no_samples = no_sample
-
+    
             
         def P_zx(self, x):
             h1 = self.fc1(x)
@@ -64,35 +46,59 @@ class Adversarial_prob_nf_class():
              
   
     class Y_output(nn.Module):      
-        def __init__(self):
-            super(Adversarial_prob_nf_class.Y_output, self).__init__()            
-            self.fc31 = nn.Sequential(nn.Linear(10,5),
-                              nn.ReLU(),
-                              nn.Linear(5,1))
+        def __init__(self, num_layers_y, step_y, out_size):
+            super(FAD_prob_class.Y_output, self).__init__()            
+            
+            lst_y = nn.ModuleList()
+            
+            for i in range(num_layers_y):
+                inp_size = out_size
+                out_size = int(inp_size//step_y)
+                if i == num_layers_y-1:
+                    block = nn.Linear(inp_size, 1)
+                else:
+                    block = nn.Sequential(nn.Linear(inp_size, out_size), nn.ReLU())
+                lst_y.append(block)            
+            
+            self.fc31 =  nn.Sequential(*lst_y)
         
         def forward(self, z):
             y = torch.sigmoid(self.fc31(z))
             return torch.mean(y, dim=0)   
        
-        
- 
-    class A_output(nn.Module):
-        def __init__(self):
-            super(Adversarial_prob_nf_class.A_output, self).__init__()            
-            self.fc41 = nn.Sequential(nn.Linear(10,5),
-                              nn.ReLU(),
-                              nn.Linear(5,1))
 
+    class A_output(nn.Module):
+        def __init__(self, out_size, num_layers_A, step_A):
+            super(FAD_prob_class.A_output, self).__init__()            
+            lst_A= nn.ModuleList()
+            
+            for i in range(num_layers_A):
+                inp_size = out_size
+                out_size = int(inp_size//step_A)
+                if i == num_layers_A-1:
+                    block = nn.Linear(inp_size, 1)
+                else:
+                    block = nn.Sequential(nn.Linear(inp_size, out_size), nn.ReLU())
+                lst_A.append(block)            
+            
+            self.fc41 =  nn.Sequential(*lst_A)
+            
         def forward(self, z):
             A = torch.sigmoid(self.fc41(z))
             return torch.mean(A, dim=0)
                         
     
-    def __init__(self, flow_length, no_sample, input_size):
-        self.model_y = Adversarial_prob_nf_class.Y_output()
-        self.model_A = Adversarial_prob_nf_class.A_output()
-        self.Transform = nn.Sequential(Adversarial_prob_nf_class.Affine_transform(no_sample, input_size), 
-                                       *[Adversarial_prob_nf_class.Flow_transform() 
+    def __init__(self, flow_length, no_sample, num_layers_y, input_size, step_z, step_y):
+        
+        output_size = int(input_size//step_z**2)
+        
+        self.model_y = FAD_prob_class.Y_output(num_layers_y, step_y,
+                                                          out_size = output_size)
+        self.model_A = FAD_prob_class.A_output(num_layers_A = num_layers_y, 
+                                                          step_A = step_y, out_size=output_size)
+        self.Transform = nn.Sequential(FAD_prob_class.Affine_transform(input_size,
+                                                                                  step_z, no_sample), 
+                                       *[FAD_prob_class.Flow_transform(step_z, no_sample, input_size=output_size) 
                                        for _ in range(flow_length)])
 
 

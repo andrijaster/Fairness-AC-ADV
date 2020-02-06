@@ -1,50 +1,71 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Nov 22 08:15:22 2019
-
-@author: Andri
-"""
-
 import torch
 import torch.utils.data
 import numpy as np
 from torch import nn, optim
 from torch.nn import functional as F
-from sklearn.model_selection import KFold
-from aif360.datasets import GermanDataset
-from sklearn.metrics import accuracy_score
-from sklearn.preprocessing import StandardScaler
-from torch.optim.lr_scheduler import StepLR
 
-class Adversarial_weight_class:
+
+class FAIR_scalar_class:
     
     class Fair_classifier(nn.Module):
-        def __init__(self, input_size):
-            super(Adversarial_weight_class.Fair_classifier, self).__init__()
+        def __init__(self, inp_size, num_layers_w, step_w, 
+                     num_layers_A, step_A, num_layers_y, step_y):
+            super(FAIR_scalar_class.Fair_classifier, self).__init__()
+
+            lst_z = nn.ModuleList()
+            lst_A = nn.ModuleList()
+            lst_y = nn.ModuleList()
+            out_size_A = inp_size
+            out_size_y = inp_size
+            out_size = inp_size
+
+            for i in range(num_layers_w):
+                inp_size = out_size
+                out_size = int(inp_size//step_w)
+                if i == num_layers_w-1:
+                    block = nn.Linear(inp_size, 1)
+                else:
+                    block = nn.Sequential(nn.Linear(inp_size, out_size), 
+                                      nn.BatchNorm1d(num_features = out_size),nn.ReLU())
+                lst_z.append(block)
+                
+            for i in range(num_layers_A):
+                inp_size = out_size_A
+                out_size_A = int(inp_size//step_A)
+                if i == num_layers_A-1:
+                    block = nn.Linear(inp_size, 1)
+                else:
+                    block = nn.Sequential(nn.Linear(inp_size, out_size_A), 
+                                      nn.BatchNorm1d(num_features = out_size_A),nn.ReLU())
+                lst_A.append(block)
+
+            for i in range(num_layers_y):
+                inp_size = out_size_y
+                out_size_y = int(inp_size//step_y)
+                if i == num_layers_y-1:
+                    block = nn.Linear(inp_size, 1)
+                else:
+                    block = nn.Sequential(nn.Linear(inp_size, out_size_y), 
+                                      nn.BatchNorm1d(num_features = out_size_y),nn.ReLU())
+                lst_y.append(block)
             
-            self.fc1 = nn.Sequential(nn.Linear(input_size,20),
-            nn.BatchNorm1d(num_features=20),
-            nn.ReLU(),
-            nn.Linear(20,1))    
+            self.fc1 = nn.Sequential(*lst_y) 
             
-            self.fc2 = nn.Sequential(nn.Linear(input_size,20),
-            nn.BatchNorm1d(num_features=20),
-            nn.ReLU(),
-            nn.Linear(20,1))  
+            self.fc2 = nn.Sequential(*lst_A)  
     
-            self.fc3 = nn.Sequential(nn.Linear(input_size,20),
-            nn.BatchNorm1d(num_features=20),
-            nn.ReLU(),
-            nn.Linear(20,1))        
+            self.fc3 = nn.Sequential(*lst_z)    
     
         def forward(self, x):
             output_y = torch.sigmoid(self.fc1(x))
-            output_A = torch.sigmoid(self.fc2(x))
             output_w = torch.sigmoid(self.fc3(x))
+            output_A = torch.sigmoid(self.fc2(x))
             return output_y, output_A, output_w
 
-    def __init__(self, input_size):
-        self.model = Adversarial_weight_class.Fair_classifier(input_size)
+    def __init__(self, input_size, num_layers_w, step_w, 
+                     num_layers_A, step_A, num_layers_y, step_y):
+        self.model = FAIR_scalar_class.Fair_classifier(input_size, num_layers_w, 
+                                                              step_w, num_layers_A, 
+                                                              step_A, num_layers_y, step_y)
 
 
     def fit(self, x_train, y_train, A_train, max_epoch = 300, mini_batch_size = 50, 
