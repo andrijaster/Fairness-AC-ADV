@@ -4,12 +4,12 @@ import numpy as np
 from torch import nn
 from torch.nn import functional as F
 
-class FAD_prob_class():
+class FAD_prob_H_class():
     
     
     class Flow_transform(nn.Module): 
         def __init__(self, step_z, no_sample, input_size):    
-            super(FAD_prob_class.Flow_transform, self).__init__()
+            super(FAD_prob_H_class.Flow_transform, self).__init__()
             self.block = nn.Sequential(nn.Linear(input_size, input_size), nn.ReLU())
         
         def forward(self, x):
@@ -18,7 +18,7 @@ class FAD_prob_class():
     
     class Affine_transform(nn.Module):    
         def __init__(self, input_size, step_z, no_sample):
-            super(FAD_prob_class.Affine_transform, self).__init__()
+            super(FAD_prob_H_class.Affine_transform, self).__init__()
             output = int(input_size//step_z)
             self.fc1 = nn.Sequential(nn.Linear(input_size, output),
                     nn.BatchNorm1d(num_features=output),
@@ -47,7 +47,7 @@ class FAD_prob_class():
   
     class Y_output(nn.Module):      
         def __init__(self, num_layers_y, step_y, out_size):
-            super(FAD_prob_class.Y_output, self).__init__()            
+            super(FAD_prob_H_class.Y_output, self).__init__()            
             
             lst_y = nn.ModuleList()
             
@@ -69,7 +69,7 @@ class FAD_prob_class():
 
     class A_output(nn.Module):
         def __init__(self, out_size, num_layers_A, step_A):
-            super(FAD_prob_class.A_output, self).__init__()            
+            super(FAD_prob_H_class.A_output, self).__init__()            
             lst_A= nn.ModuleList()
             
             for i in range(num_layers_A):
@@ -92,18 +92,25 @@ class FAD_prob_class():
         
         output_size = int(input_size//step_z**2)
         
-        self.model_y = FAD_prob_class.Y_output(num_layers_y, step_y,
+        self.model_y = FAD_prob_H_class.Y_output(num_layers_y, step_y,
                                                           out_size = output_size)
-        self.model_A = FAD_prob_class.A_output(num_layers_A = num_layers_y, 
+        self.model_A = FAD_prob_H_class.A_output(num_layers_A = num_layers_y, 
                                                           step_A = step_y, out_size=output_size)
-        self.Transform = nn.Sequential(FAD_prob_class.Affine_transform(input_size, step_z, no_sample), 
-                                       *[FAD_prob_class.Flow_transform(step_z, no_sample, input_size=output_size) 
+        self.Transform = nn.Sequential(FAD_prob_H_class.Affine_transform(input_size,
+                                                                                  step_z, no_sample), 
+                                       *[FAD_prob_H_class.Flow_transform(step_z, no_sample, input_size=output_size) 
                                        for _ in range(flow_length)])
 
 
     def fit(self, x_train, y_train, A_train, max_epoch = 100, mini_batch_size = 50, alpha = 1,
             log_epoch = 1, log = 1):
         
+        
+        def entropy(output):
+            output = torch.clamp(output, 1e-5, 1 - 1e-5)
+            entropy = -output*torch.log(output)
+            return torch.mean(entropy)
+            
         self.model_y.train()
         self.model_A.train()
         self.Transform.train()
@@ -131,7 +138,7 @@ class FAD_prob_class():
                 loss2.backward(retain_graph=True)
                 optimizer_2.step()
                 
-                loss1 = nll_criterion(output_1, batch_y) - alpha * nll_criterion(output_2,batch_A)
+                loss1 = nll_criterion(output_1, batch_y) - alpha * entropy(output_2)
                 optimizer_1.zero_grad()
                 loss1.backward()
                 optimizer_1.step()

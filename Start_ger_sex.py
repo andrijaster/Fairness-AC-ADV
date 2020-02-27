@@ -2,6 +2,7 @@ import torch
 import os
 import numpy as np
 import models
+import pickle
 
 from sklearn.preprocessing import StandardScaler
 from aif360.metrics import ClassificationMetric
@@ -33,13 +34,11 @@ def german_dataset(name_prot=['sex']):
 
 
 def test(dataset, model, x_test, thresh_arr, unprivileged_groups, privileged_groups):
-
     bld = BinaryLabelDataset(df = dataset, label_names = ['labels'], 
                              protected_attribute_names=['sex'])
     
-    if k == 0:
-        y_val_pred_prob, A_val_pred_prob = model.predict_proba(x_test, no_samples = 128)   
-    elif np.isin(k ,model_AIF):
+ 
+    if np.isin(k ,model_AIF):
         y_val_pred_prob = model.predict_proba(bld)
     else:
         y_val_pred_prob, A_val_pred_prob = model.predict_proba(x_test)
@@ -75,15 +74,25 @@ def test(dataset, model, x_test, thresh_arr, unprivileged_groups, privileged_gro
         metric_arrs = np.append(metric_arrs, metric.statistical_parity_difference())
         metric_arrs = np.append(metric_arrs, metric.equal_opportunity_difference())
         metric_arrs = np.append(metric_arrs, metric.theil_index())
-    
     return metric_arrs
 
 
+
+""" INPUT DATA """
+model_no = 7
+epochs = 1
+threshold = [0.5]
+model_AIF = [0]
+std_scl = 1
+alpha = np.linspace(2.42, 3, 2)
+""" """
+
 saver_dir_res = 'Results'
-file_name = os.path.join(saver_dir_res, 'Results_german_sex.xls')
-model_no = 9
-inp = 56
-epochs = 500
+file_name = os.path.join(saver_dir_res, 'Results_german_sex_epoch_{}_model_no_{}.xls'.format(epochs, model_no))
+
+saver_dir_models = 'Trained_models/Start_ger_sex'    
+if not os.path.exists(saver_dir_models):
+    os.mkdir(saver_dir_models)
 
 if not os.path.exists(saver_dir_res):
     os.mkdir(saver_dir_res)
@@ -93,12 +102,10 @@ data, atribute, sensitive, output, pr_gr, un_gr = german_dataset()
 skf = KFold(n_splits = 10)
 skf.get_n_splits(atribute, output)
 
-std_scl = 1
+inp = atribute.shape[1]
 AUC_y = np.zeros(model_no)
 AUC_A = np.zeros(model_no)
-#threshold = np.linspace(0.01, 1, 100)
-threshold = [0.5]
-model_AIF = [1]
+
 
 wb = Workbook()
 
@@ -112,7 +119,6 @@ sheets = [wb.add_sheet('{}'.format(i)) for i in alpha]
 
 ind = 0
 for a in alpha:
-    
     metrics = np.zeros([model_no,8])
 
     k = 1
@@ -125,9 +131,7 @@ for a in alpha:
 
     for train_index,test_index in skf.split(atribute, output):
         
-        lst = [models.FAD_prob_AF_class(input_size = inp, 
-                                             num_layers_z = 2, num_layers_y = 2, 
-                                             step_z = 1.5, step_y = 1.5),
+        lst = [
             models.Fair_rew_RF(un_gr, pr_gr),
             models.FAD_class(input_size = inp, num_layers_z = 2, num_layers_y = 2, 
                                       step_z = 1.5, step_y = 1.5),
@@ -168,14 +172,17 @@ for a in alpha:
         A_test_t = torch.tensor(A_test.values).type('torch.FloatTensor').reshape(-1,1)
         
         k = 0
-        for i in lst: 
-            if k == 0:
-                i.fit(x_train_t, y_train_t, A_train_t, max_epoch= epochs, log = 0, no_sample = 1, alpha = a)   
-            elif np.isin(k ,model_AIF):
+        for i in lst:   
+            if np.isin(k ,model_AIF):
                 i.fit(data_train, ['labels'], ['sex'])
             else:
                 i.fit(x_train_t, y_train_t, A_train_t, max_epoch= epochs, log = 0, alpha = a)
-    
+            
+            saver_path = os.path.join(saver_dir_models, 'checkpoint_{}_epochs_{}_alpha_{}'.format(type(i).__name__, epochs, a))
+            f = open(saver_path,"wb")
+            pickle.dump(i,f)
+            f.close
+            
             metrics[k,:] += test(data_test, i, x_test_t, threshold, un_gr, pr_gr)
             k+=1
     

@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 import models
+import pickle
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
@@ -68,26 +69,31 @@ def test(dataset, model, x_test, thresh_arr, unprivileged_groups, privileged_gro
     return metric_arrs
 
 
-saver_dir_res = 'Results'
-file_name = os.path.join(saver_dir_res, 'Results_readmission.xls')
+""" INPUT DATA """
 model_no = 7
-inp = 929
 epochs = 500
+std_scl = 1
+threshold = [0.5]
+model_AIF = [0]
+alpha = np.linspace(1.26, 3, 4)
+""" """
+
+saver_dir_res = 'Results'
+file_name = os.path.join(saver_dir_res, 'Results_readmission_epoch_{}_model_no_{}.xls'.format(epochs, model_no))
+
 
 if not os.path.exists(saver_dir_res):
     os.mkdir(saver_dir_res)
     
+saver_dir_models = 'Trained_models/Readmission'    
+if not os.path.exists(saver_dir_models):
+    os.mkdir(saver_dir_models)
 
 data, atribute, sensitive, output, pr_gr, un_gr = medical_dataset()
 
-
-std_scl = 1
 AUC_y = np.zeros(model_no)
 AUC_A = np.zeros(model_no)
-#threshold = np.linspace(0.01, 1, 100)
-threshold = [0.5]
-model_AIF = [0]
-
+inp = atribute.shape[1]
 
 wb = Workbook()
 
@@ -96,8 +102,7 @@ columns = ["AUC_y", "AUC_A", 'bal_acc', 'avg_odds_diff',
            'disp_imp','stat_par_diff', 'eq_opp_diff', 'theil_ind']
 
 
-alpha = np.linspace(1.26, 3, 4)
-#alpha = [1.5]
+
 
 sheets = [wb.add_sheet('{}'.format(i)) for i in alpha]
 
@@ -155,7 +160,12 @@ for a in alpha:
             i.fit(data_train, ['readmitBIN'], ['FEMALE'])
         else:
             i.fit(x_train_t, y_train_t, A_train_t, max_epoch= epochs, log = 0, alpha = a)
-
+        
+        saver_path = os.path.join(saver_dir_models, 'checkpoint_{}_epochs_{}_alpha_{}'.format(type(i).__name__, epochs, a))
+        f = open(saver_path,"wb")
+        pickle.dump(i,f)
+        f.close
+       
         metrics[k,:] += test(data_test, i, x_test_t, threshold, un_gr, pr_gr)
         k+=1
         

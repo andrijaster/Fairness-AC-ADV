@@ -4,9 +4,9 @@ from aif360.algorithms.preprocessing import Reweighing
 
 class Fair_rew_RF():
     
-    def __init__(self, un_gr, pr_gr):
+    def __init__(self, un_gr, pr_gr, n_est = 100, min_sam_leaf = 25):
         self.model_reweight = Reweighing(un_gr,pr_gr)
-        self.model = RandomForestClassifier(n_estimators=100, min_samples_leaf=25)
+        self.model = RandomForestClassifier(n_estimators=n_est, min_samples_leaf=min_sam_leaf)
         
     def fit(self, data, labels, prot):
         ds = BinaryLabelDataset(df = data, label_names = labels, 

@@ -2,6 +2,7 @@ import torch
 import os
 import numpy as np
 import models
+import models_H
 import pickle
 
 from sklearn.preprocessing import StandardScaler
@@ -13,15 +14,14 @@ from sklearn.metrics import roc_auc_score
 from xlwt import Workbook 
 
 
-def german_dataset(name_prot=['age']):
+def german_dataset(name_prot=['sex']):
     dataset_orig = GermanDataset(
-        protected_attribute_names = name_prot,
-        privileged_classes=[lambda x: x >= 25],      
-        features_to_drop=['personal_status', 'sex'] 
+        protected_attribute_names = name_prot,                                                               
+        features_to_drop=['personal_status', 'age'] 
     )
     
-    privileged_groups = [{'age': 1}]
-    unprivileged_groups = [{'age': 0}]
+    privileged_groups = [{'sex': 1}]
+    unprivileged_groups = [{'sex': 0}]
     
     data, _ = dataset_orig.convert_to_dataframe()
     data.rename(columns={'credit':'labels'}, inplace = True)
@@ -35,9 +35,11 @@ def german_dataset(name_prot=['age']):
 
 
 def test(dataset, model, x_test, thresh_arr, unprivileged_groups, privileged_groups):
+
     bld = BinaryLabelDataset(df = dataset, label_names = ['labels'], 
-                             protected_attribute_names=['age'])
-      
+                             protected_attribute_names=['sex'])
+    
+
     if np.isin(k ,model_AIF):
         y_val_pred_prob = model.predict_proba(bld)
     else:
@@ -60,7 +62,7 @@ def test(dataset, model, x_test, thresh_arr, unprivileged_groups, privileged_gro
         dataset_pred = dataset.copy()
         dataset_pred.labels = y_val_pred
         bld2 = BinaryLabelDataset(df = dataset_pred, label_names = ['labels'], 
-                             protected_attribute_names=['age'])
+                             protected_attribute_names=['sex'])
         
         metric = ClassificationMetric(
                 bld, bld2,
@@ -73,8 +75,10 @@ def test(dataset, model, x_test, thresh_arr, unprivileged_groups, privileged_gro
         metric_arrs = np.append(metric_arrs, metric.disparate_impact())
         metric_arrs = np.append(metric_arrs, metric.statistical_parity_difference())
         metric_arrs = np.append(metric_arrs, metric.equal_opportunity_difference())
-        metric_arrs = np.append(metric_arrs, metric.theil_index())   
+        metric_arrs = np.append(metric_arrs, metric.theil_index())
+    
     return metric_arrs
+
 
 """ INPUT DATA """
 model_no = 7
@@ -86,23 +90,20 @@ alpha = np.linspace(2.42, 3, 2)
 """ """
 
 saver_dir_res = 'Results'
-file_name = os.path.join(saver_dir_res, 'Results_ger_age_epoch_{}_model_no_{}.xls'.format(epochs, model_no))
+file_name = os.path.join(saver_dir_res, 'Results_german_sex_H_epoch_{}_model_no_{}.xls'.format(epochs, model_no))
 
-saver_dir_models = 'Trained_models/Start_ger_age'    
+saver_dir_models = 'Trained_models/Start_ger_sex_H'    
 if not os.path.exists(saver_dir_models):
     os.mkdir(saver_dir_models)
 
 if not os.path.exists(saver_dir_res):
     os.mkdir(saver_dir_res)
     
-
 data, atribute, sensitive, output, pr_gr, un_gr = german_dataset()
 skf = KFold(n_splits = 10)
 skf.get_n_splits(atribute, output)
-
 inp = atribute.shape[1]
-AUC_y = np.zeros(model_no)
-AUC_A = np.zeros(model_no)
+
 
 
 wb = Workbook()
@@ -117,7 +118,7 @@ sheets = [wb.add_sheet('{}'.format(i)) for i in alpha]
 
 ind = 0
 for a in alpha:
- 
+    
     metrics = np.zeros([model_no,8])
 
     k = 1
@@ -132,19 +133,21 @@ for a in alpha:
         
         lst = [
             models.Fair_rew_RF(un_gr, pr_gr),
-            models.FAD_class(input_size = inp, num_layers_z = 2, num_layers_y = 2, 
+            models_H.FAD_H_class(input_size = inp, num_layers_z = 2, num_layers_y = 2, 
                                       step_z = 1.5, step_y = 1.5),
-            models.FAIR_scalar_class(input_size = inp, num_layers_w = 2, step_w = 1.5, 
+            models_H.FAIR_scalar_H_class(input_size = inp, num_layers_w = 2, step_w = 1.5, 
                      num_layers_A = 1, step_A = 1.5, num_layers_y = 2, step_y = 1.5),
-            models.FAIR_betaSF_class(input_size = inp, num_layers_w = 2, step_w = 1.5, 
+            models_H.FAIR_betaSF_H_class(input_size = inp, num_layers_w = 2, step_w = 1.5, 
                      num_layers_A = 1, step_A = 1.5, num_layers_y = 2, step_y = 1.5),
-            models.FAIR_Bernoulli_class(input_size = inp, num_layers_w = 2, step_w = 1.5, 
+            models_H.FAIR_Bernoulli_H_class(input_size = inp, num_layers_w = 2, step_w = 1.5, 
                      num_layers_A = 1, step_A = 1.5, num_layers_y = 2, step_y = 1.5),
-            models.FAIR_betaREP_class(input_size = inp, num_layers_w = 2, step_w = 1.5, 
+            models_H.FAIR_betaREP_H_class(input_size = inp, num_layers_w = 2, step_w = 1.5, 
                      num_layers_A = 1, step_A = 1.5, num_layers_y = 2, step_y = 1.5),
-            models.FAD_prob_class(flow_length = 2, no_sample = 32,
+            models_H.FAD_prob_H_class(flow_length = 2, no_sample = 32,
                                              input_size = inp, num_layers_y = 2, 
                                              step_y = 2, step_z = 2)]
+    
+        
         
         x_train, x_test = atribute.iloc[train_index,:], atribute.iloc[test_index,:]
         y_train, y_test = output.iloc[train_index], output.iloc[test_index] 
@@ -169,18 +172,16 @@ for a in alpha:
         A_test_t = torch.tensor(A_test.values).type('torch.FloatTensor').reshape(-1,1)
         
         k = 0
-        for i in lst:   
+        for i in lst:  
             if np.isin(k ,model_AIF):
-                i.fit(data_train, ['labels'], ['age'])
+                i.fit(data_train, ['labels'], ['sex'])
             else:
                 i.fit(x_train_t, y_train_t, A_train_t, max_epoch= epochs, log = 0, alpha = a)
             saver_path = os.path.join(saver_dir_models, 'checkpoint_{}_epochs_{}_alpha_{}'.format(type(i).__name__, epochs, a))
             f = open(saver_path,"wb")
             pickle.dump(i,f)
-            f.close
-            
+            f.close    
             metrics[k,:] += test(data_test, i, x_test_t, threshold, un_gr, pr_gr)
-            wb.save(file_name) 
             k+=1
     
     metrics = np.round(metrics/10,4)
@@ -191,4 +192,4 @@ for a in alpha:
     
     ind += 1
     
-
+wb.save(file_name) 
