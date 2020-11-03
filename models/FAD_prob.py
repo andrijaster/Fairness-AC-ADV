@@ -36,7 +36,7 @@ class FAD_prob_class():
             std = torch.exp(0.5*logvar)
             number = list(std.size())
             number.insert(0,no_samples)
-            eps = torch.randn(number)
+            eps = torch.randn(number).cuda()
             return mu + eps*std
         
         def forward(self, x):
@@ -89,19 +89,26 @@ class FAD_prob_class():
                         
     
     def __init__(self, flow_length, no_sample, num_layers_y, input_size, step_z, step_y):
+
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
         output_size = int(input_size//step_z**2)
         
         self.model_y = FAD_prob_class.Y_output(num_layers_y, step_y,
                                                           out_size = output_size)
+
         self.model_A = FAD_prob_class.A_output(num_layers_A = num_layers_y, 
                                                           step_A = step_y, out_size=output_size)
         self.Transform = nn.Sequential(FAD_prob_class.Affine_transform(input_size, step_z, no_sample), 
                                        *[FAD_prob_class.Flow_transform(step_z, no_sample, input_size=output_size) 
                                        for _ in range(flow_length)])
 
+        self.model_y.to(self.device)
+        self.model_A.to(self.device)
+        self.Transform.to(self.device)
 
-    def fit(self, x_train, y_train, A_train, max_epoch = 100, mini_batch_size = 50, alpha = 1,
+
+    def fit(self, dataloader, dataloader_val, early_stopping_no = 3, max_epoch = 100, mini_batch_size = 50, alpha = 1,
             log_epoch = 1, log = 1):
         
         self.model_y.train()
@@ -113,14 +120,17 @@ class FAD_prob_class():
         list_1 = list(self.model_y.parameters())+list(self.Transform.parameters())
         list_2 = list(self.model_A.parameters())
         
-        optimizer_1 = torch.optim.Adam(list_1, lr = 0.001)
-        optimizer_2 = torch.optim.Adam(list_2, lr = 0.001)
+        optimizer_1 = torch.optim.Adam(list_1, lr = 0.0001)
+        optimizer_2 = torch.optim.Adam(list_2, lr = 0.0001)
+        prev_loss_y, prev_loss_A = 9e10,9e10
+        no_val = 0
         
         for e in range(max_epoch):
-            for i in range(0,x_train.size()[0], mini_batch_size):     
-               
-                batch_x, batch_y, batch_A = (x_train[i:i+mini_batch_size], y_train[i:i+mini_batch_size], 
-                                            A_train[i:i+mini_batch_size])
+            for batch_x, batch_y, batch_A in dataloader:  
+
+                batch_x = batch_x.to(self.device, dtype = torch.float)  
+                batch_y = batch_y.unsqueeze(dim = 1).to(self.device, dtype = torch.float)
+                batch_A = batch_A.unsqueeze(dim = 1).to(self.device, dtype = torch.float)
                 
                 z = self.Transform(batch_x)
                 output_1 = self.model_y(z)
@@ -128,20 +138,42 @@ class FAD_prob_class():
                                 
                 loss2 = nll_criterion(output_2, batch_A)
                 optimizer_2.zero_grad()
-                loss2.backward(retain_graph=True)
-                optimizer_2.step()
                 
                 loss1 = nll_criterion(output_1, batch_y) - alpha * nll_criterion(output_2,batch_A)
                 optimizer_1.zero_grad()
+
+                loss2.backward(retain_graph=True)
                 loss1.backward()
+
+                optimizer_2.step()
                 optimizer_1.step()
                 
             if e%log_epoch == 0 and  log == 1:
-                z = self.Transform(x_train)
+                z = self.Transform(batch_x)
                 out_1 = self.model_y(z)
                 out_2 = self.model_A(z)
-                print(nll_criterion(out_2, A_train).data, nll_criterion(out_1, y_train).data)
 
+                for x_val, y_val, A_val in dataloader_val:
+                    
+                    x_val = x_val.to(self.device, dtype = torch.float)  
+                    y_val = y_val.unsqueeze(dim = 1).to(self.device, dtype = torch.float)
+                    A_val = A_val.unsqueeze(dim = 1).to(self.device, dtype = torch.float)
+
+                    z = self.Transform(x_val)
+                    out_1_val = self.model_y(z)
+                    out_2_val = self.model_A(z)
+
+                    loss_y_val = nll_criterion(out_1_val, y_val).data.cpu().numpy()
+                    loss_A_val = nll_criterion(out_2_val, A_val).data.cpu().numpy()
+
+                    if loss_y_val > prev_loss_y and loss_A_val > prev_loss_A:
+                        no_val +=1
+                    else:
+                        prev_loss_y, prev_loss_A = loss_y_val, loss_A_val
+                        no_val = 0
+                
+                if no_val == early_stopping_no:
+                    break
    
     def predict(self, x_test):
         self.model_y.eval()
@@ -154,15 +186,13 @@ class FAD_prob_class():
         A = np.round(A.data)
         return y, A
     
-    def predict_proba(self, x_test):
-        self.model_y.eval()
-        self.model_A.eval()
-        self.Transform.eval()
-        z = self.Transform(x_test)
-        y = self.model_y(z)
-        A = self.model_A(z)
-        y = y.data
-        A = A.data
+    def predict_proba(self, dataloader):
+        for batch_x, _ , _ in dataloader: 
+            z = self.Transform(batch_x.to(self.device, dtype=torch.float))
+            y = self.model_y(z)
+            A = self.model_A(z)
+        y = y.data.cpu().numpy()
+        A = A.data.cpu().numpy()
         return y, A
     
 

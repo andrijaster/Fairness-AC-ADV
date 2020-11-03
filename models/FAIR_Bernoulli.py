@@ -81,16 +81,26 @@ class FAIR_Bernoulli_class():
     def __init__(self, input_size, num_layers_w,
                      step_w, num_layers_A, step_A,
                       num_layers_y, step_y):
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
         self.model_y = FAIR_Bernoulli_class.Output_class(input_size,num_layers_y,
                      step_y)
+        
+        self.model_y.to(self.device)
+
         self.model_A = FAIR_Bernoulli_class.Atribute_class(input_size,num_layers_A,
                      step_A)
+
+        self.model_A.to(self.device)
+
         self.model_w = FAIR_Bernoulli_class.weight_class(input_size,num_layers_w,
                      step_w)
 
+        self.model_w.to(self.device)
 
-    def fit(self, x_train, y_train, A_train, max_epoch = 200, 
-            mini_batch_size = 50, alpha = 1, beta = 1, log_epoch = 10, log = 1):
+
+    def fit(self, dataloader, dataloader_val, early_stopping_no = 3, max_epoch = 200, 
+            mini_batch_size = 50, alpha = 1, beta = 1, log_epoch = 10, log = 0):
         
         def loss_ML_sam(output, target, sam):
             output = torch.clamp(output, 1e-5, 1 - 1e-5)
@@ -116,38 +126,62 @@ class FAIR_Bernoulli_class():
         optimizer_2 = torch.optim.Adam(list_2, lr = 0.0001)
         optimizer_3 = torch.optim.Adam(list_3, lr = 0.0001)
         
+        prev_loss_y, prev_loss_A = 9e10,9e10
+        no_val = 0        
+        
         for e in range(max_epoch):
-            for i in range(0,x_train.size()[0], mini_batch_size):     
-                batch_x, batch_y, batch_A = (x_train[i:i+mini_batch_size], y_train[i:i+mini_batch_size], 
-                                            A_train[i:i+mini_batch_size])
+            for batch_x, batch_y, batch_A in dataloader:   
+
+                batch_x = batch_x.to(self.device, dtype=torch.float)  
+                batch_y = batch_y.unsqueeze(dim = 1).to(self.device, dtype = torch.float)
+                batch_A = batch_A.unsqueeze(dim = 1).to(self.device, dtype = torch.float)
+
                 A = self.model_A(batch_x)
                 y = self.model_y(batch_x)
-                w = self.model_w(batch_x)
-                
+                w = self.model_w(batch_x)                
                 dist = torch.distributions.Bernoulli(w)
                 sam = dist.sample()
-                
-                optimizer_2.zero_grad()
-                loss2 = loss_ML_sam(A, batch_A, sam)
-                loss2.backward(retain_graph = True)
-                optimizer_2.step()
-    
-                optimizer_1.zero_grad()        
-                loss1 = loss_ML_sam(y, batch_y, sam)
-                loss1.backward(retain_graph = True)
-                optimizer_1.step()
-                
-                optimizer_3.zero_grad()
-                loss3 = loss_w(A, y, batch_A, batch_y, alpha, beta, w, sam)
-                loss3.backward()
-                optimizer_3.step()
-                
-            if e%log_epoch == 0 and log == 1:
-                y = self.model_y(x_train)
-                A = self.model_A(x_train)
-                print(nll_criterion(A, A_train).data, nll_criterion(y, y_train).data)
-                print(min(w.data),max(w.data),torch.mean(w).data,torch.sum(w).data)
 
+                loss2 = loss_ML_sam(A, batch_A, sam)   
+                optimizer_2.zero_grad()             
+                
+                loss1 = loss_ML_sam(y, batch_y, sam)
+                optimizer_1.zero_grad() 
+
+                loss3 = loss_w(A, y, batch_A, batch_y, alpha, beta, w, sam)
+                optimizer_3.zero_grad()
+
+                loss2.backward(retain_graph = True)
+                loss1.backward(retain_graph = True)
+                loss3.backward()    
+
+                optimizer_2.step()
+                if e%2 == 0:
+                    optimizer_2.step()
+                    optimizer_1.step()            
+              
+            if e%log_epoch == 0 and log == 1:
+
+                for x_val, y_val, A_val in dataloader_val:
+                    
+                    x_val = x_val.to(self.device, dtype = torch.float)  
+                    y_val = y_val.unsqueeze(dim = 1).to(self.device, dtype = torch.float)
+                    A_val = A_val.unsqueeze(dim = 1).to(self.device, dtype = torch.float)
+
+                    out_1_val = self.model_y(x_val)
+                    out_2_val = self.model_A(x_val)
+
+                    loss_y_val = nll_criterion(out_1_val, y_val).data.cpu().numpy()
+                    loss_A_val = nll_criterion(out_2_val, A_val).data.cpu().numpy()
+
+                    if loss_y_val > prev_loss_y and loss_A_val > prev_loss_A:
+                        no_val +=1
+                    else:
+                        prev_loss_y, prev_loss_A = loss_y_val, loss_A_val
+                        no_val = 0
+                
+                if no_val == early_stopping_no:
+                    break  
 
 
     def predict(self, x_test):
@@ -159,13 +193,12 @@ class FAIR_Bernoulli_class():
         A = np.round(A.data)
         return y, A
     
-    def predict_proba(self, x_test):
-        self.model_y.eval()
-        self.model_A.eval()
-        y = self.model_y(x_test)
-        A = self.model_A(x_test)
-        y = y.data
-        A = A.data
+    def predict_proba(self, dataloader):
+        for x_test, _ , _ in dataloader: 
+            y = self.model_y(x_test.to(self.device, dtype = torch.float))
+            A = self.model_A(x_test.to(self.device, dtype = torch.float))
+            y = y.data.cpu().numpy()
+            A = A.data.cpu().numpy()
         return y, A
 
 

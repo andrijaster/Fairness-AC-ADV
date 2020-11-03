@@ -4,6 +4,8 @@ import numpy as np
 from torch import nn, optim
 from torch.nn import functional as F
 
+from sklearn.metrics import roc_auc_score
+
 
 class FAIR_scalar_class:
     
@@ -26,7 +28,7 @@ class FAIR_scalar_class:
                     block = nn.Linear(inp_size, 1)
                 else:
                     block = nn.Sequential(nn.Linear(inp_size, out_size), 
-                                      nn.BatchNorm1d(num_features = out_size),nn.ReLU())
+                                      nn.BatchNorm1d(num_features = out_size,momentum=0.01),nn.ReLU())
                 lst_z.append(block)
                 
             for i in range(num_layers_A):
@@ -36,7 +38,7 @@ class FAIR_scalar_class:
                     block = nn.Linear(inp_size, 1)
                 else:
                     block = nn.Sequential(nn.Linear(inp_size, out_size_A), 
-                                      nn.BatchNorm1d(num_features = out_size_A),nn.ReLU())
+                                      nn.BatchNorm1d(num_features = out_size_A, momentum=0.01),nn.ReLU())
                 lst_A.append(block)
 
             for i in range(num_layers_y):
@@ -46,7 +48,7 @@ class FAIR_scalar_class:
                     block = nn.Linear(inp_size, 1)
                 else:
                     block = nn.Sequential(nn.Linear(inp_size, out_size_y), 
-                                      nn.BatchNorm1d(num_features = out_size_y),nn.ReLU())
+                                      nn.BatchNorm1d(num_features = out_size_y,momentum=0.01),nn.ReLU())
                 lst_y.append(block)
             
             self.fc1 = nn.Sequential(*lst_y) 
@@ -63,13 +65,15 @@ class FAIR_scalar_class:
 
     def __init__(self, input_size, num_layers_w, step_w, 
                      num_layers_A, step_A, num_layers_y, step_y):
+
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.model = FAIR_scalar_class.Fair_classifier(input_size, num_layers_w, 
                                                               step_w, num_layers_A, 
                                                               step_A, num_layers_y, step_y)
+        self.model.to(self.device)
 
-
-    def fit(self, x_train, y_train, A_train, max_epoch = 300, mini_batch_size = 50, 
-            alpha = 1.0, beta = 0, log_epoch = 10, log = 1):
+    def fit(self, dataloader, dataloader_val, early_stopping_no = 3, max_epoch = 300, mini_batch_size = 50, 
+            alpha = 1.0, beta = 0, log_epoch = 1, log = 0):
         
         def loss(output, target, weights):
             output = torch.clamp(output, 1e-5, 1 - 1e-5)
@@ -77,7 +81,7 @@ class FAIR_scalar_class:
             ML =  weights*(target*torch.log(output) + (1-target)*torch.log(1-output))
             return torch.neg(torch.mean(ML))
 
-        self.model.train()
+
         nll_criterion =F.binary_cross_entropy
         list_0 = list(self.model.fc1.parameters())
         list_1 = list(self.model.fc3.parameters())
@@ -86,48 +90,74 @@ class FAIR_scalar_class:
         optimizer_0 = torch.optim.Adam(list_0, lr = 0.0001)
         optimizer_1 = torch.optim.Adam(list_1, lr = 0.0001)
         optimizer_2 = torch.optim.Adam(list_2, lr = 0.0001)
-        
+
+        prev_loss_y, prev_loss_A = 9e10,9e10
+        no_val = 0        
     
         for e in range(max_epoch):
-            for i in range(0,x_train.size()[0], mini_batch_size):     
-                batch_x, batch_y, batch_A = (x_train[i:i+mini_batch_size], y_train[i:i+mini_batch_size], 
-                                            A_train[i:i+mini_batch_size])
+            for batch_x, batch_y, batch_A in dataloader:  
+                self.model.train()
+
+                batch_x = batch_x.to(self.device, dtype=torch.float)
+                batch_y = batch_y.unsqueeze(dim = 1).to(self.device, dtype = torch.float)
+                batch_A = batch_A.unsqueeze(dim = 1).to(self.device, dtype = torch.float)
+
                 y, A, w = self.model(batch_x)
-                loss0 = loss(y, batch_y, w) 
+                loss0 = loss(y, batch_y, w)
                 optimizer_0.zero_grad()
+
+                loss2 = loss(A, batch_A, w)
+                optimizer_2.zero_grad()
+
+                loss1 = loss(y, batch_y, w) - alpha*loss(A, batch_A, w) - beta*torch.norm(w,1)
+                optimizer_1.zero_grad()
+
                 loss0.backward(retain_graph = True)
+                loss2.backward(retain_graph = True)
+                loss1.backward()
+
                 optimizer_0.step()
-                if e%1 == 0:
-                    loss2 = loss(A, batch_A, w)
-                    optimizer_2.zero_grad()
-                    loss2.backward(retain_graph = True)
+
+                if e%2 == 0:
                     optimizer_2.step()
-                    loss1 = loss(y, batch_y, w) - alpha*loss(A, batch_A, w) - beta*torch.norm(w,1)
-                    optimizer_1.zero_grad()
-                    loss1.backward()
                     optimizer_1.step()
-    
                 
             if e%log_epoch == 0 and log == 1:
-                y, A, w = self.model(x_train)
-                print(min(w.data),max(w.data),torch.mean(w).data,torch.sum(w).data)
-                print(nll_criterion(A, A_train).data, nll_criterion(y, y_train).data)
+
+                for x_val, y_val, A_val in dataloader_val:
+                    
+                    x_val = x_val.to(self.device, dtype = torch.float)  
+                    y_val = y_val.unsqueeze(dim = 1).to(self.device, dtype = torch.float)
+                    A_val = A_val.unsqueeze(dim = 1).to(self.device, dtype = torch.float)
+
+                    out_1_val, out_2_val, _ = self.model(x_val)
+
+                    loss_y_val = nll_criterion(out_1_val, y_val).data.cpu().numpy()
+                    loss_A_val = nll_criterion(out_2_val, A_val).data.cpu().numpy()
+
+                    if loss_y_val > prev_loss_y and loss_A_val > prev_loss_A:
+                        no_val +=1
+                    else:
+                        prev_loss_y, prev_loss_A = loss_y_val, loss_A_val
+                        no_val = 0
+                
+                if no_val == early_stopping_no:
+                    break                
 
 
     def predict(self, x_test):
-        self.model.eval()
         y, A , w= self.model(x_test)
         y = np.round(y.data)
         A = np.round(A.data)
         w = w.data
         return y, A
 
-    def predict_proba(self, x_test):
-        self.model.eval()
-        y, A , w= self.model(x_test)
-        y = y.data
-        A = A.data
-        w = w.data
+    def predict_proba(self, dataloader):
+        for x_test, _, _ in dataloader:
+            y, A , w= self.model(x_test.to(self.device, dtype = torch.float))
+            y = y.data.cpu().numpy()
+            A = A.data.cpu().numpy()
+            w = w.data.cpu().numpy()
         return y, A
 
 
