@@ -183,7 +183,7 @@ Adversarial training has widely been used for finding Nash equilibrium in mini-m
 In this paper, we propose Fair Adversarial Instance Re-weighting (FAIR) -- a novel model for mitigating bias in discriminative algorithms by using an adversarial framework to learn instance reweighing and not new data representation as is done in previous work. Also, in our approach, the weighting is not performed as preprocessing, but is integrated in the learning procedure so that the learning is performed end-to-end. FAIR consists of three neural networks: the first one is used for determining weights for each instance, the second one for predicting the sensitive attribute, and the third one for predicting the output label. FAIR proposes four different weighting methods. In the first method (FAIR-scalar), obtained scalar weights are used for weighting the log likelihood of corresponding instances, whereas in all other methods instance weights are random variables parametrized by the output of the first network. In the second method (FAIR-Bernoulli) the weights are distributed according to Bernoulli distribution and during learning, score function is used to evaluate the expectation of the log likelihood. Other two methods rely on beta distribution, but they differ in evaluation of the expectation of the log likelihood -- the third one (FAIR-betaSF) uses score function and the fourth one (FAIR-betaREP) relies on reparametrization. Additionally, we discuss how to reduce the variance of FAIR-Bernoulli and FAIR-betaSF using baseline functions. We evaluated our models on four different real-world datasets and compared them to the state-of-the-art techniques. The results demonstrate that FAIR achieved the best results, with respect to fairness and classification performance. Furthermore, to the best of our knowledge this is the first model that merges reweighting and adversarial approaches with a weighting function that can provide interpretable information about fairness of individual instances.
 
 In section~\ref{Sec:Related Work} the related work is reviewed. Adversarial models for debiasing datasets in probabilistic and non probabilistic framework are presented in section ~\ref{Sec:advnet}. The proposed FAIR algorithm with different variants is described in ~\ref{Sec:FAIR}.
-Experimental results on real-world applications are shown in section~\ref{Sec:exp-evaluation}. Final conclusions are given in section~\ref{Sec:Conclusion}.
+Experimental setup and results on real-world applications are shown in sections ~\ref{Sec:exp-evaluation} and ~\ref{sec:ResultsDiscussion}, respectively. Final conclusions are given in section~\ref{Sec:Conclusion}.
 
 
 \section{Related Work}
@@ -576,10 +576,13 @@ The hyperparameters $\alpha$ of FAIR and FAD models were varied in range $[0, 10
 \textbf{Metrics}. 
 Classification performance of all presented classifiers is quantified by the area under the ROC curve (AUC). As fairness metrics we use ASD and AEOD defined by Eqs. \ref{metric:asd}, \ref{metric:aeod} and \ref{metric:aod}. It is worth noticing that AUC is calculated for the output ($y$) and the sensitive attribute ($s$). Therefore, we present $AUC_y$ and $AUC_s$ for the output and  sensitive attribute, respectively. If subscript is omitted, then $AUC_y$ is presented. Also, every presented measure is calculated on the test set.
 
-\marginpar{Šta misliš da ovo bude zasebno poglavlje? Results and Discussion - Prvo Results, drugo Discussion. Ovako imamo samo poglavlje 5.1 - cemu deljenje ako se deli samo na jednu jedinicu}
-\textbf{Results}. The model hyperparameters were firstly tuned on validation set for each model separately. For each model family (e.g., FAD models obtained for different values of hyperparameter $\alpha$), only models that belong to the Pareto efficient solutions on validation (models that are not dominated by other models in terms of both predictive performance and fairness) \cite{marler2004survey} are evaluated on test set. Consequently, in this section all presented results were evaluated on test sets and only Pareto efficient solutions were presented. Additional results can be observer in~\ref{app:Additional results}.
+\section{Results and Discussion}
+\label{sec:ResultsDiscussion}
+Results and discussion section present results obtained using above-presented experimental evaluation.
 
-Firstly, models performances obtained on \textit{Adult income} dataset are illustrated in Fig.~\ref{fig:Adult} by three fairness metrics ($\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$) and classification performance ($\mathbf{AUC_y}$). The models with greater AUC score and lower (un)fairness metric (upper left corner of plots) are preferred. It can be observed that FAIR models dominates Pareto optimal solutions with respect to the all fairness metrics. In addition, Reweighing-NN and FAIR-betaREP models dominate the upper left corner of Pareto fronts for AOD and AEOD, whereas the FAIR-scalar dominates the upper left corner of Pareto front for ASD metric. Moreover, in table~\ref{tab:Adult} the Pareto optimal solutions obtained for all three fairness metrics and ($\mathbf{AUC_y}$) is presented. Similarly, it can be concluded that number of FAIR models is larger compared to the other models and FAIR can therefore be considered better then other models.
+\subsection{Results}
+\label{sec:Results}
+The model hyperparameters were firstly tuned on validation set for each model separately. For each model family (e.g., FAD models obtained for different values of hyperparameter $\alpha$), only models that belong to the Pareto efficient solutions on validation (models that are not dominated by other models in terms of both predictive performance and fairness) \cite{marler2004survey} are evaluated on test set. Consequently, in this section all presented results were evaluated on test sets and only Pareto efficient solutions were presented. Additional results can be observer in~\ref{app:Additional results}.
 
 \begin{figure*}
 	\center
@@ -590,7 +593,9 @@ Firstly, models performances obtained on \textit{Adult income} dataset are illus
 	\vskip -0.2in
 \end{figure*}
 
-\begin{table}[]
+Firstly, models performances obtained on \textit{Adult income} dataset are illustrated in Fig.~\ref{fig:Adult} by three fairness metrics ($\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$) and classification performance ($\mathbf{AUC_y}$). The models with greater AUC score and lower (un)fairness metric (upper left corner of plots) are preferred. It can be observed that FAIR models dominates Pareto optimal solutions with respect to the all fairness metrics. In addition, Reweighing-NN and FAIR-betaREP models dominate the upper left corner of Pareto fronts for AOD and AEOD, whereas the FAIR-scalar dominates the upper left corner of Pareto front for ASD metric. Moreover, in table~\ref{tab:Adult} the Pareto optimal solutions obtained for all three fairness metrics and ($\mathbf{AUC_y}$) is presented. Similarly, it can be concluded that number of FAIR models is larger compared to the other models and FAIR can therefore be considered better then other models.
+
+\begin{table}
 	\centering
 	\caption{Pareto optimal solutions - \textit{Adult income} dataset}
 	\begin{tabular}{|c|l|l|l|l|}
@@ -622,16 +627,16 @@ Firstly, models performances obtained on \textit{Adult income} dataset are illus
 
 Secondly, the results obtained on \textit{Hospital readmission} dataset are presented in Fig~\ref{fig:Readmission}. It can be noticed that only FAIR models exist on Pareto front and consequently all other model are dominated by them. It can be observed that in the case of AOD and ASD metrics FAIR-scalar is the closest to the upper left corner and can therefore be considered better than others. The letter can be also confirmed in the table~\ref{tab:Readmission} where only FAIR models exist on overall Pareto front.
 
-\begin{figure*}[h!]
+\begin{figure}
 	\center
 	\includegraphics[angle=0, width=0.7\textwidth]{Readmission.png}
 	\captionsetup{justification=centering}
 	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{Hospital readmission} dataset}
 	\label{fig:Readmission}
 	\vskip -0.2in
-\end{figure*}
+\end{figure}
 
-\begin{table}[h!]
+\begin{table}
 	\centering
 	\caption{Pareto optimal solutions - \textit{Hospital readmission} dataset}
 	\begin{tabular}{|c|l|l|l|l|}
@@ -649,16 +654,16 @@ Secondly, the results obtained on \textit{Hospital readmission} dataset are pres
 
 Thirdly, models performances obtained on \textit{Hospital expenditures} dataset are illustrated in Fig.~\ref{fig:Adult}. It can be observed that the FAIR models dominates Pareto front in all presented metrics. In the case of ASD metric PR model is the closest to the upper left corner of Pareto front, whereas in the case of AOD and AEOD metrics similarly can be concluded for DI-RF model. However in table~\ref{tab:MEPS-19} where overall Pareto front is presented the FAIR models still dominates Pareto front.
 
-\begin{figure*}[]
+\begin{figure}
 	\center
 	\includegraphics[angle=0, width=0.7\textwidth]{MEPS19.png}
 	\captionsetup{justification=centering}
 	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ \textit{Hospital expenditures} dataset}
 	\label{fig:MEPS19}
 	\vskip -0.2in
-\end{figure*}
+\end{figure}
 
-\begin{table}[H]
+\begin{table}
 	\centering
 	\caption{Pareto optimal solutions - \textit{Hospital expenditures} dataset}
 	\begin{tabular}{|c|l|l|l|l|}
@@ -690,25 +695,25 @@ Thirdly, models performances obtained on \textit{Hospital expenditures} dataset 
 
 Eventually, model performances obtained of \textit{German credit} dataset for age and sex as sensitive attributes are presented in Figs.~\ref{fig:Ger-age-res} and~\ref{fig:Ger-sex-res}, respectively. Similarly as in previous datasets, overall Pareto fronts, for age and sex as sensitive attributes, are presented in Tables~\ref{tab:Ger-age} and~\ref{tab:Ger-sex}. It can be observed that in  Fig.~\ref{fig:Ger-sex-res} all models are equally represented, whereas in  Fig.~\ref{fig:Ger-age-res} FAIR models dominates the Pareto front in all cases. Similar conclusion can be made in the case of overall Pareto fronts that are presented in tables~\ref{tab:Ger-age} and~\ref{tab:Ger-sex}. In table~\ref{tab:Ger-age} it can be observed that all models are equally represented in Pareto fronts, whereas in table~\ref{tab:Ger-sex} the most dominant models are Reweighing-RF and FAD.
 
-\begin{figure*}[h!]
+\begin{figure}
 	\center
 	\includegraphics[angle=0, width=0.7\textwidth]{Ger_age.png}
 	\captionsetup{justification=centering}
 	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ \textit{German credit} (age) dataset}
 	\label{fig:Ger-sex-res}
 	\vskip -0.2in
-\end{figure*}
+\end{figure}
 
-\begin{figure*}[h!]
+\begin{figure}
 	\center
 	\includegraphics[angle=0, width=0.7\textwidth]{Ger_sex.png}
 	\captionsetup{justification=centering}
 	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ \textit{German credit} (sex) dataset}
 	\label{fig:Ger-age-res}
 	\vskip -0.2in
-\end{figure*} 
+\end{figure} 
 
-\begin{table}[]
+\begin{table}
 	\centering
 	\caption{Pareto optimal solutions - \textit{German credit} - age dataset}
 	\begin{tabular}{|c|l|l|l|l|}
@@ -734,7 +739,7 @@ Eventually, model performances obtained of \textit{German credit} dataset for ag
 	\label{tab:Ger-age}
 \end{table}
 
-\begin{table}[]
+\begin{table}
 	\centering
 	\caption{Pareto optimal solutions - \textit{German credit} - sex dataset}
 	\begin{tabular}{|c|l|l|l|l|}
@@ -757,17 +762,17 @@ Eventually, model performances obtained of \textit{German credit} dataset for ag
 	\label{tab:Ger-sex}%
 \end{table}
 
-\subsection{Experimental behaviour of FAIR models}
+\subsection{Discussion}
 
 Model behaviour of FAIR model with respect to change of hyperparameter $\alpha$ is shown in Fig.~\ref{fig:FigResultsAlpha} on \textit{Geman credit} dataset. It can be observed that as $\alpha$ decreases, instances which are unfair (but potentially useful for prediction of target variable) are being discarded, so AUC metrics for both the target variable and sensitive attribute decrease. This is experimental verification of theoretical model properties presented in section~\ref{Sec:FAIR}.
 
-\begin{figure*}[h!]
+\begin{figure}[h]
 	\center
 	\includegraphics[angle=0, width=0.8\textwidth]{AUC_y_A.png}
 	\captionsetup{justification=centering}
 	\caption{$\mathbf{AUC_y}$ and $\mathbf{AUC_s}$ as functions of the fariness hyperparameter $\alpha$ measured on the  German credit - sex and Readmission datasets ($\mathbf{AUC_y}$ is preferred larger, and $\mathbf{AUC_s}$ smaller)}
 	\label{fig:FigResultsAlpha}
-\end{figure*}
+\end{figure}
 
 Furthermore, we increased the hyperparameter $\alpha$ in FAIR-scalar model from 0 to the first value where one of the instance in training dataset has weight that tends to 1. Based on theoretical formulation of model properties this is the most "fair" instance in dataset. Moreover, we kept to increase parameter $\alpha$ until the first two instances with weights that tends to 1 in opposite sex and label categories occurred. In table~\ref{tab:Explainability} the attributes of previously mentioned instances are presented.
 
@@ -775,7 +780,7 @@ Firstly, it could be observed that the most "fair" instance has good credit scor
 
 It can be concluded that all presented instances have reasonable explanations why they are labelled with bad or good credit score. Furthermore, it can be seen that sex does not have any kind of cause on final decision so FAIR-scalar successfully labelled them as "fair".
 
-\begin{table}[h!]
+\begin{table}
 	\centering
 	\caption{German credit dataset instances with non zero weights}
 	\resizebox{\textwidth}{!}{\begin{tabular}{|c|c|c|c|}
