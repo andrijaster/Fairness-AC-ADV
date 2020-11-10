@@ -126,7 +126,7 @@
 %% \address{Address\fnref{label3}}
 %% \fntext[label3]{}
 
-\title{Structured Prediction of Sparse Dependent Variables for Traffic State Etimation in Large-Scale Networks \tnoteref{label1}}
+\title{FAIR: Fair Adversarial Instance Re-weighting}
 \tnotetext[label1]{}
 
 %% use optional labels to link authors explicitly to addresses:
@@ -134,7 +134,7 @@
 %% \address[label1]{}
 %% \address[label2]{}
 
-\author[FON]{Andrija Petrović}
+\author[FON]{Andrija Petrović\tnoteref{label1}}
 \ead{aapetrovic@mas.bg.ac.rs}
 \author[MATF]{Mladen Nikolić}
 \author[FON]{Sandro Radovanović}
@@ -565,8 +565,7 @@ The second, we used \textit{Hospital readmission} dataset \cite{stiglic2015compr
  
 The third dataset, named \textit{Hospital Expenditures}, comes from \cite{bellamy2019ai}. It represents a binary classification task of predicting whether a person would have 'high' or 'low' utilization of medical expenditures. The sensitive attribute is Race. Dataset contains 15,830 instances and 133 attributes, after usage of numerical features dummy codding total number of attributes used in this dataset is 138. In addition whereas 11,081, 2,374 and 2,375 instances were used during training, validation and testing, respectively. 
 
-As a fourth dataset, we used \textit{German credit} dataset. \textit{German credit} dataset has 1,000 instances where the task is to classify bank account holders into classes good or bad. The total number of attributes used in dataset, after applying one-hot encoding on categorical features is 58, including sensitive attributes. Following \cite{kamiran2012decision} definition of fairness for German credit dataset there are two sensitive attributes, one being Gender and other being Age ($\geq 25$ is considered as privileged class, and $\leq 25$ as unprivileged class).  Total numbers of instances used in training, validation and testing are 700, 150 and 150, respectively. 
-\marginpar{Da li je $\geq 25$ i $< 25$ ili je $> 25$ i $\leq 25$? German credit sensitive attribute}
+As a fourth dataset, we used \textit{German credit} dataset. \textit{German credit} dataset has 1,000 instances where the task is to classify bank account holders into classes good or bad. The total number of attributes used in dataset, after applying one-hot encoding on categorical features is 58, including sensitive attributes. Following \cite{kamiran2012decision} definition of fairness for German credit dataset there are two sensitive attributes, one being Gender and other being Age ($\geq 25$ is considered as privileged class, and $> 25$ as unprivileged class).  Total numbers of instances used in training, validation and testing are 700, 150 and 150, respectively. 
 
 \textbf{Models}. \sloppy The results obtained by FAIR models are compared with seven related and state-of-the-art algorithms FAD, its probabilistic variant (FAD-prob), reweighing preprocessing technique~\cite{kamiran2012data} combined with the random forest classifier (Reweighing - RF) and neural networks (Reweighing - NN), disparity impact remover~\cite{feldman2015certifying} combined with random forest (DI - RF) and neural networks (DI - NN) and prejudice remover~\cite{kamishima2012fairness} (PR). Bearing in mind that all presented models have fairness hypeparameter that affects on trade-offs between fairness and pure performances of classifiers, the datasets are split on train, validation and test set. Note that such hyperparameters do not control models capacity and are not tuned to obtain maximal perfomance (like regularization hyperparameter would be), but is varied in order to illustrate model behaviour for different trade-offs. Model architectures and hyperparameters used in experiments are discussed in \ref{app:Architecture}.
 
