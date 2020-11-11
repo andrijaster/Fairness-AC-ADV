@@ -1,4 +1,4 @@
- %%
+%%
 %% Copyright 2007-2019 Elsevier Ltd
 %%
 %% This file is part of the 'Elsarticle Bundle'.
@@ -262,11 +262,11 @@ Based on this, the overall adversarial objective function of FAD-prob model is:
 \label{Sec:FAIR}
 Unfairness which AI models learn is introduced through data instances containing unfair decisions. Therefore, we strive to recognize if a particular instance in a dataset is unfair. The main principle of FAIR is to reweight log likelihood of each instance, according to the trade-off between fairness and prediction performance, in order to obtain a fair and useful predictor of the target variable.
 
-FAIR consists of three neural networks: weighting network $f_\theta(\mathbf{x})$, predictor network $g_\phi(\mathbf{x})$ and sensitive network $h_\psi(\mathbf{x})$.
-For an instance $\mathbf{x}$ the weighting network outputs the weight of that instance $w_\mathbf{x}\in[0,1]$, while predictor network and sensitive network output prediction of output labels $\mathbf{y}$ and sensitive features $\mathbf{s}$, respectively. In order to incorporate fairness objective, FAIR weights log likelihood of instances, so that the ones that are strongly informative of sensitive attribute, but not of target variable are assigned low weights and the ones that are informative of target variable, but not of sensitive attributes are assigned high weights.
+FAIR consists of three neural networks: the weighting network $f_\theta(\mathbf{x})$, the predictor network $g_\phi(\mathbf{x})$, and the sensitive network $h_\psi(\mathbf{x})$.
+For an instance $\mathbf{x}$ the weighting network outputs the weight of that instance $w_\mathbf{x}\in[0,1]$, while the predictor network and the sensitive network output predictions of the output labels $\mathbf{y}$ and the sensitive features $\mathbf{s}$, respectively. In order to incorporate fairness objective, FAIR weights log likelihood of instances, so that the ones that are strongly informative of the sensitive features, but not of the target variable are assigned low weights and the ones that are informative of the target variable, but not of the sensitive attributes are assigned high weights.
 The weighting network is not used during inference, but can be helpful for assessing new instances.
 
-Based on different weighting techniques, we present four different FAIR weighting methods. The first one FAIR-scalar is based on non-probabilistic weighting framework, whereas FAIR-Bernoulli, FAIR-betaSF and FAIR-betaREP are based on probabilistic framework. The graphical representation of FAIR with different weighting methods are given in Fig.~\ref{fig:Fig1}.
+Based on different weighting techniques, we present four different FAIR weighting methods. The first one, FAIR-scalar is based on non-probabilistic weighting framework, whereas FAIR-Bernoulli, FAIR-betaSF, and FAIR-betaREP are based on probabilistic framework. The graphical representation of FAIR with different weighting methods are given in Fig.~\ref{fig:Fig1}.
 
 \begin{figure*}[t!]
 	\vskip 0.2in
@@ -285,14 +285,14 @@ Assume that each instance $\mathbf{x}$ is assigned a scalar weight $f_\theta(\ma
 (\theta^*,\phi^*,\psi^*) = \arg\min_{\theta,\phi}\max_{\psi}\mathbb{E}_{\substack{\mathbf{x},\mathbf{y},\mathbf{s} \sim P(\mathbf{x},\mathbf{y},\mathbf{s})\\w=f_\theta(\mathbf{x})}} [w \cdot(\alpha\log P_{\psi}(\mathbf{s}|\mathbf{x})
 - \log P_{\phi}(\mathbf{y}|\mathbf{x}))]
 \end{equation}
-Similarly to FAD model, the hyperparameter $\alpha$ controls the trade-off between fairness and prediction performance of the predictor networks, but this trade-off will be given further theoretical analysis.
+Similarly to FAD model, the hyperparameter $\alpha$ controls the trade-off between fairness and predictive performance of the predictor network, but this trade-off will be given further theoretical analysis.
 
 
 \subsection{FAIR -- probabilistic framework}
 \label{Sec:FAD-pf}
-In the the case of FAIR with probabilistic approach to weighting, it is assumed that  weights of instances are random variables. In contrast to FAIR-scalar, in probabilistic framework, output of weighting network $f_\theta$ models a probability distribution of instance weights: $P(w_\mathbf{x}|\mathbf{x})$. Consequently, we can use different probability distribution models. We consider Bernoulli (FAIR-Bernoulli) and beta distribution (FAIR-betaSF and FAIR-betaREP).
+In the the case of FAIR with probabilistic approach to weighting, it is assumed that  weights of instances are random variables. In contrast to FAIR-scalar, in probabilistic framework, output of the weighting network $f_\theta$ models a probability distribution of instance weights: $P(w_\mathbf{x}|\mathbf{x})$. Consequently, we can use different probability distribution models. We consider Bernoulli (FAIR-Bernoulli) and beta distribution (FAIR-betaSF and FAIR-betaREP).
 
-FAIR-Bernoulli assumes that log likelihoods of instances, with respect to sensitive features $\log P_{\psi}(\mathbf{s}|\mathbf{x})$ and labels $\log P_{\phi}(\mathbf{y}|\mathbf{x})$ are weighted by integers $w_\mathbf{x} \in \{0,1\}$ such that it holds $P_\theta(w_\mathbf{x}=1|\mathbf{x})=f_\theta(x)$, meaning that the conditional probability of weights is Bernoulli distribution ${\cal B}(f_\theta(\mathbf{x}))$. The FAIR-Bernoulli adversarial loss ${\cal L}^{\cal B}_{\alpha}(\theta, \phi, \psi)$ is given by:
+FAIR-Bernoulli assumes that log likelihoods of instances, with respect to sensitive features $\log P_{\psi}(\mathbf{s}|\mathbf{x})$ and labels $\log P_{\phi}(\mathbf{y}|\mathbf{x})$ are weighted by integers $w_\mathbf{x} \in \{0,1\}$ such that it holds $P_\theta(w_\mathbf{x}=1|\mathbf{x})=f_\theta(x)$, meaning that the conditional probability of weights is a Bernoulli distribution ${\cal B}(f_\theta(\mathbf{x}))$. The FAIR-Bernoulli adversarial loss ${\cal L}^{\cal B}_{\alpha}(\theta, \phi, \psi)$ is given by:
 \begin{gather}
 \label{Eq:Loss_prob}
 \mathbb{E}_{\substack{\mathbf{x},\mathbf{y}, \mathbf{s} \sim P\left(\mathbf{x},\mathbf{y}, \mathbf{s}\right)\\w \sim P_\theta(w|\mathbf{x})}}  \left[ w \cdot(\alpha\log P_{\psi}\left(\mathbf{s}|\mathbf{x}\right)
@@ -301,7 +301,7 @@ FAIR-Bernoulli assumes that log likelihoods of instances, with respect to sensit
 and the corresponding adversarial problem is $(\theta^*,\phi^*,\psi^*) = \arg\min_{\theta,\phi}\max_{\psi}{\cal L}^{\cal B}_\alpha(\theta,\phi,\psi)$
 where the superscript ${\cal B}$ emphasizes Bernoulli assumption.
 
-In order to optimize the loss, gradients with respect to $\theta$, $\phi$, and $\psi$ need to be computed. Gradients with respect to $\phi$ and $\psi$ are computed by standard backpropagation. However, gradient with respect to $\theta$ is trickier since $\theta$ defines the distribution of $w$ over which the expectation is taken. Therefore, we derive gradient of adversarial loss $\nabla_{\theta}{\cal L}_{\alpha}(\theta, \phi, \psi)$ for FAIR-Bernoulli and FAIR-betaSF (Eq.~\ref{Eq:Gradient}) as:
+In order to optimize the loss, gradients with respect to $\theta$, $\phi$, and $\psi$ need to be computed. Gradients with respect to $\phi$ and $\psi$ are computed by standard backpropagation. However, the gradient with respect to $\theta$ is trickier since $\theta$ defines the distribution of $w$ over which the expectation is taken. Therefore, we derive the gradient of the adversarial loss $\nabla_{\theta}{\cal L}_{\alpha}(\theta, \phi, \psi)$ for FAIR-Bernoulli and FAIR-betaSF as follows:
 \begin{gather*}
 \begin{split}
 \nabla_{\theta}{\cal L}_{\alpha}(\theta, \phi, \psi) = \nabla_{\theta} \mathbb{E}_{\substack{\mathbf{x},\mathbf{y}, \mathbf{s} \sim P(\mathbf{x},\mathbf{y}, \mathbf{s})\\w \sim P_\theta(w|\mathbf{x})}} \bigg[ w \cdot ( \alpha \log P_{\psi}(\mathbf{s}|\mathbf{x}) - \log P_{\phi}(\mathbf{y}|\mathbf{x}))\bigg]
@@ -310,10 +310,10 @@ In order to optimize the loss, gradients with respect to $\theta$, $\phi$, and $
 The gradient operator $\nabla_{\theta}$ can be propagated through the expectation as:
 \begin{align*}
 \begin{split}
-\nabla_{\theta}{\cal L}_{\alpha}(\theta, \phi, \psi) =& \mathbb{E}_{\mathbf{y},\mathbf{x},\mathbf{s}} [ \int_w \nabla_{\theta}  P_\theta(w|\mathbf{x}) \cdot w \cdot ( \alpha \log P_{\psi}(\mathbf{s}|\mathbf{x}) - \log P_{\phi}\left(\mathbf{y}|\mathbf{x}\right))dw \bigg]
+\nabla_{\theta}{\cal L}_{\alpha}(\theta, \phi, \psi) =& \mathbb{E}_{\mathbf{y},\mathbf{x},\mathbf{s}} \bigg[ \int_w \nabla_{\theta}  P_\theta(w|\mathbf{x}) \cdot w \cdot ( \alpha \log P_{\psi}(\mathbf{s}|\mathbf{x}) - \log P_{\phi}\left(\mathbf{y}|\mathbf{x}\right))dw \bigg]
 \end{split}
 \end{align*}
-Gradient of distribution $P_\theta(w|\mathbf{x})$ can be transformed as:
+Gradient of the distribution $P_\theta(w|\mathbf{x})$ can be transformed as:
 \begin{align*}
 \begin{split}
 \nabla_{\theta}  P_\theta(w|\mathbf{x}) &= P_\theta(w|\mathbf{x}) \cdot \frac{\nabla_{\theta}P_\theta(w|\mathbf{x}) }{ P_\theta(w|\mathbf{x})}
@@ -322,19 +322,19 @@ Gradient of distribution $P_\theta(w|\mathbf{x})$ can be transformed as:
 \end{split}
 \end{align*}
 
-Following this transformation, the final form of gradient of the loss with respect to $\theta$ can be represented as:
-
+Following this transformation, the final form of the gradient of the loss with respect to $\theta$ can be represented as:
 \begin{align}
 \label{Eq:Gradient}
 \begin{split}
 \mathbb{E}_{\substack{\mathbf{x}, \mathbf{s}, \mathbf{y}\sim P(\mathbf{x},\mathbf{s}, \mathbf{y})\\w \sim P_\theta(w|\mathbf{x})}} \Big[w\cdot \nabla_{\theta}  \log P_\theta(w|\mathbf{x}) \cdot (\alpha\log P_\psi(\mathbf{s}|\mathbf{x}) - \log P_\phi(\mathbf{y}|\mathbf{x})) \Big]
 \end{split}
 \end{align}
+which is a suitable form as it allows the use of the stochastic gradient descent.
 
-Next, we assume that weights $w_\mathbf{x}$ are random variables distributed according to beta distribution which, in contrast to the case of FAIR-Bernoulli, take any value from the interval $[0,1]$. The outputs of weighting network are parameters $\alpha_\mathbf{x}$ and $\beta_\mathbf{x}$ of beta distribution. The adversarial loss as defined by Eq.~\ref{Eq:Loss_prob}, but with beta distribution assumed instead of Bernoulli. We denote corresponding loss by ${\cal L}^\beta_\alpha(\theta,\phi,\psi)$ where $\beta$ in the superscript emphasizes the assumed distribution. In optimization, the gradient $\nabla_{\theta}{\cal L}^\beta_{\alpha}(\theta, \phi, \psi)$
+Next, we assume that weights $w_\mathbf{x}$ are random variables distributed according to the beta distribution which, in contrast to the case of FAIR-Bernoulli, takes any value from the interval $[0,1]$. The outputs of the weighting network are the parameters $\alpha_\mathbf{x}$ and $\beta_\mathbf{x}$ of the beta distribution. The adversarial loss as defined by Eq.~\ref{Eq:Loss_prob}, but with beta distribution assumed instead of Bernoulli. We denote corresponding loss by ${\cal L}^\beta_\alpha(\theta,\phi,\psi)$ where $\beta$ in the superscript emphasizes the assumed distribution. In optimization, the gradient $\nabla_{\theta}{\cal L}^\beta_{\alpha}(\theta, \phi, \psi)$
 can be evaluated either by using score function as in Eq.~\ref{Eq:Gradient} or by the reparametrization trick of beta distribution as shown in \cite{shah2015empirical}. These two approaches we name FAIR-betaSF and FAIR-betaREP respectively.
 
-Pseudocode of probabalistic FAIR with score function (FAIR-Bernoulli and FAIR-betaSF) is presented in Algortihm~\ref{alg:FAIR-sf}. FAIR losses are defined in terms of expectations. However, with finite samples, expectation is always approximated by sample mean, which is used in the algorithm.
+Pseudocode of probabalistic FAIR with score function (FAIR-Bernoulli and FAIR-betaSF) is presented in Algortihm~\ref{alg:FAIR-sf}. FAIR losses are defined in terms of expectations. However, with finite samples, expectation is always approximated by sample mean, which we use in the algorithm.
 
 \begin{algorithm}
 	\caption{Probabilistic FAIR with score function}
@@ -361,11 +361,10 @@ Pseudocode of probabalistic FAIR with score function (FAIR-Bernoulli and FAIR-be
 \subsubsection{FAIR-Bernoulli and FAIR-betaSF with baselines}
 \label{app:baselines}
 
-Variance reduction methodology relying on baseline functions is commonly used in reinforcement learning algorithms. It is shown that introducing baseline in loss function does not introduce additional bias into the model thanks to the fact that it holds $\mathbb{E}_{P_\theta(w|\mathbf{x})}[\nabla_{\theta}\log P_\theta(w|\mathbf{x}) b(\mathbf{x})]=0$ \cite{sutton2018reinforcement}.
-The goal of baseline network is to reduce the variance of estimates of gradient with respect to $\theta_g$ obtained by score function in FAIR-Bernoulli and FAIR-betaSF.
+Baseline functions are a commonly used tool to reduce the variance of the estimate of the gradient in reinforcement learning algorithms. It is shown that introducing baseline in loss function does not introduce additional bias into the model \cite{sutton2018reinforcement}.
 
-Keeping in mind that the variance can be represented as $\mathrm{Var}[x] = \mathbb{E}[x^2] - \mathbb{E}[x]^2$ (where squaring of a vector $v$ means $v^Tv$), the baseline loss can simplified due to the already stated fact that
-$\mathbb{E}_{P_\theta(w|\mathbf{x})}[\nabla_{\theta}\log P_\theta(w|\mathbf{x}) b_\mu(\mathbf{x})]=0$:
+Keeping in mind that the variance can be represented as $\mathrm{Var}[x] = \mathbb{E}[x^2] - \mathbb{E}[x]^2$ (where squaring of a vector $v$ means $v^Tv$), the baseline loss can be simplified due to the fact that it holds
+$\mathbb{E}_{P_\theta(w|\mathbf{x})}[\nabla_{\theta}\log P_\theta(w|\mathbf{x}) b_\mu(\mathbf{x})]=0$ \cite{sutton2018reinforcement}:
 \begin{gather*}
 	\begin{split}
 	&{\cal L}_{\alpha}(\mu) = \mathbb{E} \Big[\Big(\nabla_{\theta}\log P_\theta(w|\mathbf{x}) \cdot w \cdot (\alpha \log P_\psi(\mathbf{s}|\mathbf{x}) - \log P_\phi(\mathbf{y}|\mathbf{x}))  - b_\mu(\mathbf{x})\Big)^2 \Big]
@@ -379,7 +378,7 @@ Furthermore, we assumed the independence among the values involved in the expect
 	\end{split}
 \end{equation*}
 
-Considering that the first factor is constant with respect to $b_\mu$ it can be omitted, so that the final form of baseline loss ${\cal L}_{\alpha}(\mu)$  is:
+Considering that the first factor is constant with respect to $b_\mu$ it can be omitted, so that the final form of the loss ${\cal L}_{\alpha}(\mu)$  is:
 \begin{equation*}
 \begin{split}
 \mathbb{E} [\big(w \cdot (\alpha \log P_\psi(\mathbf{s}|\mathbf{x}) - \log P_\phi(\mathbf{y}|\mathbf{x})) - b_\mu(\mathbf{x})\big)^2]
@@ -393,13 +392,13 @@ Then, the gradient $\nabla_\mu{\cal L}_\alpha(\mu)$ is:
 \end{split}
 \end{equation*}
 
-In Fig.~\ref{fig:Fig2} graphical representation of FAIR-betaSF with baseline is shown. The pseudo-code of FAIR-betaSF is presented in Algorithm~\ref{alg:beta-base}.
+In Fig.~\ref{fig:Fig2} graphical representation of FAIR-betaSF with baseline is shown. The pseudo-code is presented in Algorithm~\ref{alg:beta-base}.
 
 \begin{figure*}[h!]
 	\center
 	\includegraphics[width=1\textwidth]{Fig2.pdf}
 	\captionsetup{justification=centering}
-	\caption{Graphical representations of FAIR-betaSF model with baseline}
+	\caption{Graphical representations of FAIR-betaSF model with baseline function}
 	\label{fig:Fig2}
 \end{figure*}
 
