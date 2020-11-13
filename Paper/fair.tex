@@ -328,11 +328,11 @@ Pseudocode of probabalistic FAIR with score function (FAIR-Bernoulli and FAIR-be
 	\caption{Probabilistic FAIR with score function}
 	\label{alg:FAIR-sf}
 	\begin{algorithmic}
-		\State {\bfseries Input:} learning rates $\gamma_\theta, \gamma_\phi, \gamma_\psi$, dataset $D$,  hyperparameter $\alpha$, probabilistic model ${\cal P}$ of instance weights
+		\State {\bfseries Input:} learning rates $\gamma_\theta, \gamma_\phi, \gamma_\psi$, dataset $D$,  hyperparameter $\alpha$, probabilistic model ${\cal P}$ of instance weights, number of iterations $M$
 		\State {\bfseries Output:} parameters $\theta,\phi,\psi$
 		\vspace{2mm}
 		\State Initialize $\theta$, $\phi$, $\psi$
-		\While{not converged}
+		\For{i = 1 to M}
 		\State Sample a mini-batch $B\subseteq D$
 		\State Sample $w_\mathbf{x}\sim {\cal P}(f_\theta(\mathbf{x}))$ for each $\mathbf{x}$ in $B$
 		\State $d_{\theta} \leftarrow \gamma_\theta\frac{1}{|B|} \sum_{(\mathbf{x},\mathbf{y},\mathbf{s})\in B}\left[w_\mathbf{x}\nabla_{\theta}\log P_\theta(w_\mathbf{x}|\mathbf{x})\cdot\right.$
@@ -341,7 +341,7 @@ Pseudocode of probabalistic FAIR with score function (FAIR-Bernoulli and FAIR-be
 		\State $d_{\phi} \leftarrow \gamma_\phi\nabla_{\phi}{\cal L}^{\cal P}_\alpha(\theta,\phi,\psi,B)$
 		\State $d_{\psi} \leftarrow -\gamma_\psi\nabla_{\psi}{\cal L}^{\cal P}_\alpha(\theta,\phi,\psi,B)$
 		\State $(\theta,\phi,\psi) \leftarrow (\theta,\phi,\psi) - (d_{\theta}, d_{\phi}, d_{\psi})$
-		\EndWhile
+		\EndFor
 	\end{algorithmic}
 \end{algorithm}
 
@@ -374,7 +374,7 @@ Considering that the first factor is constant with respect to $b_\mu$ it can be 
 \begin{equation*}
 \begin{split}
 \mathbb{E} \left[\left(w \cdot (\alpha \log P_\psi(\mathbf{s}|\mathbf{x}) - \log P_\phi(\mathbf{y}|\mathbf{x})) - b_\mu(\mathbf{x})\right)^2\right]
-\end{split} 
+\end{split}
 \end{equation*}
 
 Then, the gradient $\nabla_\mu{\cal L}_\alpha(\mu)$ is:
@@ -398,11 +398,11 @@ In Fig.~\ref{fig:Fig2} graphical representation of FAIR-betaSF with baseline is 
 	\caption{FAIR-betaSF with baseline}
 	\label{alg:beta-base}
 	\begin{algorithmic}
-		\State {\bfseries Input:} learning rates $\gamma_\theta, \gamma_\phi, \gamma_\psi$, $\gamma_b$ dataset $D$,  hyperparameter $\alpha$
+		\State {\bfseries Input:} learning rates $\gamma_\theta, \gamma_\phi, \gamma_\psi$, $\gamma_b$ dataset $D$,  hyperparameter $\alpha$, number of iterations $M$
 		\State {\bfseries Output:} parameters $\theta,\phi,\psi$, $\mu$
 		\vspace{2mm}
 		\State Initialize $\theta$, $\phi$, $\psi$, $\mu$
-		\While{not converged}
+		\For{i = 1 to M}
 		\State Sample a mini-batch $B\subseteq D$
 		\State $\alpha_\mathbf{x},\beta_\mathbf{x}\leftarrow f_\theta(\mathbf{x})$ for each $\mathbf{x}\in B$
 		\State Sample $w_\mathbf{x}\sim \beta(\alpha,\beta)$ for each $\mathbf{x}\in B$
@@ -415,7 +415,7 @@ In Fig.~\ref{fig:Fig2} graphical representation of FAIR-betaSF with baseline is 
 		
 		\hspace{1.5cm}$\left.(\alpha\log P_\psi(\mathbf{s}|\mathbf{x})-\log P_\phi(\mathbf{y}|\mathbf{x}) - b_\mu(\mathbf{x}))\right]$
 		\State $(\theta,\phi,\psi,\mu) \leftarrow (\theta,\phi,\psi,\mu) - (d_{\theta},d_{\phi}, d_{\psi},  d_{\mu})$
-		\EndWhile
+		\EndFor
 	\end{algorithmic}
 \end{algorithm}
 
@@ -457,7 +457,7 @@ In practice, expectations are approximated by sample means (or sums since outmos
 where dependence of $w_\mathbf{x}$ on $\theta$ is not made explicit, but we are aware that it exists.
 To shorten the proofs, we formulate regularization in a constraint based manner \cite{tibshirani1996regression}, although it is more often formulated and implemented in a mathematically equivalent penalty based manner (note that the meaning of regularization parameter is reversed -- in penalty based formulation case $\lambda=0$ corresponds to infinite value of $\lambda$ in constraint based formulation).
 
-Now we prove important properties of our model. In a nutshell, hyperparameter $\alpha$ controls the trade-off between fairness and the quality of prediction of the target variable. Extreme case $\alpha=0$ represents extreme emphasis on fairness and $\alpha\rightarrow\infty$ represents extreme emphasis on quality of prediction and disregard for fairness. Please note that a superficial glance at the adversarial problem would suggest vice versa, but we stress that it is not the case. The role of hyperparameter $\alpha$ in FAIR model is the opposite to its role in FAD model.
+Now we analyze how our model behaves with respect to the hyperparameter $\alpha$. First, we aim to understand how it controls the trade-off between fairness and the quality of prediction of the target variable. This aspect is important for the practical application of the method. In a nutshell, extreme case $\alpha=0$ represents extreme emphasis on fairness and $\alpha\rightarrow\infty$ represents extreme emphasis on quality of prediction and disregard for fairness. Please note that a superficial glance at the adversarial problem would suggest vice versa, but we stress that it is not the case. The role of hyperparameter $\alpha$ in FAIR model is the opposite to its role in FAD model. Second, we aim to understand how the hyperparameter $\alpha$ affects the optimal weights assigned to the instances. It turns out that under some (reasonable) conditions the optimal weights will tend to $0$ and $1$ and that the value of $\alpha$ controls the proportion of the two limiting values. Further discussion is provided after the theoretical results.
 
 \begin{lemma}
 	If $\lambda$ is finite, there exist strictly negative constants
