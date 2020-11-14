@@ -537,7 +537,7 @@ In the following propositions, we explicitly denote dependence of the optimal so
 	For each such $\alpha$, since derivative with respect to $w_\mathbf{x}$ is negative, by the same argument as in the proof of Theorem \ref{pp:anypoint}, it holds $w^*_{\mathbf{x},\alpha}=1$. Hence, we can conclude that for each $\varepsilon>0$, there exists $\alpha_0$ such that for all $\alpha>\alpha_0$ it holds $w^*_{\mathbf{x},\alpha}>1-\varepsilon$  (since $w^*_{\mathbf{x},\alpha}=1$). Therefore, by the definition of the limit, we conclude that it holds $w^*_{\mathbf{x},\alpha}\rightarrow 1$ as $\alpha\rightarrow\infty$.
 \end{proof}
 
-In case of infinite $\lambda$, overfitting might falsify our proof of Lemma \ref{pp:bounded} and in that case for some instance $\mathbf{x}$ it might hold $w^*_{\mathbf{x},\alpha}\rightarrow 0$ as $\alpha\rightarrow\infty$. However, this suggests an interesting diagnostic property -- if for ever larger values of $\alpha$ one obtains $w_\mathbf{x}=0$ for some $\mathbf{x}$, one has reasons to suspect overfitting. Also, finite capacity of the network might make regularization 
+In case of infinite $\lambda$, overfitting might falsify our proof of Lemma \ref{pp:bounded} and in that case for some instance $\mathbf{x}$ it might hold $w^*_{\mathbf{x},\alpha}\rightarrow 0$ as $\alpha\rightarrow\infty$. However, this suggests an interesting diagnostic property -- if for ever larger values of $\alpha$ one obtains $w_\mathbf{x}=0$ for some $\mathbf{x}$, one has reasons to suspect overfitting. Also, finite capacity of the network might make regularization
 unnecessary in practice. However, theoretical analysis was easier under the assumption of explicit regularization.
 
 Also note that the model of instance weights need not allow values $0$ and $1$. Nevertheless, the provided theorems inform us that the gradients will push the weights towards these values. Still, our probabilistic approaches might provide additional regularization by giving nonzero probability to other weight values except the optimal ones.
@@ -568,7 +568,7 @@ For optimization of all neural network based models we use Adam optimizer \cite{
 During optimization of FAIR and FAD models, early stopping was used. In the early stopping procedure, the min and max objectives of adversarial training procedure on validation set were monitored. In case when there were no improvements in either of these two metrics for a given number of epoch (provided in \ref{app:Architecture}), the training procedure is stopped.
 
 \textbf{Metrics}.
-Classification performance of all presented classifiers is quantified by the area under the ROC curve (AUC), which is calculated for the target variable ($\mathbf{y}$) and the sensitive attribute ($\mathbf{s}$). Therefore, we present $AUC_y$ and $AUC_s$ for the target variable and the sensitive attribute, respectively. If subscript is omitted, then $AUC_y$ is presented. As fairness metrics we use ASD, AEOD, and AOD defined by Eqs. \ref{metric:asd}, \ref{metric:aeod}, and \ref{metric:aod}, respectively. 
+Classification performance of all presented classifiers is quantified by the area under the ROC curve (AUC), which is calculated for the target variable ($\mathbf{y}$) and the sensitive attribute ($\mathbf{s}$). Therefore, we present $AUC_y$ and $AUC_s$ for the target variable and the sensitive attribute, respectively. If subscript is omitted, then $AUC_y$ is presented. As fairness metrics we use ASD, AEOD, and AOD defined by Eqs. \ref{metric:asd}, \ref{metric:aeod}, and \ref{metric:aod}, respectively.
 
 \textbf{Evaluation procedure and presentation of results}. The evaluated models (both FAIR and the baselines) have hyperparameters which affect the trade-off between fairness and predictive performance of the classifiers. Note that such hyperparameters do not control model capacity. Therefore, we do not tune them to obtain maximal perfomance (like one might tune regularization hyperparameters). Instead, we vary them in order to illustrate model behaviour for different trade-offs. The hyperparameters $\alpha$ of FAIR and FAD models were varied in range $[0, 10^{-3}, 10^{-2}, 10^{-1}, 1, 10, 10^{2}, 10^{3}]$, whereas in the case of other models, hyperparameters were varied in range $[0, 10^{-3}, 10^{-2}, 10^{-1}, 1]$ (since $1$ is the maximal value for these methods). For each such value, evlauation metrics were computed. We call a set of models obtained from one model kind (FAD, FAIR, etc.) by varying the fairnes related hyperparamter, a {\em model family}. For instance, all FAD models trained for different values of $\alpha$ constitute a FAD model family.
 
@@ -589,18 +589,20 @@ In this section we provide experimental results following the above provided set
 \subsection{Results}
 \label{sec:Results}
 
-In this section we present results obtained using the experimental evaluation outlined above.
+
+Pareto fronts of models for the \textit{Adult income} dataset are illustrated in Fig.~\ref{fig:Adult}. Three plots
+correspond to three three fairness metrics ($\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$) against which the classification performance ($\mathbf{AUC_y}$) is plotted. Greater AUC score is preferred and lower (un)fairness metric is preferred. However, each model on the Pareto front is relevant. It can be observed that FAIR models are numerous among Pareto optimal solutions with respect to all fairness metrics. In addition, Reweighing-NN and FAIR-betaREP models are closest to the upper left corner of Pareto fronts for AOD and AEOD, whereas the FAIR-scalar seems closest to the left corner of Pareto front for ASD metric. Exact values of the metrics for all Pareto optimal models are provided in Table~\ref{tab:Adult}. 
+%Similarly, it can be concluded that number of FAIR models is larger compared to the other models and FAIR can therefore be considered better then other models.
 
 \begin{figure*}
 	\center
 	\includegraphics[angle=0, width=0.7\textwidth]{Adult.png}
 	\captionsetup{justification=centering}
-	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{Adult income} datasets}
+	\caption{Classification performance against fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{Adult income} datasets}
 	\label{fig:Adult}
 	\vskip -0.2in
 \end{figure*}
 
-Firstly, models performances obtained on \textit{Adult income} dataset are illustrated in Fig.~\ref{fig:Adult} by three fairness metrics ($\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$) and classification performance ($\mathbf{AUC_y}$). The models with greater AUC score and lower (un)fairness metric (upper left corner of plots) are preferred. It can be observed that FAIR models dominates Pareto optimal solutions with respect to the all fairness metrics. In addition, Reweighing-NN and FAIR-betaREP models dominate the upper left corner of Pareto fronts for AOD and AEOD, whereas the FAIR-scalar dominates the upper left corner of Pareto front for ASD metric. Moreover, in table~\ref{tab:Adult} the Pareto optimal solutions obtained for all three fairness metrics and ($\mathbf{AUC_y}$) is presented. Similarly, it can be concluded that number of FAIR models is larger compared to the other models and FAIR can therefore be considered better then other models.
 
 \begin{table}
 	\centering
@@ -632,13 +634,15 @@ Firstly, models performances obtained on \textit{Adult income} dataset are illus
 	\label{tab:Adult}
 \end{table}
 
-Secondly, the results obtained on \textit{Hospital readmission} dataset are presented in Fig~\ref{fig:Readmission}. It can be noticed that only FAIR models exist on Pareto front and consequently all other model are dominated by them. It can be observed that in the case of AOD and ASD metrics FAIR-scalar is the closest to the upper left corner and can therefore be considered better than others. The letter can be also confirmed in the table~\ref{tab:Readmission} where only FAIR models exist on overall Pareto front.
+The results obtained on the \textit{Hospital readmission} dataset are presented in Fig~\ref{fig:Readmission}. It can be noticed that only FAIR models populate the Pareto front and that, consequently, all other model are dominated by them. 
+%It can be observed that in the case of AOD and ASD metrics FAIR-scalar is the closest to the upper left corner and can %therefore be considered better than others. 
+Exact values are providede in Table~\ref{tab:Readmission}.
 
 \begin{figure}
 	\center
 	\includegraphics[angle=0, width=0.7\textwidth]{Readmission.png}
 	\captionsetup{justification=centering}
-	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{Hospital readmission} dataset}
+	\caption{Classification performance against fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{Hospital readmission} dataset}
 	\label{fig:Readmission}
 	\vskip -0.2in
 \end{figure}
@@ -659,7 +663,7 @@ Secondly, the results obtained on \textit{Hospital readmission} dataset are pres
 	\label{tab:Readmission}%
 \end{table}
 
-Thirdly, models performances obtained on \textit{Hospital expenditures} dataset are illustrated in Fig.~\ref{fig:Adult}. It can be observed that the FAIR models dominates Pareto front in all presented metrics. In the case of ASD metric PR model is the closest to the upper left corner of Pareto front, whereas in the case of AOD and AEOD metrics similarly can be concluded for DI-RF model. However in table~\ref{tab:MEPS-19} where overall Pareto front is presented the FAIR models still dominates Pareto front.
+Thirdly, models performances obtained on \textit{Hospital expenditures} dataset are illustrated in Fig.~\ref{fig:MEPS19}. It can be observed that the FAIR models dominates Pareto front in all presented metrics. In the case of ASD metric PR model is the closest to the upper left corner of Pareto front, whereas in the case of AOD and AEOD metrics similarly can be concluded for DI-RF model. However in table~\ref{tab:MEPS-19} where overall Pareto front is presented the FAIR models still dominates Pareto front.
 
 \begin{figure}
 	\center
@@ -825,7 +829,7 @@ We introduced a Fair Adversarial Instance Re-weighting (FAIR) discriminative mod
 Further studies should address extending FAIR models to numerical and categorical values of sensitive attributes and adding additional loss for individual fairness.
 
 \section*{Acknowledgement}
-This work was supported in part by the ONR/ONR Global under Grant N62909-19-1-2008. In addition, this research is partially supported by the Ministry of Science, Education and Technological Development of the Republic of Serbia grants OI174021, TR35011 and TR41008. The authors would like to express gratitude to company Saga d.o.o Belgrade, for supporting this research.
+This work was supported in part by the ONR/ONR Global under grant N62909-19-1-2008, by the Ministry of Science, Education and Technological Development of the Republic of Serbia grants OI174021, TR35011, and TR41008, and by the company Saga d.o.o, Belgrade.
 
 \bibliographystyle{elsarticle-num}
 \bibliography{literatura}
