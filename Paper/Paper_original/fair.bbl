@@ -49,8 +49,8 @@ K.~Boyd, D.~Teres, J.~Rapoport, S.~Lemeshow, The relationship between age and
   discrimination, Archives of Internal Medicine 156~(16) (1996) 1821--1826.
 
 \bibitem{kim2016data}
-P.~T. Kim, Data-driven discrimination at work, Wm. \& Mary L. Rev. 58 (2016)
-  857.
+P.~T. Kim, Data-driven discrimination at work, William \& Mary Law Review 58
+  (2016) 857.
 
 \bibitem{wang2019approaching}
 X.~Wang, H.~Huang, Approaching machine learning fairness through adversarial
@@ -132,8 +132,8 @@ V.~Grari, S.~Lamprier, M.~Detyniecki, Adversarial learning for counterfactual
   fairness, arXiv preprint arXiv:2008.13122 (2020).
 
 \bibitem{barocas2016big}
-S.~Barocas, A.~D. Selbst, Big data's disparate impact, Calif. L. Rev. 104
-  (2016) 671.
+S.~Barocas, A.~D. Selbst, Big data's disparate impact, California Law Review
+  104 (2016) 671.
 
 \bibitem{friedler2019comparative}
 S.~A. Friedler, C.~Scheidegger, S.~Venkatasubramanian, S.~Choudhary, E.~P.
@@ -215,7 +215,7 @@ A.~Frank, A.~Asuncion, et~al., Uci machine learning repository, 2010, URL
 
 \bibitem{kohavi1996scaling}
 R.~Kohavi, Scaling up the accuracy of naive-bayes classifiers: A decision-tree
-  hybrid., in: Kdd, Vol.~96, 1996, pp. 202--207.
+  hybrid., in: Knowledge Discovery in Databases, Vol.~96, 1996, pp. 202--207.
 
 \bibitem{Dua:2019}
 D.~Dua, C.~Graff, \href{http://archive.ics.uci.edu/ml}{{UCI} machine learning
@@ -232,6 +232,11 @@ R.~K. Bellamy, K.~Dey, M.~Hind, S.~C. Hoffman, S.~Houde, K.~Kannan, P.~Lohia,
   J.~Martino, S.~Mehta, A.~Mojsilovi{\'c}, et~al., Ai fairness 360: An
   extensible toolkit for detecting and mitigating algorithmic bias, IBM Journal
   of Research and Development 63~(4/5) (2019) 4--1.
+
+\bibitem{bock2019proof}
+S.~Bock, M.~Wei{\ss}, A proof of local convergence for the adam optimizer, in:
+  2019 International Joint Conference on Neural Networks (IJCNN), IEEE, 2019,
+  pp. 1--8.
 
 \bibitem{marler2004survey}
 R.~T. Marler, J.~S. Arora, Survey of multi-objective optimization methods for
