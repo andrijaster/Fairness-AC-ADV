@@ -1,0 +1,106 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% "ModernCV" CV and Cover Letter
+% LaTeX Template
+% Version 1.1 (9/12/12)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Xavier Danaux (xdanaux@gmail.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+% Important note:
+% This template requires the moderncv.cls and .sty files to be in the same
+% directory as this .tex file. These files provide the resume style and themes
+% used for structuring the document.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[11pt,a4paper,roman]{moderncv} % Font sizes: 10, 11, or 12; paper sizes: a4paper, letterpaper, a5paper, legalpaper, executivepaper or landscape; font families: sans or roman
+
+\moderncvstyle{classic} % CV theme - options include: 'casual' (default), 'classic', 'oldstyle' and 'banking'
+\moderncvcolor{black} % CV color - options include: 'blue' (default), 'orange', 'green', 'red', 'purple', 'grey' and 'black'
+
+\usepackage[utf8]{inputenc}
+%\usepackage[T1, T2A]{fontenc}
+%\usepackage[serbian]{babel}
+\usepackage{indentfirst}
+%\setlength{\parindent}{1.5cm}
+
+\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+\usepackage{multicol}
+
+\usepackage[scale=0.85]{geometry} % Reduce document margins
+%\setlength{\hintscolumnwidth}{3cm} % Uncomment to change the width of the dates column
+%\setlength{\makecvtitlenamewidth}{10cm} % For the 'classic' style, uncomment to adjust the width of the space allocated to your name
+
+%----------------------------------------------------------------------------------------
+%	NAME AND CONTACT INFORMATION SECTION
+%----------------------------------------------------------------------------------------
+
+\firstname{Andrija} % Your first name
+\familyname{Petrovic} % Your last name
+
+% All information in this block is optional, comment out any lines you don't need
+\title{Cover Letter}
+\address{Center for Business Decision Making\\Faculty of Organizational Sciences\\ University of Belgrade}{Jove Ilica 154}{11000 Belgrade, Serbia}
+\mobile{(+381) 066~8896~051}
+%\phone{(000) 111 1112}
+%\fax{(000) 111 1113}
+\email{aapetrovic@mas.bg.ac.rs}
+%\homepage{www.linkedin.com} % The first argument is the url for the clickable link, the second argument is the url displayed in the template - this allows special characters to be displayed such as the tilde in this example
+%\extrainfo{Born 18.06.1985.}
+
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+%\makecvtitle % Print the CV title
+
+
+
+%----------------------------------------------------------------------------------------
+%	COVER LETTER
+%----------------------------------------------------------------------------------------
+
+% To remove the cover letter, comment out this entire block
+
+\clearpage
+
+\recipient{Editor-in-Chief}{Expert Systems with Applications} % Letter recipient
+
+%\recipient{HR Departmnet}{Austcorp\\Sidney\\Australia} % Letter recipient
+\date{\today} % Letter date
+\opening{Dear Editor,} % Opening greeting
+\closing{Sincerely,} % Closing phrase
+%\enclosure[Attached]{curriculum vit\ae{}} % List of enclosed documents
+
+\makelettertitle % Print letter title
+
+
+Please find enclosed our manuscript, “Structured Prediction of Sparse Dependent Variables for Traffic State Etimation in Large-Scale Networks ” by Andrija Petrovi\'c, Sandro Radovanovi\'c, Mladen Nikoli\'c, Boris Delibasi\'c, and Milo\v s Jovanovi\'c, which we would like to submit for publication in Expert Systems with Applications.
+
+
+In this manuscript we propose a hybrid of two Gaussian Conditional Random Field models (one recently proposed for classification, and one for regression) for inference of traffic speed, a relevant variable for traffic state estimation and travel information systems. It addresses two specifics of the problem -- sparsity in traffic data and the fact that observations are not independent. The proposed model showed better prediction performance compared to several unstructured and structured models.
+Our contribution is twofold. Firstly, we contribute to the state-of-art in data mining by proposing a new hybrid approach for prediction of dependent sparse variables. Secondly, we contribute to the state-of-art in traffic state estimation by proposing two traffic state estimation models of two large-scale real-world networks.
+
+In order to comply with article policy, as a corresponding author on behalf of all the authors I would like to confirm that the manuscript has not been published elsewhere, accepted for publication elsewhere or under editorial review for publication elsewhere; and that my Institute's (University of Belgrade) representative is fully aware of this submission. Additionally, I confirm that instructions for authors of this journal have been read carefully and that the manuscript complies to all points.
+
+
+Thank you for your consideration.
+
+\vspace{10mm}
+
+\makeletterclosing % Print letter signature
+
+%----------------------------------------------------------------------------------------
+
+\end{document} 

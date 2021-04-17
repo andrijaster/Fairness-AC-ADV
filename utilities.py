@@ -371,6 +371,8 @@ if __name__ == "__main__":
 
     add = 4
 
+    aaa = np.logspace(-2, np.log10(5), num = 8)
+
     points = pd.read_excel("Results/readmission.xls", index_col=0)
     po_Read_AOD, po_Read_AOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
     po_Read_total = Pareto_optimal_total(points.iloc[:,[0, 4, 5, 6, 7, 11, 12, 13]], FAIR=True, name = "Results/Readmission_PO")
