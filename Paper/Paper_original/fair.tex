@@ -148,7 +148,7 @@
 
 
 \begin{abstract}
-With growing awareness of societal impact of artificial intelligence, fairness has become an important aspect of machine learning algorithms. The issue is that human biases towards certain groups of population, defined by sensitive features like race and gender, are introduced to the training data through data collection and labeling. Two important directions of fairness ensuring research have focused on (i) instance weighting in order to decrease the impact of more biased instances and (ii) adversarial training in order to construct data representations informative of the target variable, but uninformative of the sensitive attributes. In this paper we propose a Fair Adversarial Instance Re-weighting (FAIR) method, which uses adversarial training to learn instance weighting function that ensures fair predictions. Merging the two paradigms, it inherits desirable  properties from both interpretability of reweighting and end-to-end trainability of adversarial training. We propose four different variants of the method and, among other things, demonstrate how the method can be cast in a fully probabilistic framework. Additionally, theoretical analysis of FAIR models' properties have been studied extensively. We compare FAIR models to 7 other related and state-of-the-art models and demonstrate that FAIR is able to achieve a better trade-off between accuracy and unfairness. To the best of our knowledge, this is the first model that merges reweighting and adversarial approaches by means of a weighting function that can provide interpretable information about fairness of individual instances.
+With growing awareness of societal impact of artificial intelligence, fairness has become an important aspect of machine learning algorithms. The issue is that human biases towards certain groups of population, defined by sensitive features like race and gender, are introduced to the training data through data collection and labeling. Two important directions of fairness ensuring research have focused on (i) instance weighting in order to decrease the impact of more biased instances and (ii) adversarial training in order to construct data representations informative of the target variable, but uninformative of the sensitive attributes. In this paper we propose a Fair Adversarial Instance Re-weighting (FAIR) method, which uses adversarial training to learn instance weighting function that ensures fair predictions. Merging the two paradigms, it inherits desirable  properties from both interpretability of reweighting and end-to-end trainability of adversarial training. We propose four different variants of the method and, among other things, demonstrate how the method can be cast in a fully probabilistic framework. Additionally, theoretical analysis of FAIR models' properties have been studied extensively. We compare FAIR models to six other related and state-of-the-art models and demonstrate that FAIR is able to achieve a better trade-off between accuracy and unfairness. To the best of our knowledge, this is the first model that merges reweighting and adversarial approaches by means of a weighting function that can provide interpretable information about fairness of individual instances.
 \end{abstract}
 
 
@@ -218,7 +218,7 @@ where $TPR$ represents true positive rate (recall) of the prediction model. Reca
 \end{equation}
 where $FPR$ represent false positive rate (probability of false alarm), and $TPR$ true positive rate (recall). Values of $\mathbf{AOD}$ close to zero are preferred.
 
-Regarding fairness-aware machine learning algorithms, interested readers are referred to an extensive reviews presented in \cite{friedler2019comparative} and \cite{corbett2018measure}. We focus on two approaches relevant for our work.
+Regarding fairness-aware machine learning algorithms, interested readers are referred to an extensive reviews presented in \cite{friedler2019comparative} and \cite{corbett2018measure}. A naive approach to ensuring fairness would be to eliminate sensitive features from the dataset. However, the information contained in the sensitive features can often be approximated from other input features. For example, location of residence correlates with race, although it is not obviously sensitive itself. Therefore, more sophisticated approaches are needed. We focus on two families of methods relevant for our work.
 
 \textbf{Instance Reweighting}. Instance reweighting has shown impressive results, although the idea is relatively simple \cite{feldman2015certifying, krasanakis2018adaptive, ren2018learning, shu2019meta, jiang2018mentornet}. As a preprocessing technique, it was traditionally used for the class imbalance problem by assigning larger weights to instances of a  lower cardinality class, so that the learning algorithm gives more importance to that class. This idea can be applied to the fairness problem as well -- it assigns lower importance to unfair examples or removes them from the learning process. More specifically, those examples will have a lower impact on the likelihood function one tries to optimize.
 The simplest approach is to assign weights to instances so that sums of weights per value of a  sensitive feature is the same and all instances from a group have the same weight \cite{kamiran2012data}. That approach was improved in \cite{krasanakis2018adaptive} by utilizing adaptive sensitive reweighting procedure. One can use variational fair auto encoder with Maximum Mean Discrepancy \cite{louizos2015variational} which calculates distances between distributions using kernels. It is worth noticing that instance reweighting has shown to have lower disparate impact \cite{feldman2015certifying} compared to not applying any instance weighting strategy. An advantage of this class of methods is that the weights can be interpreted as indicators of individual instance fairness. However, the training is not end-to-end. To apply some instance reweighting strategy one needs to perform a two step procedure -- first to obtain instance weights, and then to use the weights by the learning algorithm. This is a drawback of this approach since the weighting procedure is oblivious of the model representation and learning algorithm and therefore might choose suboptimal weights for them.
@@ -232,52 +232,14 @@ Another adversarial approach focuses on learning to select non-sensitive feature
 \vspace{2mm}
 Our approach tries to keep the best from both worlds. It provides interpretable information on instance fairness like reweighting approach and allows end-to-end training like adversarial approach.
 
-
-\section{Fairness via Adversarial Network}
-\label{Sec:advnet}
-The dataset given by $D= \{(\mathbf{x}_i, \mathbf{y}_i, \mathbf{s}_i) \}_{i=1}^N$, consists of input features $\mathbf{x}$, the true label (or the target variable) $\mathbf{y}$ and sensitive features $\mathbf{s}$. It is generated by joint true underlying distribution $D \sim P(\mathbf{x},\mathbf{y},\mathbf{s})$. Generally, an unfair discriminative model predicts the label $\mathbf{\hat{y}}$ based on both input $\mathbf{x}$ and sensitive  features $\mathbf{s}$, which can lead to bias. A naive approach to ensuring fairness would be to eliminate sensitive features $\mathbf{s}$ from the dataset. However, the information contained in the sensitive features can often be approximated from other input features $\mathbf{x}$. For example, location of residence correlates with race, although it is not obviously sensitive itself. In this section, we discuss already mentioned fair adversarial discriminative model (FAD) in more detail, as a relevant baseline.
-Also, we propose our probabilistic formulation of this model based on normalizing flows. This is not the main contribution of our paper, though. Instead, we use it as another reasonable baseline for our other probabilistic models.
-
-\subsection{FAD Model}
-
-The architecture of the FAD model consists of one shared network and two task specific networks. The goal of the shared network is to map input features $\mathbf{x}$ to their new representation $\mathbf{z}=f_\theta(\mathbf{x})$, so that the obtained representation $\mathbf{z}$ is uninformative of sensitive features $\mathbf{s}$, but includes information needed to predict label $\mathbf{y}$. The first task specific network is a predictor $g_\phi(\mathbf{z})$ of the output label $\mathbf{y}$, whereas the second task specific network $h_\psi(\mathbf{z})$ estimates sensitive features $\mathbf{s}$. Since the sensitive information may also be important for estimating labels, there is a trade-off between model fairness and the accuracy of the prediction, related to the mapping from input feature space $\mathbf{x}$ to representation space $\mathbf{z}$.
-Fairness in the FAD method is achieved through adversarial learning of the mapping $g_\theta(\mathbf{x})$ and a classifier $h_\psi(\mathbf{z})$, while learning the predictor $g_\phi(\mathbf{z})$. This ensures that the accuracy is not fully sacrificed for fairness. In other words, neural networks $f_\theta(\mathbf{x})$ and $g_\phi(\mathbf{z})$ play a minimax game with the classifier $h_\psi(\mathbf{z})$. We denote probability functions modelled by these networks as $P_\phi(\mathbf{y}|\mathbf{x})$ and $P_\psi(\mathbf{s}|\mathbf{x})$. Formally, the adversarial problem of FAD model is:
-
-\begin{equation}
-\min_{\theta,\phi}\max_{\psi} \mathbb{E}_{\substack{\mathbf{x},\mathbf{y},\mathbf{s} \sim P(\mathbf{x},\mathbf{y},\mathbf{s})\\\mathbf{z}=f_\theta(\mathbf{x})}} \left[\alpha\log P_{\psi}(\mathbf{s}|\mathbf{z}) - \log P_{\phi}(\mathbf{y}|\mathbf{z})\right]
-%= \sum_{i=1}^N \mathbf{s}_i\cdot log\left(\phi(g(\mathbf{x}_i))\right) + \left(1-\mathbf{s}_i\right)\cdot\left(1-\phi(g(\mathbf{x}_i))\right)
-\end{equation}
-
-where $\alpha$ is a hyper-parameter for tuning the trade-off between the model fairness and accuracy. Increased value of $\alpha$ influences model to be more focused on fairness and, consequently, representation $\mathbf{z}$ will be less informative of sensitive features $\mathbf{s}$, but also, to some extent, of true label $\mathbf{y}$.
-
-\subsection{Probabilistic framework with normalizing flows}
-\label{Sec:advenet-nf}
-In case of the FAD method, the representation $\mathbf{z}=f_\theta(\mathbf{x})$ is an output of a neural network. We propose a fully probabilistic method (FAD-prob) based on the FAD method by considering the representation $\mathbf{z}$ as a random latent variable and modeling its distribution. Representing the hidden space as a random variable has several advantages. The main one is related to the possibility to marginalize over latent variable space and obtain better predictive performance \cite{tan2010social}. Moreover, it can provide a possibility to predict structured outputs representing sensitive features and labels \cite{koller2009probabilistic}.
-
-The conditional probability distributions of sensitive features $\mathbf{s}$ and of output labels $\mathbf{y}$,  given inputs $\mathbf{x}$ can be obtained by marginalization of joint distributions $P(\mathbf{s},\mathbf{z})$ and $P(\mathbf{y},\mathbf{z})$, respectively as:
-
-\begin{equation}
- P(\mathbf{y}|\mathbf{x}) = \int_\mathbf{z} P(\mathbf{y}|\mathbf{z}) P(\mathbf{z}|\mathbf{x}) d\mathbf{z} = \mathbb{E}_{\mathbf{z} \sim P(\mathbf{z}|\mathbf{x})} [P(\mathbf{y}|\mathbf{z})]
-\end{equation}
-
-\begin{equation}
- P(\mathbf{s}|\mathbf{x}) = \int_\mathbf{z} P(\mathbf{s}|\mathbf{z}) P(\mathbf{z}|\mathbf{x}) d\mathbf{z} = \mathbb{E}_{\mathbf{z} \sim P(\mathbf{z}|\mathbf{x})} [P(\mathbf{s}|\mathbf{z})]
-\end{equation}
-Marginalization can be performed using reparametrization trick and normalizing flows \cite{kingma2019introduction}. The reparametrization of the latent variable can be performed as $\mathbf{z} = f(\mathbf{\mu(\mathbf{x}})+ L(\mathbf{x})\cdot \mathbf{\epsilon})$
-where $f$ is a nonlinear mapping of variable $\mathbf{z}$ obtained by assuming normal distribution with mean $\mu(\mathbf{x})$ and covariance matrix $\Sigma(\mathbf{x})$, which can be factorized as $L^T(\mathbf{x})L(\mathbf{x})$ by Cholesky decomposition.
-
-Based on this, the overall adversarial objective function of FAD-prob model is:
-
-\begin{equation}
-\min_{\theta,\phi}\max_{\psi}\mathbb{E}_{\substack{\mathbf{x},\mathbf{y}, \mathbf{s} \sim P(\mathbf{x},\mathbf{y},\mathbf{s})\\\mathbf{z} \sim P_\theta(\mathbf{z}|\mathbf{x})}} \left[\alpha \log P_{\psi}(\mathbf{s}|\mathbf{z})  - \log P_{\phi}(\mathbf{y}|\mathbf{z})\right]
-\end{equation}
-
 \section{Fair Adversarial Instance Re-weighting - FAIR}
 \label{Sec:FAIR}
-Unfairness which AI models learn is introduced through data instances containing unfair decisions. Therefore, we strive to recognize if a particular instance in a dataset is unfair. The main principle of FAIR is to reweight log likelihood of each instance, according to the trade-off between fairness and prediction performance, in order to obtain a fair and useful predictor of the target variable.
+
+The dataset given by $D=\{(\mathbf{x}_i, \mathbf{y}_i, \mathbf{s}_i) \}_{i=1}^N$, consists of input features $\mathbf{x}$, the true label (or the target variable) $\mathbf{y}$ and sensitive features $\mathbf{s}$. It is generated by joint true underlying distribution $D \sim P(\mathbf{x},\mathbf{y},\mathbf{s})$. Unfairness which AI models learn is introduced through data instances containing unfair decisions. Therefore, we strive to recognize if a particular instance in a dataset is unfair. The main principle of FAIR is to reweight log likelihood of each instance, according to the trade-off between fairness and prediction performance, in order to obtain a fair and useful predictor of the target variable.
 
 FAIR consists of three neural networks: the weighting network $f_\theta(\mathbf{x})$, the predictor network $g_\phi(\mathbf{x})$, and the sensitive network $h_\psi(\mathbf{x})$.
-For an instance $\mathbf{x}$ the weighting network outputs the weight of that instance $w_\mathbf{x}\in[0,1]$, while the predictor network and the sensitive network output predictions of the output labels $\mathbf{y}$ and the sensitive features $\mathbf{s}$, respectively. In order to incorporate the fairness objective, FAIR weights log likelihood of instances, so that the ones that are strongly informative of the sensitive features, but not of the target variable are assigned low weights and the ones that are informative of the target variable, but not of the sensitive attributes are assigned high weights.
+For an instance $\mathbf{x}$ the weighting network outputs the weight of that instance $w_\mathbf{x}\in[0,1]$, while the predictor network and the sensitive network output predictions of the output labels $\mathbf{y}$ and the sensitive features $\mathbf{s}$, respectively. We denote probability functions modelled by these networks as $P_\phi(\mathbf{y}|\mathbf{x})$ and $P_\psi(\mathbf{s}|\mathbf{x})$.
+In order to incorporate the fairness objective, FAIR weights log likelihood of instances, so that the ones that are strongly informative of the sensitive features, but not of the target variable are assigned low weights and the ones that are informative of the target variable, but not of the sensitive attributes are assigned high weights.
 The weighting network is not used during inference, but can be helpful for assessing new instances.
 
 Based on different weighting techniques, we present four different FAIR weighting methods. The first one, FAIR-scalar is based on non-probabilistic weighting framework, whereas FAIR-Bernoulli, FAIR-betaSF, and FAIR-betaREP are based on probabilistic framework. The graphical representation of FAIR with different weighting methods are given in Fig.~\ref{fig:Fig1}.
@@ -299,12 +261,13 @@ Assume that each instance $\mathbf{x}$ is assigned a scalar weight $f_\theta(\ma
 (\theta^*,\phi^*,\psi^*) = \arg\min_{\theta,\phi}\max_{\psi}\mathbb{E}_{\substack{\mathbf{x},\mathbf{y},\mathbf{s} \sim P(\mathbf{x},\mathbf{y},\mathbf{s})\\w=f_\theta(\mathbf{x})}} [w \cdot(\alpha\log P_{\psi}(\mathbf{s}|\mathbf{x})
 - \log P_{\phi}(\mathbf{y}|\mathbf{x}))]
 \end{equation}
-Similarly to FAD model, the hyperparameter $\alpha$ controls the trade-off between fairness and predictive performance of the predictor network, but this trade-off will be given further theoretical analysis.
+The hyperparameter $\alpha$ controls the trade-off between fairness and predictive performance of the predictor network, but this trade-off will be given further theoretical analysis.
 
 
 \subsection{FAIR -- probabilistic framework}
-\label{Sec:FAD-pf}
-In the the case of FAIR with probabilistic approach to weighting, it is assumed that  weights of instances are random variables. In contrast to FAIR-scalar, in probabilistic framework, output of the weighting network $f_\theta$ models a probability distribution of instance weights: $P(w_\mathbf{x}|\mathbf{x})$. Consequently, we can use different probability distribution models. Therefore, FAIR with probabilist approach introduced additional regularization through probability distribution of instance weights, and have more chance to reach mixed Nash equilibrium in the cases when pure Nash equilibrium does not exist.  We consider Bernoulli (FAIR-Bernoulli) and beta distribution (FAIR-betaSF and FAIR-betaREP).
+
+In the the case of FAIR with probabilistic approach to weighting, it is assumed that  weights of instances are random variables. 
+In contrast to FAIR-scalar, in probabilistic framework, output of the weighting network $f_\theta$ models a probability distribution of instance weights: $P(w_\mathbf{x}|\mathbf{x})$. Consequently, we can use different probability distribution models. Therefore, FAIR with probabilist approach introduced additional regularization through probability distribution of instance weights, and have more chance to reach mixed Nash equilibrium in the cases when pure Nash equilibrium does not exist.  We consider Bernoulli (FAIR-Bernoulli) and beta distribution (FAIR-betaSF and FAIR-betaREP). 
 
 FAIR-Bernoulli assumes that log likelihoods of instances, with respect to sensitive features $\log P_{\psi}(\mathbf{s}|\mathbf{x})$ and labels $\log P_{\phi}(\mathbf{y}|\mathbf{x})$ are weighted by integers $w_\mathbf{x} \in \{0,1\}$ such that it holds $P_\theta(w_\mathbf{x}=1|\mathbf{x})=f_\theta(x)$, meaning that the conditional probability of weights is a Bernoulli distribution ${\cal B}(f_\theta(\mathbf{x}))$. The FAIR-Bernoulli adversarial loss ${\cal L}^{\cal B}_{\alpha}(\theta, \phi, \psi)$ is given by:
 \begin{gather}
@@ -347,7 +310,7 @@ which is a suitable form as it allows the use of the stochastic gradient descent
 Next, we assume that weights $w_\mathbf{x}$ are random variables distributed according to the beta distribution which, in contrast to the case of FAIR-Bernoulli, takes any value from the interval $[0,1]$. The outputs of the weighting network are the parameters $\alpha_\mathbf{x}$ and $\beta_\mathbf{x}$ of the beta distribution. The adversarial loss as defined by Eq.~\ref{Eq:Loss_prob}, but with beta distribution assumed instead of Bernoulli. We denote corresponding loss by ${\cal L}^\beta_\alpha(\theta,\phi,\psi)$ where $\beta$ in the superscript emphasizes the assumed distribution. In optimization, the gradient $\nabla_{\theta}{\cal L}^\beta_{\alpha}(\theta, \phi, \psi)$
 can be evaluated either by using score function as in Eq.~\ref{Eq:Gradient} or by the reparametrization trick of beta distribution as shown in \cite{shah2015empirical}. These two approaches we name FAIR-betaSF and FAIR-betaREP respectively.
 
-Pseudocode of probabalistic FAIR with score function (FAIR-Bernoulli and FAIR-betaSF) is presented in Algortihm~\ref{alg:FAIR-sf}. FAIR losses are defined in terms of expectations. However, with finite samples, expectation is always approximated by sample mean, which we use in the algorithm.
+Pseudocode of probabalistic FAIR with score function (FAIR-Bernoulli and FAIR-betaSF) is presented in Algortihm~\ref{alg:FAIR-sf}. FAIR losses are defined in terms of expectations. However, with finite samples, expectation is always approximated by sample mean, which we use in the algorithm. Incorporation of baseline functions for the reduction of variance of gradient estimate is discussed in~\ref{app:baselines}.
 
 \begin{algorithm}
 	\caption{Probabilistic FAIR with score function}
@@ -371,106 +334,6 @@ Pseudocode of probabalistic FAIR with score function (FAIR-Bernoulli and FAIR-be
 \end{algorithm}
 
 
-\subsubsection{FAIR-Bernoulli and FAIR-betaSF with baselines}
-\label{app:baselines}
-
-Baseline functions are a commonly used tool to reduce the variance of the estimate of the gradient in reinforcement learning algorithms. It is shown that introducing a baseline in loss function does not introduce additional bias into the model \cite{sutton2018reinforcement}. Here we explain how these techniques can be incorporated in FAIR models. These modifications are not included in experimental evaluation since the technique is already known and our main goal is to compare basic FAIR variants against existing baselines, but we still derive algorithms with baselines as they might be of practical importance.
-
-Already discussed adversarial loss is augmented by adding another term -- the baseline loss:
-
-\begin{equation}
-{\cal L}_{\alpha}(\mu) = \mathrm{Var} \left[w\cdot \nabla_{\theta_g}\log P_g(w|\mathbf{x}) \cdot\left( \alpha \log P_\psi(\mathbf{s}|\mathbf{x}) - \log P_\phi(\mathbf{y}|\mathbf{x}) \right)
-     - b_\mu(\mathbf{x}) \right]
-\end{equation}
-The baseline loss includes the gradient of the adversarial loss, since its purpose is to reduce the variance of the estimate of that gradient.
-Keeping in mind that the variance can be represented as $\mathrm{Var}[x] = \mathbb{E}[x^2] - \mathbb{E}[x]^2$ (where squaring of a vector $v$ means $v^Tv$), the baseline loss can be simplified due to the fact that it holds
-$\mathbb{E}_{P_\theta(w|\mathbf{x})}[\nabla_{\theta}\log P_\theta(w|\mathbf{x}) b_\mu(\mathbf{x})]=0$ \cite{sutton2018reinforcement}:
-
-\begin{gather}
-	\begin{split}
-	&{\cal L}_{\alpha}(\mu) = \mathbb{E} \left[\left(w\cdot\nabla_{\theta}\log P_\theta(w|\mathbf{x})\cdot (\alpha \log P_\psi(\mathbf{s}|\mathbf{x}) - \log P_\phi(\mathbf{y}|\mathbf{x}))  - b_\mu(\mathbf{x})\right)^2 \right]
-	\end{split}
-\end{gather}
-where the expectation is with respect to $(\mathbf{x},\mathbf{y},\mathbf{s})\sim P(\mathbf{x},\mathbf{y},\mathbf{s})$ and $w\sim P(w|\mathbf{x})$.
-Furthermore, we assumed the independence among the values involved in the expectation, and thus the expectation can be represented as:
-\begin{equation}
-	\begin{split}
-	{\cal L}_{\alpha}(\mu) = \mathbb{E} \left[\left(\nabla_{\theta}\log P_\theta(w|\mathbf{x})\right)^2 \right] \cdot \mathbb{E} \left[ \left(w \cdot (\alpha \log P_\psi(\mathbf{s}|\mathbf{x}) - \log P_\phi(\mathbf{y}|\mathbf{x})) - b_\mu(\mathbf{x})\right)^2 \right]
-	\end{split}
-\end{equation}
-
-Considering that the first factor is constant with respect to $b_\mu$ it can be omitted, so that the final form of the loss ${\cal L}_{\alpha}(\mu)$  is:
-\begin{equation}
-\begin{split}
-\mathbb{E} \left[\left(w \cdot (\alpha \log P_\psi(\mathbf{s}|\mathbf{x}) - \log P_\phi(\mathbf{y}|\mathbf{x})) - b_\mu(\mathbf{x})\right)^2\right]
-\end{split}
-\end{equation}
-
-Then, the gradient $\nabla_\mu{\cal L}_\alpha(\mu)$ is:
-\begin{equation}
-\begin{split}
--\mathbb{E} \left[w \cdot \nabla_\mu b_\mu(\mathbf{x})\cdot\left(\alpha \log P_\psi(\mathbf{s}|\mathbf{x}) - \log P_\phi(\mathbf{y}|\mathbf{x}) - b_\mu(\mathbf{x})\right)\right]
-\end{split}
-\end{equation}
-
-In Fig.~\ref{fig:Fig2} graphical representation of FAIR-betaSF with baseline is shown. The pseudo-code is presented in Algorithm~\ref{alg:beta-base}.
-
-\begin{figure*}[h!]
-	\center
-	\includegraphics[width=1\textwidth]{Fig2.pdf}
-	\captionsetup{justification=centering}
-	\caption{Graphical representations of FAIR-betaSF model with baseline function}
-	\label{fig:Fig2}
-\end{figure*}
-
-\begin{algorithm}[h!]
-	\caption{FAIR-betaSF with baseline}
-	\label{alg:beta-base}
-	\begin{algorithmic}
-		\State {\bfseries Input:} learning rates $\gamma_\theta, \gamma_\phi, \gamma_\psi$, $\gamma_b$ dataset $D$,  hyperparameter $\alpha$, number of iterations $M$
-		\State {\bfseries Output:} parameters $\theta,\phi,\psi$, $\mu$
-		\vspace{2mm}
-		\State Initialize $\theta$, $\phi$, $\psi$, $\mu$
-		\For{i = 1 to M}
-		\State Sample a mini-batch $B\subseteq D$
-		\State $\alpha_\mathbf{x},\beta_\mathbf{x}\leftarrow f_\theta(\mathbf{x})$ for each $\mathbf{x}\in B$
-		\State Sample $w_\mathbf{x}\sim \beta(\alpha,\beta)$ for each $\mathbf{x}\in B$
-		\State $d_{\theta} \leftarrow \gamma_\theta\frac{1}{|B|} \sum_{(\mathbf{x},\mathbf{y},\mathbf{s})\in B}\left[w_\mathbf{x}\nabla_{\theta}\log P_\theta(w_\mathbf{x}|\mathbf{x})\cdot\right.$
-		
-		\hspace{1.5cm}$\left.(\alpha\log P_\psi(\mathbf{s}|\mathbf{x})-\log P_\phi(\mathbf{y}|\mathbf{x})-b_\mu(\textbf{x}))\right]$
-		\State $d_{\phi} \leftarrow \gamma_\phi\nabla_{\phi}{\cal L}^{\cal P}_\alpha(\theta,\phi,\psi,B)$
-		\State $d_{\psi} \leftarrow -\gamma_\psi\nabla_{\psi}{\cal L}^{\cal P}_\alpha(\theta,\phi,\psi,B)$
-		\State $d_{\mu} \leftarrow -\gamma_\mu\frac{1}{|B|} \sum_{(\mathbf{x},\mathbf{y},\mathbf{s})\in B}\left[w_\mathbf{x}\nabla_\mu b_\mu(\mathbf{x})\cdot\right.$
-		
-		\hspace{1.5cm}$\left.(\alpha\log P_\psi(\mathbf{s}|\mathbf{x})-\log P_\phi(\mathbf{y}|\mathbf{x}) - b_\mu(\mathbf{x}))\right]$
-		\State $(\theta,\phi,\psi,\mu) \leftarrow (\theta,\phi,\psi,\mu) - (d_{\theta},d_{\phi}, d_{\psi},  d_{\mu})$
-		\EndFor
-	\end{algorithmic}
-\end{algorithm}
-
-
-\iffalse
-In addition, to reduce the variance of gradient of loss in FAIR-Bernoulli and FAIR-betaSF, it is possible to incorporate additional baseline network $b_\mu(\mathbf{x})$. Please note that we did not evaluate this improvement, but we explain how it could be done. The goal of baseline network is to minimize the loss ${\cal L}_{\alpha}(\mu)$ given by:
-\begin{equation}
-\label{Eq.Baseline-loss}
-%\begin{split}
-\mathbb{E}_{\substack{\mathbf{x}, \mathbf{s}, \mathbf{y}\sim P(\mathbf{x},\mathbf{s}, \mathbf{y})\\w \sim P_\theta(w|\mathbf{x})}} \Big[ \vphantom{)^2}\big(
-w \cdot ( \alpha \log P_\psi(\mathbf{s}|\mathbf{x}) - \log P_\phi(\mathbf{y}|\mathbf{x})) - b_\mu(\mathbf{x})\big)^2 \Big]
-%\end{split}
-\end{equation}
-
-The adversarial loss ${\cal L}_{\alpha}(\theta, \phi, \psi)$ with baseline is given by:
-\begin{equation}
-\label{Eq.ADVBaseline-loss}
-%\begin{split}
-\mathbb{E}_{\substack{\mathbf{x}, \mathbf{s}, \mathbf{y}\sim P(\mathbf{x},\mathbf{s}, \mathbf{y})\\w \sim P_\theta(w|\mathbf{x})}} \Big[ \big(
-w \cdot ( \alpha \log P_\psi(\mathbf{s}|\mathbf{x}) - \log P_\phi(\mathbf{y}|\mathbf{x})) - b_\mu(\mathbf{x})\big)\Big]
-%\end{split}
-\end{equation}
-The optimization procedure in models with baseline is performed by alternating minimization of these two losses.
-Pseudocode of FAIR-betaSF with baseline and derivation of baseline loss function are presented in Appendix \ref{app:baselines}.
-\fi
-
 
 \subsection{Analysis of model properties}
 
@@ -486,7 +349,7 @@ In practice, expectations are approximated by sample means (or sums since outmos
 where dependence of $w_\mathbf{x}$ on $\theta$ is not made explicit, but we are aware that it exists.
 To shorten the proofs, we formulate regularization in a constraint based manner \cite{tibshirani1996regression}, although it is more often formulated and implemented in a mathematically equivalent penalty based manner (note that the meaning of regularization parameter is reversed -- in penalty based formulation case $\lambda=0$ corresponds to an infinite value of $\lambda$ in constraint based formulation).
 
-Now we analyze how our method behaves with respect to the hyperparameter $\alpha$. First, we aim to understand how it controls the trade-off between fairness and the quality of prediction of the target variable. This aspect is important for the practical application of the method. In a nutshell, extreme case $\alpha=0$ represents extreme emphasis on fairness and $\alpha\rightarrow\infty$ represents extreme emphasis on quality of prediction and disregard for fairness. Please note that a superficial glance at the adversarial problem would suggest vice versa, but we stress that it is not the case. The role of hyperparameter $\alpha$ in FAIR model is the opposite to its role in FAD model. Second, we aim to understand how the hyperparameter $\alpha$ affects the optimal weights assigned to the instances. It turns out that under some (reasonable) conditions the optimal weights will tend to $0$ and $1$ and that the value of $\alpha$ controls the proportion of the two limiting values. Further discussion is provided after the theoretical results.
+Now we analyze how our method behaves with respect to the hyperparameter $\alpha$. First, we aim to understand how it controls the trade-off between fairness and the quality of prediction of the target variable. This aspect is important for the practical application of the method. In a nutshell, extreme case $\alpha=0$ represents extreme emphasis on fairness and $\alpha\rightarrow\infty$ represents extreme emphasis on quality of prediction and disregard for fairness. Please note that a superficial glance at the adversarial problem would suggest vice versa, but we stress that it is not the case. Second, we aim to understand how the hyperparameter $\alpha$ affects the optimal weights assigned to the instances. It turns out that under some (reasonable) conditions the optimal weights will tend to $0$ and $1$ and that the value of $\alpha$ controls the proportion of the two limiting values. Further discussion is provided after the theoretical results.
 
 \begin{lemma}
 	If $\lambda$ is finite, there exist strictly negative constants
@@ -603,7 +466,7 @@ The third dataset, named \textit{Hospital Expenditures}, comes from \cite{bellam
 
 As a fourth dataset, we used \textit{German credit} dataset. \textit{German credit} dataset has 1,000 instances where the task is to classify bank account holders into classes good or bad. The total number of attributes used in the dataset, after applying dummy coding is 58, including sensitive attributes. Following the definition of fairness from \cite{kamiran2012decision} for German credit dataset, there are two sensitive attributes, one being Gender and other being Age ($\geq 25$ is considered as privileged class, and $< 25$ as unprivileged class).  Total numbers of instances used in training, validation and testing was 700, 150, and 150, respectively.
 
-\textbf{Models}. \sloppy The results obtained by FAIR models are compared with seven related and state-of-the-art algorithms: FAD, its probabilistic variant (FAD-prob), reweighing preprocessing technique from~\cite{kamiran2012data} combined with the random forest classifier (Reweighing - RF) and with neural networks (Reweighing - NN), disparity impact remover~\cite{feldman2015certifying} combined with random forest (DI - RF) and neural networks (DI - NN) and prejudice remover~\cite{kamishima2012fairness} (PR). Architecture, number of epochs in early stopping procedure, and learning rates were empirically determined as to optimize the performance of each model, by varying design choices of the architectures described in the literature. Detailed specifications can be found in \ref{app:Architecture}. We did not use explicit regularization in our experiments since, in accordance with the remark after the proof of theorem \ref{pp:infty}, capacity of the models can also be controlled through the choice of architecture.
+\textbf{Models}. \sloppy The results obtained by FAIR models are compared with six related and state-of-the-art algorithms: FAD, reweighing preprocessing technique from~\cite{kamiran2012data} combined with the random forest classifier (Reweighing - RF) and with neural networks (Reweighing - NN), disparity impact remover~\cite{feldman2015certifying} combined with random forest (DI - RF) and neural networks (DI - NN) and prejudice remover~\cite{kamishima2012fairness} (PR). Architecture, number of epochs in early stopping procedure, and learning rates were empirically determined as to optimize the performance of each model, by varying design choices of the architectures described in the literature. Detailed specifications can be found in \ref{app:Architecture}. We did not use explicit regularization in our experiments since, in accordance with the remark after the proof of theorem \ref{pp:infty}, capacity of the models can also be controlled through the choice of architecture.
 
 \textbf{Optimization}.
 For optimization of all neural network based models we use Adam optimizer \cite{bock2019proof}.
@@ -638,7 +501,7 @@ In this section we present results obtained using the experimental evaluation ou
 	\vskip -0.2in
 \end{figure*}
 
-Firstly, models performances obtained on \textit{Adult income} dataset are illustrated in Fig.~\ref{fig:Adult} by three fairness metrics ($\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$) and classification performance ($\mathbf{AUC_y}$). The models with greater AUC score and lower (un)fairness metric (upper left corner of plots) are preferred. It can be observed that FAIR models dominates Pareto optimal solutions with respect to the all fairness metrics. In addition, Reweighing-NN and FAIR-betaREP models dominate the upper left corner of Pareto fronts for AOD and AEOD, whereas the FAIR-scalar dominates the upper left corner of Pareto front for ASD metric. Moreover, in table~\ref{tab:Adult} the Pareto optimal solutions obtained for all three fairness metrics and ($\mathbf{AUC_y}$) are presented. Similarly, it can be concluded that the number of FAIR models is larger compared to the other models and FAIR can therefore be considered better then other models.
+Firstly, models performances obtained on \textit{Adult income} dataset are illustrated in Fig.~\ref{fig:Adult} by three fairness metrics ($\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$) and classification performance ($\mathbf{AUC_y}$). The models with greater AUC score and lower (un)fairness metric (upper left corner of plots) are preferred. It can be observed that FAIR models dominates Pareto optimal solutions with respect to the all fairness metrics. In addition, Reweighing-NN and FAIR-betaREP models dominate the upper left corner of Pareto fronts for AOD and AEOD, whereas the FAIR-scalar dominates the upper left corner of Pareto front for ASD metric. Moreover, in Table~\ref{tab:Adult} the Pareto optimal solutions obtained for all three fairness metrics and ($\mathbf{AUC_y}$) are presented. Similarly, it can be concluded that the number of FAIR models is larger compared to the other models and FAIR can therefore be considered better then other models.
 
 \begin{table}
 	\centering
@@ -870,6 +733,84 @@ This work was supported in part by the ONR/ONR Global under Grant N62909-19-1-20
 
 \appendix
 
+\section{FAIR-Bernoulli and FAIR-betaSF with baselines}
+\label{app:baselines}
+
+Baseline functions are a commonly used tool to reduce the variance of the estimate of the gradient in reinforcement learning algorithms. It is shown that introducing a baseline in loss function does not introduce additional bias into the model \cite{sutton2018reinforcement}. Here we explain how these techniques can be incorporated in FAIR models. These modifications are not included in experimental evaluation since the technique is already known and our main goal is to compare basic FAIR variants against existing baselines, but we still derive algorithms with baselines as they might be of practical importance.
+
+Already discussed adversarial loss is augmented by adding another term -- the baseline loss:
+
+\begin{equation}
+{\cal L}_{\alpha}(\mu) = \mathrm{Var} \left[w\cdot \nabla_{\theta_g}\log P_g(w|\mathbf{x}) \cdot\left( \alpha \log P_\psi(\mathbf{s}|\mathbf{x}) - \log P_\phi(\mathbf{y}|\mathbf{x}) \right)
+     - b_\mu(\mathbf{x}) \right]
+\end{equation}
+The baseline loss includes the gradient of the adversarial loss, since its purpose is to reduce the variance of the estimate of that gradient.
+Keeping in mind that the variance can be represented as $\mathrm{Var}[x] = \mathbb{E}[x^2] - \mathbb{E}[x]^2$ (where squaring of a vector $v$ means $v^Tv$), the baseline loss can be simplified due to the fact that it holds
+$\mathbb{E}_{P_\theta(w|\mathbf{x})}[\nabla_{\theta}\log P_\theta(w|\mathbf{x}) b_\mu(\mathbf{x})]=0$ \cite{sutton2018reinforcement}:
+
+\begin{gather}
+	\begin{split}
+	&{\cal L}_{\alpha}(\mu) = \mathbb{E} \left[\left(w\cdot\nabla_{\theta}\log P_\theta(w|\mathbf{x})\cdot (\alpha \log P_\psi(\mathbf{s}|\mathbf{x}) - \log P_\phi(\mathbf{y}|\mathbf{x}))  - b_\mu(\mathbf{x})\right)^2 \right]
+	\end{split}
+\end{gather}
+where the expectation is with respect to $(\mathbf{x},\mathbf{y},\mathbf{s})\sim P(\mathbf{x},\mathbf{y},\mathbf{s})$ and $w\sim P(w|\mathbf{x})$.
+Furthermore, we assumed the independence among the values involved in the expectation, and thus the expectation can be represented as:
+\begin{equation}
+	\begin{split}
+	{\cal L}_{\alpha}(\mu) = \mathbb{E} \left[\left(\nabla_{\theta}\log P_\theta(w|\mathbf{x})\right)^2 \right] \cdot \mathbb{E} \left[ \left(w \cdot (\alpha \log P_\psi(\mathbf{s}|\mathbf{x}) - \log P_\phi(\mathbf{y}|\mathbf{x})) - b_\mu(\mathbf{x})\right)^2 \right]
+	\end{split}
+\end{equation}
+
+Considering that the first factor is constant with respect to $b_\mu$ it can be omitted, so that the final form of the loss ${\cal L}_{\alpha}(\mu)$  is:
+\begin{equation}
+\begin{split}
+\mathbb{E} \left[\left(w \cdot (\alpha \log P_\psi(\mathbf{s}|\mathbf{x}) - \log P_\phi(\mathbf{y}|\mathbf{x})) - b_\mu(\mathbf{x})\right)^2\right]
+\end{split}
+\end{equation}
+
+Then, the gradient $\nabla_\mu{\cal L}_\alpha(\mu)$ is:
+\begin{equation}
+\begin{split}
+-\mathbb{E} \left[w \cdot \nabla_\mu b_\mu(\mathbf{x})\cdot\left(\alpha \log P_\psi(\mathbf{s}|\mathbf{x}) - \log P_\phi(\mathbf{y}|\mathbf{x}) - b_\mu(\mathbf{x})\right)\right]
+\end{split}
+\end{equation}
+
+In Fig.~\ref{fig:Fig2} graphical representation of FAIR-betaSF with baseline is shown. The pseudo-code is presented in Algorithm~\ref{alg:beta-base}.
+
+\begin{figure*}[h!]
+	\center
+	\includegraphics[width=1\textwidth]{Fig2.pdf}
+	\captionsetup{justification=centering}
+	\caption{Graphical representations of FAIR-betaSF model with baseline function}
+	\label{fig:Fig2}
+\end{figure*}
+
+\begin{algorithm}[h!]
+	\caption{FAIR-betaSF with baseline}
+	\label{alg:beta-base}
+	\begin{algorithmic}
+		\State {\bfseries Input:} learning rates $\gamma_\theta, \gamma_\phi, \gamma_\psi$, $\gamma_b$ dataset $D$,  hyperparameter $\alpha$, number of iterations $M$
+		\State {\bfseries Output:} parameters $\theta,\phi,\psi$, $\mu$
+		\vspace{2mm}
+		\State Initialize $\theta$, $\phi$, $\psi$, $\mu$
+		\For{i = 1 to M}
+		\State Sample a mini-batch $B\subseteq D$
+		\State $\alpha_\mathbf{x},\beta_\mathbf{x}\leftarrow f_\theta(\mathbf{x})$ for each $\mathbf{x}\in B$
+		\State Sample $w_\mathbf{x}\sim \beta(\alpha,\beta)$ for each $\mathbf{x}\in B$
+		\State $d_{\theta} \leftarrow \gamma_\theta\frac{1}{|B|} \sum_{(\mathbf{x},\mathbf{y},\mathbf{s})\in B}\left[w_\mathbf{x}\nabla_{\theta}\log P_\theta(w_\mathbf{x}|\mathbf{x})\cdot\right.$
+		
+		\hspace{1.5cm}$\left.(\alpha\log P_\psi(\mathbf{s}|\mathbf{x})-\log P_\phi(\mathbf{y}|\mathbf{x})-b_\mu(\textbf{x}))\right]$
+		\State $d_{\phi} \leftarrow \gamma_\phi\nabla_{\phi}{\cal L}^{\cal P}_\alpha(\theta,\phi,\psi,B)$
+		\State $d_{\psi} \leftarrow -\gamma_\psi\nabla_{\psi}{\cal L}^{\cal P}_\alpha(\theta,\phi,\psi,B)$
+		\State $d_{\mu} \leftarrow -\gamma_\mu\frac{1}{|B|} \sum_{(\mathbf{x},\mathbf{y},\mathbf{s})\in B}\left[w_\mathbf{x}\nabla_\mu b_\mu(\mathbf{x})\cdot\right.$
+		
+		\hspace{1.5cm}$\left.(\alpha\log P_\psi(\mathbf{s}|\mathbf{x})-\log P_\phi(\mathbf{y}|\mathbf{x}) - b_\mu(\mathbf{x}))\right]$
+		\State $(\theta,\phi,\psi,\mu) \leftarrow (\theta,\phi,\psi,\mu) - (d_{\theta},d_{\phi}, d_{\psi},  d_{\mu})$
+		\EndFor
+	\end{algorithmic}
+\end{algorithm}
+
+
 \section{Model architecture}
 \label{app:Architecture}
 
@@ -1063,6 +1004,8 @@ More detailed results of experimental evaluation are given in Figs.~\ref{fig:Adu
 %% The Appendices part is started with the command \appendix;
 %% appendix sections are then done as normal sections
 %% \appendix
+
+
 
 \end{document}
 
