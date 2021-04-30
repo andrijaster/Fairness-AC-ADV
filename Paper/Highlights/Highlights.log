@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7140 64-bit) (preloaded format=pdflatex 2019.7.31)  15 NOV 2020 10:46
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7140 64-bit) (preloaded format=pdflatex 2019.7.31)  17 APR 2021 16:13
 entering extended mode
 **./Highlights.tex
 (Highlights.tex
@@ -398,17 +398,23 @@ Package grfext Info: Graphics extension search list:
 G,.JBIG2,.JB2,.eps]
 (grfext)             \AppendGraphicsExtensions on input line 456.
 )
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 15.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 14.
 
 ("C:\Program Files\MiKTeX 2.9\tex/latex/base\omscmr.fd"
 File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 15.
- [1
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 14.
 
-{C:/Users/Andri/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}] (Highlights
-.aux) ) 
+Overfull \hbox (0.5295pt too wide) in paragraph at lines 16--17
+[]\T2A/cmr/m/n/12 We pro-vide the-o-ret-i-cal anal-y-sis of prop-er-ties of ad-
+ver-sar-ial re-weighting. 
+ []
+
+[1
+
+{C:/Users/Andri/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}]
+(Highlights.aux) ) 
 Here is how much of TeX's memory you used:
  3226 strings out of 492895
  41368 string characters out of 3133479
@@ -417,12 +423,12 @@ Here is how much of TeX's memory you used:
  4997 words of font info for 17 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  41i,4n,34p,279b,145s stack positions out of 5000i,500n,10000p,200000b,50000s
- <C:\Users\Andri\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/lh/lh-t2a/dpi6
-00\larm1200.pk><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy
-10.pfb>
-Output written on Highlights.pdf (1 page, 20896 bytes).
+ <C:\Users\Andri\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/lh/
+lh-t2a/dpi600\larm1200.pk><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfo
+nts/cm/cmsy10.pfb>
+Output written on Highlights.pdf (1 page, 19642 bytes).
 PDF statistics:
- 50 PDF objects out of 1000 (max. 8388607)
+ 46 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

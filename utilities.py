@@ -286,13 +286,15 @@ def plot_Pareto_fronts(PO_points_AOD, PO_points_ASPD, PO_points_AEOD, upper_boun
                     'FAD-prob':'k', "FAIR-scalar":'brown', 'FAIR-betaREP':'teal', "FAIR-Bernoulli":"blueviolet", "FAIR-betaSF":"crimson"}
 
     
-    size = 70
+    size = 100
 
     figure1 = plt.figure(figsize=(9, 12))
 
     PO_points_AOD['labels'] = PO_points_AOD.index
     ax1 = plt.subplot(311)
     for k,d in PO_points_AOD.groupby('labels'):
+        if k == "FAD-prob":
+            continue
         ax1.scatter(d.iloc[:,1], d.iloc[:,0], label=k, c=dict_color[k], marker = dict_marker[k], s=size)
     # ax1.set_ylim(0.5,1)
     ax1.set_xlim(lower_bound, upper_bound)
@@ -305,6 +307,8 @@ def plot_Pareto_fronts(PO_points_AOD, PO_points_ASPD, PO_points_AEOD, upper_boun
     PO_points_ASPD['labels'] = PO_points_ASPD.index
     ax2 = plt.subplot(312)
     for k,d in PO_points_ASPD.groupby('labels'):
+        if k == "FAD-prob":
+            continue
         ax2.scatter(d.iloc[:,1], d.iloc[:,0], label=k, c=dict_color[k], marker = dict_marker[k], s=size)
     # ax2.set_ylim(0.5,1)
     ax2.set_xlim(lower_bound, upper_bound)
@@ -317,6 +321,8 @@ def plot_Pareto_fronts(PO_points_AOD, PO_points_ASPD, PO_points_AEOD, upper_boun
     PO_points_AEOD['labels'] = PO_points_AEOD.index
     ax3 = plt.subplot(313)
     for k,d in PO_points_AEOD.groupby('labels'):
+        if k == "FAD-prob":
+            continue
         ax3.scatter(d.iloc[:,1], d.iloc[:,0], label=k, c=dict_color[k], marker = dict_marker[k], s=size)    
     # ax3.set_ylim(0.5,1)
     ax3.set_xlim(lower_bound, upper_bound)

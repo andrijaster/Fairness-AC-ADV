@@ -528,7 +528,6 @@ Firstly, models performances obtained on \textit{Adult income} dataset are illus
 		\textbf{FAIR-Bernoulli} & 0.892                             & 0.098                             & 0.185                             & 0.124                              \\ \hline
 		\textbf{FAIR-betaREP}   & 0.875                             & 0.055                             & 0.174                             & 0.039                              \\ \hline
 		\textbf{FAIR-betaREP}   & 0.866                             & 0.048                             & 0.159                             & 0.029                              \\ \hline
-		\textbf{FAD-prob}       & 0.890                             & 0.079                             & 0.172                             & 0.093                              \\ \hline
 	\end{tabular}
 	\label{tab:Adult}
 \end{table}
@@ -596,7 +595,7 @@ Thirdly, models performances obtained on \textit{Hospital expenditures} dataset 
 		\textbf{FAIR-betaREP}   & 0.827                             & 0.022                             & 0.055                             & 0.027                              \\ \hline
 		\textbf{FAIR-betaREP}   & 0.817                             & 0.011                             & 0.056                             & 0.003                              \\ \hline
 		\textbf{FAIR-betaREP}   & 0.816                             & 0.010                             & 0.057                             & 0.003                              \\ \hline
-		\textbf{FAD-prob}       & 0.778                             & 0.000                             & 0.000                             & 0.000                              \\ \hline
+
 	\end{tabular}
 	\label{tab:MEPS-19}%
 \end{table}
@@ -642,7 +641,6 @@ Eventually, model performances obtained of \textit{German credit} dataset for ag
 		\textbf{FAIR-Bernoulli} & 0.765                             & 0.226                             & 0.002                             & 0.567                              \\ \hline
 		\textbf{FAIR-betaREP}   & 0.665                             & 0.003                             & 0.034                             & 0.067                              \\ \hline
 		\textbf{FAIR-betaREP}   & 0.780                             & 0.198                             & 0.037                             & 0.400                              \\ \hline
-		\textbf{FAD-prob}       & 0.752                             & 0.069                             & 0.070                             & 0.000                              \\ \hline
 	\end{tabular}
 	\label{tab:Ger-age}
 \end{table}
@@ -835,8 +833,6 @@ In all experiments with Reweighing - RF and DI - RF 500 trees were used in the r
 			\midrule
 			\textbf{FAD} & 62/41/27 & 18/12/1 & 18/12/1 & ReLU + Batch normalization  + sigmoid (last layer) & $50 / 10^{-4}$ \\
 			\midrule
-			\textbf{FAD-prob} & {46/23/23/23} & 11/1 & 11/1 & ReLU   + sigmoid (last layer) & $50 / 10^{-4}$ \\
-			\midrule
 			\textbf{FAIR-scalar} & 62/41/27/1 & 62/41/1 & 62/1 & ReLU + Batch normalization  + sigmoid (last layer) & $50 / 10^{-4}$ \\
 			\midrule
 			\textbf{FAIR-betaSF} & 62/41/27/2 & 62/41/1 & 62/1 & ReLU + Batch normalization  + sigmoid or exp (last layer) & $50 / 10^{-4}$ \\
@@ -852,8 +848,6 @@ In all experiments with Reweighing - RF and DI - RF 500 trees were used in the r
 			\textbf{Reweighing - NN} & - & 464/232/116/1 & - & ReLU + Batch normalization  + sigmoid (last layer) & $10 / 10^{-3}$ \\
 			\midrule
 			\textbf{FAD} & 464/232/116 & 58/1 & 58/1 & ReLU + Batch normalization  + sigmoid (last layer) & $40 / 10^{-4}$ \\
-			\midrule
-			\textbf{FAD-prob} & {464/232/232/232} & 116/58/1 & 116/58/1 & ReLU   + sigmoid (last layer) & $40 / 10^{-4}$ \\
 			\midrule
 			\textbf{FAIR-scalar} & 464/232/1 & 464/1 & 464/1 & ReLU + Batch normalization  + sigmoid (last layer) & $40 / 10^{-4}$ \\
 			\midrule
@@ -887,8 +881,6 @@ In all experiments with Reweighing - RF and DI - RF 500 trees were used in the r
 			\midrule
 			\textbf{FAD} & 68/34/17 & 8/1 & 8/1 & ReLU + Batch normalization  + sigmoid (last layer) & $50 / 10^{-4}$ \\
 			\midrule
-			\textbf{FAD-prob} & {68/34/34/34} & 17/1 & 17/1 & ReLU   + sigmoid (last layer) & $50 / 10^{-4}$ \\
-			\midrule
 			\textbf{FAIR-scalar} & 68/34/1 & 68/1 & 68/1 & ReLU + Batch normalization  + sigmoid (last layer) & $50 / 10^{-4}$ \\
 			\midrule
 			\textbf{FAIR-betaSF} & 68/34/2 & 68/1 & 68/1 & ReLU + Batch normalization  + sigmoid or exp (last layer) & $50 / 10^{-5}$ \\
@@ -904,8 +896,6 @@ In all experiments with Reweighing - RF and DI - RF 500 trees were used in the r
 			\textbf{Reweighing - NN} & - & 37/24/1 & - & ReLU + Batch normalization  + sigmoid (last layer) & $10 / 10^{-3}$ \\
 			\midrule
 			\textbf{FAD} & 37/24/1 & 16/1 & 16/1 & ReLU + Batch normalization  + sigmoid (last layer) & $60 / 10^{-4}$ \\
-			\midrule
-			\textbf{FAD-prob} & {28/14/14/14} & 7/1 & 7/1 & ReLU   + sigmoid (last layer) & $50 / 10^{-5}$ \\
 			\midrule
 			\textbf{FAIR-scalar} & 37/1 & 1  & 1  & ReLU + Batch normalization  + sigmoid (last layer) & $50 / 10^{-4}$ \\
 			\midrule
@@ -936,8 +926,6 @@ In all experiments with Reweighing - RF and DI - RF 500 trees were used in the r
 			\textbf{Reweighing - NN} & - & 37/24/1 & - & ReLU + Batch normalization  + sigmoid (last layer) & $10 / 10^{-3}$ \\
 			\midrule
 			\textbf{FAD} & 37/24/1 & 16/1 & 16/1 & ReLU + Batch normalization  + sigmoid (last layer) & $50 / 10^{-4}$ \\
-			\midrule
-			\textbf{FAD-prob} & {28/14/14/14} & 7/1 & 7/1 & ReLU   + sigmoid (last layer) & $50 / 10^{-5}$ \\
 			\midrule
 			\textbf{FAIR-scalar} & 37/1 & 37/1 & 1  & ReLU + Batch normalization  + sigmoid (last layer) & $50 / 10^{-4}$ \\
 			\midrule
