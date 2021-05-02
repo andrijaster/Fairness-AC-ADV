@@ -181,29 +181,10 @@ B.~H. Zhang, B.~Lemoine, M.~Mitchell, Mitigating unwanted biases with
   adversarial learning, in: Proceedings of the 2018 AAAI/ACM Conference on AI,
   Ethics, and Society, ACM, 2018, pp. 335--340.
 
-\bibitem{tan2010social}
-C.~Tan, J.~Tang, J.~Sun, Q.~Lin, F.~Wang, Social action tracking via noise
-  tolerant time-varying factor graphs, in: Proceedings of the 16th ACM SIGKDD
-  international conference on Knowledge discovery and data mining, 2010, pp.
-  1049--1058.
-
-\bibitem{koller2009probabilistic}
-D.~Koller, N.~Friedman, Probabilistic graphical models: principles and
-  techniques, MIT press, 2009.
-
-\bibitem{kingma2019introduction}
-D.~P. Kingma, M.~Welling, et~al., An introduction to variational autoencoders,
-  Foundations and Trends{\textregistered} in Machine Learning 12~(4) (2019)
-  307--392.
-
 \bibitem{shah2015empirical}
 A.~Shah, D.~Knowles, Z.~Ghahramani, An empirical study of stochastic
   variational inference algorithms for the beta bernoulli process, in:
   International Conference on Machine Learning, 2015, pp. 1594--1603.
-
-\bibitem{sutton2018reinforcement}
-R.~S. Sutton, A.~G. Barto, Reinforcement learning: An introduction, MIT press,
-  2018.
 
 \bibitem{tibshirani1996regression}
 R.~Tibshirani, Regression shrinkage and selection via the lasso, Journal of the
@@ -242,5 +223,9 @@ S.~Bock, M.~Wei{\ss}, A proof of local convergence for the adam optimizer, in:
 R.~T. Marler, J.~S. Arora, Survey of multi-objective optimization methods for
   engineering, Structural and multidisciplinary optimization 26~(6) (2004)
   369--395.
+
+\bibitem{sutton2018reinforcement}
+R.~S. Sutton, A.~G. Barto, Reinforcement learning: An introduction, MIT press,
+  2018.
 
 \end{thebibliography}
