@@ -100,7 +100,7 @@
 %% for the whole article with \linenumbers.
 %% \usepackage{lineno}
 
-\journal{Neural Networks}
+\journal{Neurocomputing}
 
 \begin{document}
 
@@ -494,9 +494,9 @@ In this section we present results obtained using the experimental evaluation ou
 
 \begin{figure*}
 	\center
-	\includegraphics[angle=0, width=0.7\textwidth]{Adult.png}
+	\includegraphics[angle=0, width=0.7\textwidth]{Adult_ACC.png}
 	\captionsetup{justification=centering}
-	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{Adult income} datasets}
+	\caption{Classification performance and fairness of models as measured by $\mathbf{ACC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{Adult income} datasets}
 	\label{fig:Adult}
 	\vskip -0.2in
 \end{figure*}
@@ -506,28 +506,37 @@ Firstly, models performances obtained on \textit{Adult income} dataset are illus
 \begin{table}
 	\centering
 	\caption{Pareto optimal solutions - \textit{Adult income} dataset}
-	\begin{tabular}{|c|l|l|l|l|}
+	\begin{tabular}{|c|c|c|c|c|}
 		\hline
-		\textbf{model}          & \multicolumn{1}{c|}{\textbf{AUC}} & \multicolumn{1}{c|}{\textbf{AOD}} & \multicolumn{1}{c|}{\textbf{ASD}} & \multicolumn{1}{c|}{\textbf{AEOD}} \\ \hline
-		\textbf{PR}             & 0.547                             & 0.000                             & 0.000                             & 0.000                              \\ \hline
-		\textbf{DI-RF}          & 0.887                             & 0.095                             & 0.125                             & 0.155                              \\ \hline
-		\textbf{DI-RF}          & 0.888                             & 0.103                             & 0.139                             & 0.163                              \\ \hline
-		\textbf{Reweighing-NN}  & 0.852                             & 0.018                             & 0.152                             & 0.022                              \\ \hline
-		\textbf{Reweighing-NN}  & 0.849                             & 0.020                             & 0.123                             & 0.005                              \\ \hline
-		\textbf{Reweighing-NN}  & 0.824                             & 0.040                             & 0.092                             & 0.117                              \\ \hline
-		\textbf{Reweighing-NN}  & 0.851                             & 0.015                             & 0.111                             & 0.064                              \\ \hline
-		\textbf{Reweighing-RF}  & 0.888                             & 0.104                             & 0.167                             & 0.143                              \\ \hline
-		\textbf{FAD}            & 0.886                             & 0.070                             & 0.172                             & 0.071                              \\ \hline
-		\textbf{FAIR-scalar}    & 0.652                             & 0.005                             & 0.094                             & 0.052                              \\ \hline
-		\textbf{FAIR-scalar}    & 0.881                             & 0.115                             & 0.092                             & 0.154                              \\ \hline
-		\textbf{FAIR-scalar}    & 0.891                             & 0.085                             & 0.167                             & 0.109                              \\ \hline
-		\textbf{FAIR-betaSF}    & 0.867                             & 0.061                             & 0.146                             & 0.063                              \\ \hline
-		\textbf{FAIR-betaSF}    & 0.878                             & 0.074                             & 0.197                             & 0.065                              \\ \hline
-		\textbf{FAIR-betaSF}    & 0.867                             & 0.055                             & 0.142                             & 0.068                              \\ \hline
-		\textbf{FAIR-Bernoulli} & 0.580                             & 0.001                             & 0.073                             & 0.075                              \\ \hline
-		\textbf{FAIR-Bernoulli} & 0.892                             & 0.098                             & 0.185                             & 0.124                              \\ \hline
-		\textbf{FAIR-betaREP}   & 0.875                             & 0.055                             & 0.174                             & 0.039                              \\ \hline
-		\textbf{FAIR-betaREP}   & 0.866                             & 0.048                             & 0.159                             & 0.029                              \\ \hline
+		\textbf{model}           & \textbf{ACC} & \textbf{AOD} & \textbf{ASD} & \textbf{AEOD} \\ \hline
+		\textbf{PR}              & 0.7450       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{Reweighing-NN}   & 0.7927       & 0.0182       & 0.1517       & 0.0222        \\ \hline
+		\textbf{Reweighing-NN}   & 0.8031       & 0.0200       & 0.1231       & 0.0052        \\ \hline
+		\textbf{Reweighing-NN}   & 0.7963       & 0.0396       & 0.0918       & 0.1170        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8622       & 0.1151       & 0.0922       & 0.1544        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8050       & 0.0151       & 0.1105       & 0.0640        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8649       & 0.0939       & 0.1736       & 0.1236        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8630       & 0.0848       & 0.1672       & 0.1087        \\ \hline
+		\textbf{FAIR-scalar}     & 0.7559       & 0.0090       & 0.0164       & 0.0161        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8110       & 0.0996       & 0.0654       & 0.1955        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8076       & 0.1466       & 0.0565       & 0.2841        \\ \hline
+		\textbf{FAIR-betaSF}     & 0.8397       & 0.0607       & 0.1456       & 0.0627        \\ \hline
+		\textbf{FAIR-betaSF}     & 0.8431       & 0.0551       & 0.1421       & 0.0676        \\ \hline
+		\textbf{FAIR-betaREP}    & 0.8333       & 0.0550       & 0.1741       & 0.0390        \\ \hline
+		\textbf{FAIR-betaREP}    & 0.8308       & 0.0475       & 0.1588       & 0.0287        \\ \hline
+		\textbf{LURMI}           & 0.8212       & 0.0397       & 0.1420       & 0.0259        \\ \hline
+		\textbf{LURMI}           & 0.7577       & 0.0157       & 0.0112       & 0.0286        \\ \hline
+		\textbf{LURMI}           & 0.7653       & 0.0491       & 0.0860       & 0.0742        \\ \hline
+		\textbf{PYCO\_diff}      & 0.8068       & 0.0984       & 0.0596       & 0.1917        \\ \hline
+		\textbf{PYCO\_diff}      & 0.7810       & 0.0915       & 0.0233       & 0.1785        \\ \hline
+		\textbf{PYCO\_diff}      & 0.8135       & 0.0824       & 0.1000       & 0.1490        \\ \hline
+		\textbf{PYCO\_diff}      & 0.8162       & 0.1206       & 0.0780       & 0.2349        \\ \hline
+		\textbf{PYCO\_diff}      & 0.8272       & 0.0925       & 0.1408       & 0.1487        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.7802       & 0.5744       & 0.0097       & 0.3087        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.7974       & 0.0828       & 0.0626       & 0.1496        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.8016       & 0.2105       & 0.0081       & 0.3506        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.8138       & 0.0707       & 0.1084       & 0.1199        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.8231       & 0.0836       & 0.1192       & 0.1408        \\ \hline
 	\end{tabular}
 	\label{tab:Adult}
 \end{table}
@@ -536,9 +545,9 @@ Secondly, the results obtained on \textit{Hospital readmission} dataset are pres
 
 \begin{figure}
 	\center
-	\includegraphics[angle=0, width=0.7\textwidth]{Readmission.png}
+	\includegraphics[angle=0, width=0.7\textwidth]{Readmission_ACC.png}
 	\captionsetup{justification=centering}
-	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{Hospital readmission} dataset}
+	\caption{Classification performance and fairness of models as measured by $\mathbf{ACC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{Hospital readmission} dataset}
 	\label{fig:Readmission}
 	\vskip -0.2in
 \end{figure}
@@ -546,15 +555,12 @@ Secondly, the results obtained on \textit{Hospital readmission} dataset are pres
 \begin{table}
 	\centering
 	\caption{Pareto optimal solutions - \textit{Hospital readmission} dataset}
-	\begin{tabular}{|c|l|l|l|l|}
+	\begin{tabular}{|c|c|c|c|c|}
 		\hline
-		\textbf{model}          & \multicolumn{1}{c|}{\textbf{AUC}} & \multicolumn{1}{c|}{\textbf{AOD}} & \multicolumn{1}{c|}{\textbf{ASD}} & \multicolumn{1}{c|}{\textbf{AEOD}} \\ \hline
-		\textbf{FAIR-scalar}    & 0.791                             & 0.002                             & 0.006                             & 0.015                              \\ \hline
-		\textbf{FAIR-betaSF}    & 0.795                             & 0.014                             & 0.008                             & 0.023                              \\ \hline
-		\textbf{FAIR-betaSF}    & 0.789                             & 0.001                             & 0.003                             & 0.001                              \\ \hline
-		\textbf{FAIR-Bernoulli} & 0.780                             & 0.000                             & 0.000                             & 0.000                              \\ \hline
-		\textbf{FAIR-Bernoulli} & 0.787                             & 0.000                             & 0.000                             & 0.000                              \\ \hline
-		\textbf{FAIR-Bernoulli} & 0.788                             & 0.001                             & 0.000                             & 0.002                              \\ \hline
+		\textbf{model}          & \textbf{ACC} & \textbf{AOD} & \textbf{ASD} & \textbf{AEOD} \\ \hline
+		\textbf{FAIR-scalar}    & 0.8559     & 0.0001     & 0.0000     & 0.0002      \\ \hline
+		\textbf{FAIR-betaSF}    & 0.8654     & 0.0002     & 0.0008     & 0.0008      \\ \hline
+		\textbf{FAIR-Bernoulli} & 0.8550     & 0.0000            & 0.0000            & 0.0000             \\ \hline
 	\end{tabular}
 	\label{tab:Readmission}%
 \end{table}
@@ -563,9 +569,9 @@ Thirdly, models performances obtained on \textit{Hospital expenditures} dataset 
 
 \begin{figure}
 	\center
-	\includegraphics[angle=0, width=0.7\textwidth]{MEPS19.png}
+	\includegraphics[angle=0, width=0.7\textwidth]{MEPS19_ACC.png}
 	\captionsetup{justification=centering}
-	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ \textit{Hospital expenditures} dataset}
+	\caption{Classification performance and fairness of models as measured by $\mathbf{ACC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ \textit{Hospital expenditures} dataset}
 	\label{fig:MEPS19}
 	\vskip -0.2in
 \end{figure}
@@ -573,29 +579,31 @@ Thirdly, models performances obtained on \textit{Hospital expenditures} dataset 
 \begin{table}
 	\centering
 	\caption{Pareto optimal solutions - \textit{Hospital expenditures} dataset}
-	\begin{tabular}{|c|l|l|l|l|}
+	\begin{tabular}{|c|c|c|c|c|}
 		\hline
-		\textbf{model}          & \multicolumn{1}{c|}{\textbf{AUC}} & \multicolumn{1}{c|}{\textbf{AOD}} & \multicolumn{1}{c|}{\textbf{ASD}} & \multicolumn{1}{c|}{\textbf{AEOD}} \\ \hline
-		\textbf{PR}             & 0.842                             & 0.033                             & 0.043                             & 0.059                              \\ \hline
-		\textbf{DI-RF}          & 0.840                             & 0.032                             & 0.058                             & 0.043                              \\ \hline
-		\textbf{DI-RF}          & 0.842                             & 0.027                             & 0.059                             & 0.028                              \\ \hline
-		\textbf{Reweighing-RF}  & 0.842                             & 0.040                             & 0.065                             & 0.057                              \\ \hline
-		\textbf{FAIR-scalar}    & 0.853                             & 0.044                             & 0.078                             & 0.051                              \\ \hline
-		\textbf{FAIR-betaSF}    & 0.823                             & 0.003                             & 0.050                             & 0.013                              \\ \hline
-		\textbf{FAIR-betaSF}    & 0.821                             & 0.013                             & 0.052                             & 0.007                              \\ \hline
-		\textbf{FAIR-betaSF}    & 0.828                             & 0.028                             & 0.069                             & 0.026                              \\ \hline
-		\textbf{FAIR-betaSF}    & 0.825                             & 0.015                             & 0.059                             & 0.006                              \\ \hline
-		\textbf{FAIR-betaSF}    & 0.827                             & 0.024                             & 0.065                             & 0.021                              \\ \hline
-		\textbf{FAIR-betaSF}    & 0.818                             & 0.012                             & 0.054                             & 0.002                              \\ \hline
-		\textbf{FAIR-Bernoulli} & 0.855                             & 0.056                             & 0.087                             & 0.070                              \\ \hline
-		\textbf{FAIR-Bernoulli} & 0.856                             & 0.074                             & 0.091                             & 0.110                              \\ \hline
-		\textbf{FAIR-Bernoulli} & 0.855                             & 0.047                             & 0.080                             & 0.056                              \\ \hline
-		\textbf{FAIR-betaREP}   & 0.820                             & 0.012                             & 0.053                             & 0.002                              \\ \hline
-		\textbf{FAIR-betaREP}   & 0.820                             & 0.007                             & 0.052                             & 0.008                              \\ \hline
-		\textbf{FAIR-betaREP}   & 0.827                             & 0.022                             & 0.055                             & 0.027                              \\ \hline
-		\textbf{FAIR-betaREP}   & 0.817                             & 0.011                             & 0.056                             & 0.003                              \\ \hline
-		\textbf{FAIR-betaREP}   & 0.816                             & 0.010                             & 0.057                             & 0.003                              \\ \hline
-
+		\textbf{model}           & \textbf{ACC} & \textbf{AOD} & \textbf{ASD} & \textbf{AEOD} \\ \hline
+		\textbf{PR}              & 0.8573       & 0.0334       & 0.0426       & 0.0589        \\ \hline
+		\textbf{PR}              & 0.8291       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{DI-NN}           & 0.8459       & 0.0125       & 0.0324       & 0.0533        \\ \hline
+		\textbf{Reweighing-NN}   & 0.8371       & 0.0107       & 0.0351       & 0.0078        \\ \hline
+		\textbf{Reweighing-RF}   & 0.8644       & 0.0399       & 0.0653       & 0.0566        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8703       & 0.0574       & 0.0844       & 0.0801        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8657       & 0.0562       & 0.0837       & 0.0755        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8522       & 0.0276       & 0.0205       & 0.0512        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8484       & 0.0426       & 0.0099       & 0.0816        \\ \hline
+		\textbf{FAIR-betaSF}     & 0.8615       & 0.0030       & 0.0502       & 0.0127        \\ \hline
+		\textbf{FAIR-betaSF}     & 0.8636       & 0.0130       & 0.0520       & 0.0075        \\ \hline
+		\textbf{FAIR-betaSF}     & 0.8611       & 0.0115       & 0.0545       & 0.0021        \\ \hline
+		\textbf{FAIR-Bernoulli}  & 0.8648       & 0.0560       & 0.0866       & 0.0705        \\ \hline
+		\textbf{FAIR-betaREP}    & 0.8623       & 0.0116       & 0.0534       & 0.0024        \\ \hline
+		\textbf{FAIR-betaREP}    & 0.8619       & 0.0067       & 0.0519       & 0.0076        \\ \hline
+		\textbf{FAIR-betaREP}    & 0.8581       & 0.0110       & 0.0556       & 0.0027        \\ \hline
+		\textbf{FAIR-betaREP}    & 0.8564       & 0.0099       & 0.0575       & 0.0035        \\ \hline
+		\textbf{PYCO\_diff}      & 0.8488       & 0.0845       & 0.0063       & 0.1556        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.8319       & 0.0446       & 0.0160       & 0.0785        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.8463       & 0.0541       & 0.0014       & 0.0983        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.8661       & 0.0265       & 0.1038       & 0.0025        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.8640       & 0.0335       & 0.0839       & 0.0344        \\ \hline
 	\end{tabular}
 	\label{tab:MEPS-19}%
 \end{table}
@@ -604,18 +612,18 @@ Eventually, model performances obtained of \textit{German credit} dataset for ag
 
 \begin{figure}
 	\center
-	\includegraphics[angle=0, width=0.7\textwidth]{Ger_age.png}
+	\includegraphics[angle=0, width=0.7\textwidth]{Ger_age_ACC.png}
 	\captionsetup{justification=centering}
-	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ \textit{German credit} (age) dataset}
+	\caption{Classification performance and fairness of models as measured by $\mathbf{ACC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ \textit{German credit} (age) dataset}
 	\label{fig:Ger-sex-res}
 	\vskip -0.2in
 \end{figure}
 
 \begin{figure}
 	\center
-	\includegraphics[angle=0, width=0.7\textwidth]{Ger_sex.png}
+	\includegraphics[angle=0, width=0.7\textwidth]{Ger_sex_ACC.png}
 	\captionsetup{justification=centering}
-	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ \textit{German credit} (sex) dataset}
+	\caption{Classification performance and fairness of models as measured by $\mathbf{ACC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ \textit{German credit} (sex) dataset}
 	\label{fig:Ger-age-res}
 	\vskip -0.2in
 \end{figure}
@@ -623,24 +631,27 @@ Eventually, model performances obtained of \textit{German credit} dataset for ag
 \begin{table}
 	\centering
 	\caption{Pareto optimal solutions - \textit{German credit} - age dataset}
-	\begin{tabular}{|c|l|l|l|l|}
+	\begin{tabular}{|c|c|c|c|c|}
 		\hline
-		\textbf{model}          & \multicolumn{1}{c|}{\textbf{AUC}} & \multicolumn{1}{c|}{\textbf{AOD}} & \multicolumn{1}{c|}{\textbf{ASD}} & \multicolumn{1}{c|}{\textbf{AEOD}} \\ \hline
-		\textbf{PR}             & 0.701                             & 0.114                             & 0.002                             & 0.367                              \\ \hline
-		\textbf{DI-NN}          & 0.769                             & 0.056                             & 0.013                             & 0.067                              \\ \hline
-		\textbf{DI-NN}          & 0.780                             & 0.025                             & 0.054                             & 0.100                              \\ \hline
-		\textbf{DI-NN}          & 0.751                             & 0.042                             & 0.043                             & 0.133                              \\ \hline
-		\textbf{DI-RF}          & 0.727                             & 0.017                             & 0.011                             & 0.033                              \\ \hline
-		\textbf{DI-RF}          & 0.735                             & 0.055                             & 0.100                             & 0.033                              \\ \hline
-		\textbf{Reweighing-NN}  & 0.710                             & 0.033                             & 0.005                             & 0.167                              \\ \hline
-		\textbf{Reweighing-NN}  & 0.768                             & 0.041                             & 0.109                             & 0.000                              \\ \hline
-		\textbf{Reweighing-NN}  & 0.761                             & 0.001                             & 0.087                             & 0.100                              \\ \hline
-		\textbf{FAIR-scalar}    & 0.776                             & 0.159                             & 0.037                             & 0.600                              \\ \hline
-		\textbf{FAIR-scalar}    & 0.787                             & 0.085                             & 0.103                             & 0.033                              \\ \hline
-		\textbf{FAIR-betaSF}    & 0.596                             & 0.000                             & 0.000                             & 0.000                              \\ \hline
-		\textbf{FAIR-Bernoulli} & 0.765                             & 0.226                             & 0.002                             & 0.567                              \\ \hline
-		\textbf{FAIR-betaREP}   & 0.665                             & 0.003                             & 0.034                             & 0.067                              \\ \hline
-		\textbf{FAIR-betaREP}   & 0.780                             & 0.198                             & 0.037                             & 0.400                              \\ \hline
+		\textbf{model}          & \textbf{ACC} & \textbf{AOD} & \textbf{ASD} & \textbf{AEOD} \\ \hline
+		\textbf{DI-NN}          & 0.7800       & 0.0254       & 0.0537       & 0.1000        \\ \hline
+		\textbf{DI-NN}          & 0.7700       & 0.0421       & 0.0427       & 0.1333        \\ \hline
+		\textbf{DI-NN}          & 0.7700       & 0.0471       & 0.0134       & 0.0333        \\ \hline
+		\textbf{DI-RF}          & 0.6900       & 0.0167       & 0.0110       & 0.0333        \\ \hline
+		\textbf{DI-RF}          & 0.6900       & 0.0167       & 0.0110       & 0.0333        \\ \hline
+		\textbf{DI-RF}          & 0.6900       & 0.0167       & 0.0110       & 0.0333        \\ \hline
+		\textbf{Reweighing-NN}  & 0.7900       & 0.0410       & 0.1087       & 0.0000        \\ \hline
+		\textbf{Reweighing-RF}  & 0.7000       & 0.0333       & 0.0220       & 0.0667        \\ \hline
+		\textbf{FAIR-scalar}    & 0.6800       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{FAIR-scalar}    & 0.7500       & 0.0008       & 0.0867       & 0.1000        \\ \hline
+		\textbf{FAIR-scalar}    & 0.7800       & 0.0852       & 0.1026       & 0.0333        \\ \hline
+		\textbf{FAIR-betaSF}    & 0.6800       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{FAIR-Bernoulli} & 0.7600       & 0.2260       & 0.0024       & 0.5667        \\ \hline
+		\textbf{FAIR-betaREP}   & 0.6900       & 0.0167       & 0.0110       & 0.0333        \\ \hline
+		\textbf{FAIR-betaREP}   & 0.7800       & 0.1977       & 0.0366       & 0.4000        \\ \hline
+		\textbf{PYCO\_diff}     & 0.7400       & 0.0224       & 0.0410       & 0.0278        \\ \hline
+		\textbf{PYCO\_diff}     & 0.7067       & 3.4655       & 0.0117       & 0.2444        \\ \hline
+		\textbf{PYCO\_diff}     & 0.7067       & 0.0251       & 0.0269       & 0.0211        \\ \hline
 	\end{tabular}
 	\label{tab:Ger-age}
 \end{table}
@@ -648,22 +659,36 @@ Eventually, model performances obtained of \textit{German credit} dataset for ag
 \begin{table}
 	\centering
 	\caption{Pareto optimal solutions - \textit{German credit} - sex dataset}
-	\begin{tabular}{|c|l|l|l|l|}
+	\begin{tabular}{|c|c|c|c|c|}
 		\hline
-		\textbf{model}         & \multicolumn{1}{c|}{\textbf{AUC}} & \multicolumn{1}{c|}{\textbf{AOD}} & \multicolumn{1}{c|}{\textbf{ASD}} & \multicolumn{1}{c|}{\textbf{AEOD}} \\ \hline
-		\textbf{PR}            & 0.540                             & 0.000                             & 0.000                             & 0.000                              \\ \hline
-		\textbf{DI-RF}         & 0.727                             & 0.017                             & 0.023                             & 0.033                              \\ \hline
-		\textbf{DI-RF}         & 0.725                             & 0.018                             & 0.004                             & 0.017                              \\ \hline
-		\textbf{Reweighing-NN} & 0.755                             & 0.002                             & 0.021                             & 0.117                              \\ \hline
-		\textbf{Reweighing-RF} & 0.739                             & 0.025                             & 0.014                             & 0.050                              \\ \hline
-		\textbf{Reweighing-RF} & 0.739                             & 0.041                             & 0.047                             & 0.033                              \\ \hline
-		\textbf{Reweighing-RF} & 0.780                             & 0.018                             & 0.077                             & 0.083                              \\ \hline
-		\textbf{Reweighing-RF} & 0.763                             & 0.029                             & 0.072                             & 0.067                              \\ \hline
-		\textbf{FAD}           & 0.672                             & 0.013                             & 0.042                             & 0.067                              \\ \hline
-		\textbf{FAD}           & 0.766                             & 0.015                             & 0.005                             & 0.167                              \\ \hline
-		\textbf{FAD}           & 0.547                             & 0.015                             & 0.019                             & 0.283                              \\ \hline
-		\textbf{FAD}           & 0.576                             & 0.014                             & 0.022                             & 0.067                              \\ \hline
-		\textbf{FAIR-betaSF}   & 0.804                             & 0.005                             & 0.081                             & 0.000                              \\ \hline
+		\textbf{model}           & \textbf{ACC} & \textbf{AOD} & \textbf{ASD} & \textbf{AEOD} \\ \hline
+		\textbf{PR}              & 0.6800       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{DI-RF}           & 0.7000       & 0.0167       & 0.0233       & 0.0333        \\ \hline
+		\textbf{DI-RF}           & 0.7000       & 0.0178       & 0.0041       & 0.0167        \\ \hline
+		\textbf{Reweighing-NN}   & 0.7300       & 0.0017       & 0.0208       & 0.1167        \\ \hline
+		\textbf{Reweighing-RF}   & 0.7000       & 0.0167       & 0.0233       & 0.0333        \\ \hline
+		\textbf{Reweighing-RF}   & 0.7800       & 0.0184       & 0.0771       & 0.0833        \\ \hline
+		\textbf{Reweighing-RF}   & 0.7500       & 0.0289       & 0.0715       & 0.0667        \\ \hline
+		\textbf{FAD}             & 0.7100       & 0.0154       & 0.0046       & 0.1667        \\ \hline
+		\textbf{FAIR-scalar}     & 0.7600       & 0.0300       & 0.0619       & 0.1167        \\ \hline
+		\textbf{FAIR-scalar}     & 0.7467       & 0.3124       & 0.0114       & 0.4643        \\ \hline
+		\textbf{FAIR-betaSF}     & 0.6800       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{FAIR-betaSF}     & 0.8000       & 0.0050       & 0.0812       & 0.0000        \\ \hline
+		\textbf{FAIR-betaREP}    & 0.7000       & 0.0101       & 0.0112       & 0.1333        \\ \hline
+		\textbf{FAIR-betaREP}    & 0.6900       & 0.0006       & 0.0025       & 0.1333        \\ \hline
+		\textbf{FAIR-betaREP}    & 0.8100       & 0.2228       & 0.2704       & 0.3500        \\ \hline
+		\textbf{CLFR}            & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{CLFR}            & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{CLFR}            & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{CLFR}            & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{LURMI}           & 0.7000       & 0.0151       & 0.0210       & 0.0960        \\ \hline
+		\textbf{LURMI}           & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{LURMI}           & 0.7000       & 0.0273       & 0.0094       & 0.0152        \\ \hline
+		\textbf{PYCO\_diff}      & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.7133       & 0.0334       & 0.0022       & 0.0502        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.7533       & 0.1361       & 0.0251       & 0.2083        \\ \hline
 	\end{tabular}
 	\label{tab:Ger-sex}%
 \end{table}
@@ -945,6 +970,103 @@ In all experiments with Reweighing - RF and DI - RF 500 trees were used in the r
 
 More detailed results of experimental evaluation are given in Figs.~\ref{fig:Adult all}, ~\ref{fig:Readmission all},~\ref{fig:MEPS19 all},~\ref{fig:Ger_age all} and~\ref{fig:Ger_sex all} by presenting Pareto fronts with all dominated and non-dominated models.
 
+
+\begin{figure*}
+	\center
+	\includegraphics[angle=0, width=0.7\textwidth]{Adult.png}
+	\captionsetup{justification=centering}
+	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{Adult income} datasets}
+	\label{fig:Adult}
+	\vskip -0.2in
+\end{figure*}
+
+\begin{figure}
+	\center
+	\includegraphics[angle=0, width=0.7\textwidth]{Readmission.png}
+	\captionsetup{justification=centering}
+	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{Hospital readmission} dataset}
+	\label{fig:Readmission}
+	\vskip -0.2in
+\end{figure}
+
+\begin{figure}
+	\center
+	\includegraphics[angle=0, width=0.7\textwidth]{MEPS19.png}
+	\captionsetup{justification=centering}
+	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ \textit{Hospital expenditures} dataset}
+	\label{fig:MEPS19}
+	\vskip -0.2in
+\end{figure}
+
+\begin{figure}
+	\center
+	\includegraphics[angle=0, width=0.7\textwidth]{Ger_age.png}
+	\captionsetup{justification=centering}
+	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ \textit{German credit} (age) dataset}
+	\label{fig:Ger-sex-res}
+	\vskip -0.2in
+\end{figure}
+
+\begin{figure}
+	\center
+	\includegraphics[angle=0, width=0.7\textwidth]{Ger_sex.png}
+	\captionsetup{justification=centering}
+	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ \textit{German credit} (sex) dataset}
+	\label{fig:Ger-age-res}
+	\vskip -0.2in
+\end{figure}
+
+
+
+\begin{figure*}
+	\center
+	\includegraphics[angle=0, width=1\textwidth]{Adult_all_ACC.png}
+	\captionsetup{justification=centering}
+	\caption{Classification performance and fairness of models as measured by $\mathbf{ACC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{Adult income} dataset}
+	\label{fig:Adult all}
+	\vskip -0.2in
+\end{figure*}
+
+\begin{figure*}
+	\center
+	\includegraphics[angle=0, width=1\textwidth]{Readmission_all_ACC.png}
+	\captionsetup{justification=centering}
+	\caption{Classification performance and fairness of models as measured by $\mathbf{ACC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{Hospital readmission} dataset}
+	\label{fig:Readmission all}
+	\vskip -0.2in
+\end{figure*}
+
+\begin{figure*}
+	\center
+	\includegraphics[angle=0, width=1\textwidth]{MEPS19_all_ACC.png}
+	\captionsetup{justification=centering}
+	\caption{Classification performance and fairness of models as measured by $\mathbf{ACC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{Hospital expenditures} dataset}
+	\label{fig:MEPS19 all}
+	\vskip -0.2in
+\end{figure*}
+
+\begin{figure*}
+	\center
+	\includegraphics[angle=0, width=1\textwidth]{Ger_age_all_ACC.png}
+	\captionsetup{justification=centering}
+	\caption{Classification performance and fairness of models as measured by $\mathbf{ACC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{German credit} (age) dataset}
+	\label{fig:Ger_age all}
+	\vskip -0.2in
+\end{figure*}
+
+\begin{figure*}
+	\center
+	\includegraphics[angle=0, width=1\textwidth]{Ger_sex_all_ACC.png}
+	\captionsetup{justification=centering}
+	\caption{Classification performance and fairness of models as measured by $\mathbf{ACC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{German credit} (sex) dataset}
+	\label{fig:Ger_sex all}
+	\vskip -0.2in
+\end{figure*}
+
+
+
+
+
 \begin{figure*}
 	\center
 	\includegraphics[angle=0, width=1\textwidth]{Adult_all.png}
@@ -989,6 +1111,7 @@ More detailed results of experimental evaluation are given in Figs.~\ref{fig:Adu
 	\label{fig:Ger_sex all}
 	\vskip -0.2in
 \end{figure*}
+
 %% The Appendices part is started with the command \appendix;
 %% appendix sections are then done as normal sections
 %% \appendix
