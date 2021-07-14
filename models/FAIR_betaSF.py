@@ -109,27 +109,29 @@ class FAIR_betaSF_class():
                 batch_A = batch_A.unsqueeze(dim = 1).to(self.device, dtype = torch.float) 
 
                 y, A, alfa, beta = self.model(batch_x)
-                
                 dist = torch.distributions.Beta(alfa, beta)
                 w = dist.sample()
                 
                 loss0 = loss(y, batch_y, w) 
                 optimizer_0.zero_grad()
+                loss0.backward(retain_graph = True)
+                optimizer_0.step()
 
+                y, A, alfa, beta = self.model(batch_x)
+                dist = torch.distributions.Beta(alfa, beta)
+                w = dist.sample()
                 loss2 = loss(A, batch_A, w)
                 optimizer_2.zero_grad()  
+                loss2.backward()
+                optimizer_2.step()
 
+                y, A, alfa, beta = self.model(batch_x)
+                dist = torch.distributions.Beta(alfa, beta)
+                w = dist.sample()
                 loss1 = loss_w(A, y, batch_A, batch_y, alpha, beta, dist, w)
                 optimizer_1.zero_grad()
-
-                loss0.backward(retain_graph = True)
-                loss2.backward(retain_graph = True)
                 loss1.backward()
-
-                optimizer_0.step()
-                if e%2 == 0:
-                    optimizer_2.step()
-                    optimizer_1.step()
+                optimizer_1.step()
     
                 
             if e%log_epoch == 0 and log == 1:

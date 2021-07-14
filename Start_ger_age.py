@@ -32,7 +32,8 @@ if __name__ == "__main__":
     """ INPUT DATA """
     epochs = 3000
     threshold = 0.5
-    model_AIF = [0, 1, 2, 3 ,4]
+    # model_AIF = [0, 1, 2, 3 ,4]
+    model_AIF = []
     alpha = [0, 1e-3, 1e-2, 1e-1, 1, 10, 100, 1000]
     eta = [0, 1e-3, 1e-2, 1e-1, 1, 10, 100, 1000]
 
@@ -72,31 +73,36 @@ if __name__ == "__main__":
         k+=1   
 
     row = 1
+
     for a in alpha:
 
         ind = eta[iteracija]
         iteracija +=1
 
         lst = [
-            models.Fair_PR(sensitive = prot, class_attr = 'labels', eta = ind),
-            models.Fair_DI_NN(sensitive = prot, inp_size = inp, num_layers_y = 3, step_y = 1.5, repair_level = ind),
-            models.Fair_DI_RF(sensitive = prot, repair_level = ind),
-            models.Fair_rew_NN(un_gr, pr_gr, inp_size = inp, num_layers_y = 3, step_y = 1.5),
-            models.Fair_rew_RF(un_gr, pr_gr),
+            # models.Fair_PR(sensitive = prot, class_attr = 'labels', eta = ind),
+            # models.Fair_DI_NN(sensitive = prot, inp_size = inp, num_layers_y = 3, step_y = 1.5, repair_level = ind),
+            # models.Fair_DI_RF(sensitive = prot, repair_level = ind),
+            # models.Fair_rew_NN(un_gr, pr_gr, inp_size = inp, num_layers_y = 3, step_y = 1.5),
+            # models.Fair_rew_RF(un_gr, pr_gr),
 
             models.FAD_class(input_size = inp, num_layers_z = 3, num_layers_y = 3, 
-                                        step_z = 1.5, step_y = 1.5),
-            models.FAIR_scalar_class(input_size = inp, num_layers_w = 3, step_w = 1.5, 
-                        num_layers_A = 2, step_A = 1.5, num_layers_y = 4, step_y = 1.5),
-            models.FAIR_betaSF_class(input_size = inp, num_layers_w = 3, step_w = 1.5, 
-                        num_layers_A = 2, step_A = 1.5, num_layers_y = 4, step_y = 1.5),
-            models.FAIR_Bernoulli_class(input_size = inp, num_layers_w = 3, step_w = 1.5, 
-                        num_layers_A = 2, step_A = 1.5, num_layers_y = 4, step_y = 1.5),
-            models.FAIR_betaREP_class(input_size = inp, num_layers_w = 3, step_w = 1.5, 
-                        num_layers_A = 2, step_A = 1.5, num_layers_y = 4, step_y = 1.5),
-            models.FAD_prob_class(flow_length = 2, no_sample = 1,
-                                                input_size = inp, num_layers_y = 2, 
-                                                step_y = 2, step_z = 2)] 
+                                        step_z = 1.5, step_y = 1.5, name = f"FAD_{a}"),
+            # models.FAIR_scalar_class(input_size = inp, num_layers_w = 3, step_w = 1.5, 
+                        # num_layers_A = 2, step_A = 1.5, num_layers_y = 4, step_y = 1.5),
+            # models.FAIR_betaSF_class(input_size = inp, num_layers_w = 3, step_w = 1.5, 
+                        # num_layers_A = 2, step_A = 1.5, num_layers_y = 4, step_y = 1.5),
+            # models.FAIR_Bernoulli_class(input_size = inp, num_layers_w = 3, step_w = 1.5, 
+                        # num_layers_A = 2, step_A = 1.5, num_layers_y = 4, step_y = 1.5),
+            # models.FAIR_betaREP_class(input_size = inp, num_layers_w = 3, step_w = 1.5, 
+                        # num_layers_A = 2, step_A = 1.5, num_layers_y = 4, step_y = 1.5),
+            # models.FAD_prob_class(flow_length = 2, no_sample = 1,
+                                                # input_size = inp, num_layers_y = 2, 
+                                                # step_y = 2, step_z = 2)
+            models.CLFR_class(input_size = inp, num_layers_z = 3, num_layers_y = 3, 
+                                        step_z = 1.5, step_y = 1.5, name = f"CLFR_{a}"),
+            models.LURMI_class(input_size = inp, num_layers_z = 3, num_layers_y = 3, 
+                                        step_z = 1.5, step_y = 1.5, name = f"LURMI_{a}")] 
 
         k = 0
         for i in lst:  
@@ -105,7 +111,7 @@ if __name__ == "__main__":
                 i.fit(data_train, ['labels'], [prot])
                 saver_path = os.path.join(saver_dir_models, 'checkpoint_{}_epochs_{}_eta_{}'.format(type(i).__name__, epochs, ind))
             else:
-                i.fit(dataloader_train, dataloader_val, max_epoch= epochs, log = 1, alpha = a, log_epoch = 2)
+                i.fit(dataloader_train, dataloader_val, max_epoch= epochs, log = 1, alpha = a, log_epoch = 2, early_stopping_no= 1)
                 saver_path = os.path.join(saver_dir_models, 'checkpoint_{}_epochs_{}_alpha_{}'.format(type(i).__name__, epochs, a))
 
             torch.cuda.empty_cache()

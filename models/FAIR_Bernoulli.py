@@ -143,22 +143,30 @@ class FAIR_Bernoulli_class():
                 sam = dist.sample()
 
                 loss2 = loss_ML_sam(A, batch_A, sam)   
-                optimizer_2.zero_grad()             
-                
+                optimizer_2.zero_grad()        
+                loss2.backward()     
+                optimizer_2.step()
+
+                A = self.model_A(batch_x)
+                y = self.model_y(batch_x)
+                w = self.model_w(batch_x)                
+                dist = torch.distributions.Bernoulli(w)
+                sam = dist.sample()      
                 loss1 = loss_ML_sam(y, batch_y, sam)
                 optimizer_1.zero_grad() 
+                loss1.backward()
+                optimizer_1.step() 
 
+                A = self.model_A(batch_x)
+                y = self.model_y(batch_x)
+                w = self.model_w(batch_x)                
+                dist = torch.distributions.Bernoulli(w)
+                sam = dist.sample()
                 loss3 = loss_w(A, y, batch_A, batch_y, alpha, beta, w, sam)
                 optimizer_3.zero_grad()
-
-                loss2.backward(retain_graph = True)
-                loss1.backward(retain_graph = True)
                 loss3.backward()    
-
                 optimizer_2.step()
-                if e%2 == 0:
-                    optimizer_2.step()
-                    optimizer_1.step()            
+                               
               
             if e%log_epoch == 0 and log == 1:
 

@@ -105,22 +105,20 @@ class FAIR_scalar_class:
                 y, A, w = self.model(batch_x)
                 loss0 = loss(y, batch_y, w)
                 optimizer_0.zero_grad()
-
-                loss2 = loss(A, batch_A, w)
-                optimizer_2.zero_grad()
-
-                loss1 = loss(y, batch_y, w) - alpha*loss(A, batch_A, w) - beta*torch.norm(w,1)
-                optimizer_1.zero_grad()
-
-                loss0.backward(retain_graph = True)
-                loss2.backward(retain_graph = True)
-                loss1.backward()
-
+                loss0.backward()
                 optimizer_0.step()
 
-                if e%2 == 0:
-                    optimizer_2.step()
-                    optimizer_1.step()
+                y, A, w = self.model(batch_x)
+                loss2 = loss(A, batch_A, w)
+                optimizer_2.zero_grad()
+                loss2.backward()
+                optimizer_2.step()
+
+                y, A, w = self.model(batch_x)
+                loss1 = loss(y, batch_y, w) - alpha*loss(A, batch_A, w) - beta*torch.norm(w,1)
+                optimizer_1.zero_grad()
+                loss1.backward()
+                optimizer_1.step()
                 
             if e%log_epoch == 0 and log == 1:
 

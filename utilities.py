@@ -142,7 +142,7 @@ def test(dataset_val, dataset_test,
             y_val_pred = (y_val_pred_prob > thresh).astype(np.float64)
         else:
             y_val_pred = (y_val_pred_prob > thresh).astype(np.float64)
-            A_pred = (A_prob > thresh).astype(np.float64)
+            # A_pred = (A_prob > thresh).astype(np.float64)
                 
         metric_arrs = np.append(metric_arrs, roc_auc_score(y_test, y_val_pred_prob))
         print("y {}".format(roc_auc_score(y_test, y_val_pred_prob)))
@@ -151,8 +151,9 @@ def test(dataset_val, dataset_test,
         if np.isin(k,model_AIF):
             metric_arrs = np.append(metric_arrs, 0)
         else:
-            metric_arrs = np.append(metric_arrs, roc_auc_score(A_test, A_prob))
-            print("A {}".format(roc_auc_score(A_test, A_prob)))
+            # metric_arrs = np.append(metric_arrs, roc_auc_score(A_test, A_prob))
+            metric_arrs = np.append(metric_arrs, 0)
+            # print("A {}".format(roc_auc_score(A_test, A_prob)))
             
         dataset_pred = dataset.copy()
         dataset_pred.labels = y_val_pred
@@ -277,15 +278,16 @@ def Pareto_optimal_total(dataset, FAIR = True, name = "proba"):
 
     return pareto_optimal    
 
-def plot_Pareto_fronts(PO_points_AOD, PO_points_ASPD, PO_points_AEOD, upper_bound = 0.1, lower_bound = -0.002, name = "Readmission"):
+def plot_Pareto_fronts(PO_points_AOD, PO_points_ASPD, PO_points_AEOD, upper_bound = 0.1, lower_bound = -0.002, name = "Readmission", acc = False):
 
     dict_marker = {"PR":'o', "DI-NN":'v', "DI-RF":'^', "Reweighing-NN":'>', "Reweighing-RF":'<', "FAD":'8',
-                    'FAD-prob':'s', "FAIR-scalar":'p', 'FAIR-betaREP':'P', "FAIR-Bernoulli":"*", "FAIR-betaSF":"h"}
+                    'FAD-prob':'s', "FAIR-scalar":'p', 'FAIR-betaREP':'P', "FAIR-Bernoulli":"*", "FAIR-betaSF":"h",
+                    "LURMI":"2", "CLFR": "X", "PYCO_diff":"d", "PYCO_non_diff":"D"}
 
     dict_color = {"PR":'b', "DI-NN":'g', "DI-RF":'r', "Reweighing-NN":'c', "Reweighing-RF":'m', "FAD":'y',
-                    'FAD-prob':'k', "FAIR-scalar":'brown', 'FAIR-betaREP':'teal', "FAIR-Bernoulli":"blueviolet", "FAIR-betaSF":"crimson"}
+                    'FAD-prob':'k', "FAIR-scalar":'brown', 'FAIR-betaREP':'teal', "FAIR-Bernoulli":"blueviolet", "FAIR-betaSF":"crimson",
+                    "LURMI":"orchid", "CLFR": "navy", "PYCO_diff":"purple", "PYCO_non_diff":"darkviolet"}
 
-    
     size = 100
 
     figure1 = plt.figure(figsize=(9, 12))
@@ -298,8 +300,12 @@ def plot_Pareto_fronts(PO_points_AOD, PO_points_ASPD, PO_points_AEOD, upper_boun
         ax1.scatter(d.iloc[:,1], d.iloc[:,0], label=k, c=dict_color[k], marker = dict_marker[k], s=size)
     # ax1.set_ylim(0.5,1)
     ax1.set_xlim(lower_bound, upper_bound)
+    # ax1.set_xlim(-0.01, None)
     # ax1.set_xlim(0,model1.time_control[-1])
-    ax1.set_ylabel('AUC$_y$', fontweight="bold")
+    if acc:
+        ax1.set_ylabel('ACC$_y$', fontweight="bold")
+    else:
+        ax1.set_ylabel('AUC$_y$', fontweight="bold")
     ax1.set_xlabel("AOD", fontweight="bold")
     ax1.grid()
     ax1.legend(loc = 'lower right')
@@ -312,8 +318,12 @@ def plot_Pareto_fronts(PO_points_AOD, PO_points_ASPD, PO_points_AEOD, upper_boun
         ax2.scatter(d.iloc[:,1], d.iloc[:,0], label=k, c=dict_color[k], marker = dict_marker[k], s=size)
     # ax2.set_ylim(0.5,1)
     ax2.set_xlim(lower_bound, upper_bound)
+    # ax2.set_xlim(-0.01, None)
     # ax1.set_xlim(0,model1.time_control[-1])
-    ax2.set_ylabel('AUC$_y$', fontweight="bold")
+    if acc:
+        ax2.set_ylabel('ACC$_y$', fontweight="bold")
+    else:
+        ax2.set_ylabel('AUC$_y$', fontweight="bold")
     ax2.set_xlabel("ASD", fontweight="bold")
     ax2.grid()
     ax2.legend(loc = 'lower right')
@@ -326,8 +336,12 @@ def plot_Pareto_fronts(PO_points_AOD, PO_points_ASPD, PO_points_AEOD, upper_boun
         ax3.scatter(d.iloc[:,1], d.iloc[:,0], label=k, c=dict_color[k], marker = dict_marker[k], s=size)    
     # ax3.set_ylim(0.5,1)
     ax3.set_xlim(lower_bound, upper_bound)
+    # ax3.set_xlim(-0.01, None)
     # ax1.set_xlim(0,model1.time_control[-1])
-    ax3.set_ylabel('AUC$_y$', fontweight="bold")
+    if acc:
+        ax3.set_ylabel('ACC$_y$', fontweight="bold")
+    else:
+        ax3.set_ylabel('AUC$_y$', fontweight="bold")
     ax3.set_xlabel("AEOD", fontweight="bold")
     ax3.grid()
     ax3.legend(loc = 'lower right')
@@ -372,92 +386,188 @@ def plot_AUC_Y_AUC_A(name):
 
 if __name__ == "__main__":
 
-    col_AUC_y_val = 0
-    col_AUC_A_val = 7
+    def AUC_plot():
+        col_AUC_y_val = 0
+        # col_AUC_y_val = 1
+        col_AUC_A_val = 7
 
-    add = 4
+        add = 4
 
-    aaa = np.logspace(-2, np.log10(5), num = 8)
+        aaa = np.logspace(-2, np.log10(5), num = 8)
 
-    points = pd.read_excel("Results/readmission.xls", index_col=0)
-    po_Read_AOD, po_Read_AOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
-    po_Read_total = Pareto_optimal_total(points.iloc[:,[0, 4, 5, 6, 7, 11, 12, 13]], FAIR=True, name = "Results/Readmission_PO")
+        points = pd.read_excel("Results/readmission.xls", index_col=0)
+        po_Read_AOD, po_Read_AOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        po_Read_total = Pareto_optimal_total(points.iloc[:,[0, 4, 5, 6, 7, 11, 12, 13]], FAIR=True, name = "Results/Readmission_PO")
 
-    points = pd.read_excel("Results/Adult.xls", index_col=0)
-    po_Adult_AOD, po_Adult_AOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
-    po_Adult_total = Pareto_optimal_total(points.iloc[:,[0, 4, 5, 6, 7, 11, 12, 13]], FAIR=True,  name = "Results/Adult_PO")
+        points = pd.read_excel("Results/Adult.xls", index_col=0)
+        po_Adult_AOD, po_Adult_AOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        po_Adult_total = Pareto_optimal_total(points.iloc[:,[0, 4, 5, 6, 7, 11, 12, 13]], FAIR=True,  name = "Results/Adult_PO")
 
-    points = pd.read_excel("Results/Ger_age.xls", index_col=0)
-    po_Ger_age_AOD, po_Ger_age_AOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
-    po_Ger_age_total = Pareto_optimal_total(points.iloc[:,[0, 4, 5, 6, 7, 11, 12, 13]], FAIR=True,  name = "Results/Ger_age_PO")
+        points = pd.read_excel("Results/Ger_age.xls", index_col=0)
+        po_Ger_age_AOD, po_Ger_age_AOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        po_Ger_age_total = Pareto_optimal_total(points.iloc[:,[0, 4, 5, 6, 7, 11, 12, 13]], FAIR=True,  name = "Results/Ger_age_PO")
 
-    points = pd.read_excel("Results/ger_sex.xlsx", index_col=0)
-    po_Ger_sex_AOD, po_Ger_sex_AOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
-    po_Ger_sex_total = Pareto_optimal_total(points.iloc[:,[0, 4, 5, 6, 7, 11, 12, 13]], FAIR=True,  name = "Results/Ger_sex_PO")
+        points = pd.read_excel("Results/ger_sex.xlsx", index_col=0)
+        po_Ger_sex_AOD, po_Ger_sex_AOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        po_Ger_sex_total = Pareto_optimal_total(points.iloc[:,[0, 4, 5, 6, 7, 11, 12, 13]], FAIR=True,  name = "Results/Ger_sex_PO")
 
-    points = pd.read_excel("Results/MEPS19.xls", index_col=0)
-    po_MEPS19_AOD, po_MEPS19_AOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
-    po_MEPS19_total = Pareto_optimal_total(points.iloc[:,[0, 4, 5, 6, 7, 11, 12, 13]], FAIR=True,  name = "Results/MEPS19_PO")
+        points = pd.read_excel("Results/MEPS19.xls", index_col=0)
+        po_MEPS19_AOD, po_MEPS19_AOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        po_MEPS19_total = Pareto_optimal_total(points.iloc[:,[0, 4, 5, 6, 7, 11, 12, 13]], FAIR=True,  name = "Results/MEPS19_PO")
 
-    add = 5
+        add += 1
 
-    points = pd.read_excel("Results/readmission.xls", index_col=0)
-    po_Read_ASPD, po_Read_ASPD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        points = pd.read_excel("Results/readmission.xls", index_col=0)
+        po_Read_ASPD, po_Read_ASPD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
 
-    points = pd.read_excel("Results/Adult.xls", index_col=0)
-    po_Adult_ASPD, po_Adult_ASPD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        points = pd.read_excel("Results/Adult.xls", index_col=0)
+        po_Adult_ASPD, po_Adult_ASPD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
 
-    points = pd.read_excel("Results/Ger_age.xls", index_col=0)
-    po_Ger_age_ASPD, po_Ger_age_ASPD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        points = pd.read_excel("Results/Ger_age.xls", index_col=0)
+        po_Ger_age_ASPD, po_Ger_age_ASPD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
 
-    points = pd.read_excel("Results/ger_sex.xlsx", index_col=0)
-    po_Ger_sex_ASPD, po_Ger_sex_ASPD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        points = pd.read_excel("Results/ger_sex.xlsx", index_col=0)
+        po_Ger_sex_ASPD, po_Ger_sex_ASPD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
 
-    points = pd.read_excel("Results/MEPS19.xls", index_col=0)
-    po_MEPS19_ASPD, po_MEPS19_ASPD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        points = pd.read_excel("Results/MEPS19.xls", index_col=0)
+        po_MEPS19_ASPD, po_MEPS19_ASPD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
 
-    add = 6
+        add += 1
 
-    points = pd.read_excel("Results/readmission.xls", index_col=0)
-    po_Read_AEOD, po_Read_AEOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        points = pd.read_excel("Results/readmission.xls", index_col=0)
+        po_Read_AEOD, po_Read_AEOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
 
-    points = pd.read_excel("Results/Adult.xls", index_col=0)
-    po_Adult_AEOD, po_Adult_AEOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        points = pd.read_excel("Results/Adult.xls", index_col=0)
+        po_Adult_AEOD, po_Adult_AEOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
 
-    points = pd.read_excel("Results/Ger_age.xls", index_col=0)
-    po_Ger_age_AEOD, po_Ger_age_AEOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        points = pd.read_excel("Results/Ger_age.xls", index_col=0)
+        po_Ger_age_AEOD, po_Ger_age_AEOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
 
-    points = pd.read_excel("Results/ger_sex.xlsx", index_col=0)
-    po_Ger_sex_AEOD, po_Ger_sex_AEOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        points = pd.read_excel("Results/ger_sex.xlsx", index_col=0)
+        po_Ger_sex_AEOD, po_Ger_sex_AEOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
 
-    points = pd.read_excel("Results/MEPS19.xls", index_col=0)
-    po_MEPS19_AEOD, po_MEPS19_AEOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        points = pd.read_excel("Results/MEPS19.xls", index_col=0)
+        po_MEPS19_AEOD, po_MEPS19_AEOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        
+
+        plot_Pareto_fronts(po_Read_AOD, po_Read_ASPD, po_Read_AEOD, upper_bound = 0.03, lower_bound = -0.002, name = "IMG_results/Readmission")
+        plot_Pareto_fronts(po_Read_AOD_all, po_Read_ASPD_all, po_Read_AEOD_all, upper_bound = 0.03, lower_bound = -0.002, name = "IMG_results/Readmission_all")
+        plot_Pareto_fronts(po_Adult_AOD, po_Adult_ASPD, po_Adult_AEOD, upper_bound = 0.2, lower_bound = -0.002, name = "IMG_results/Adult")
+        plot_Pareto_fronts(po_Adult_AOD_all, po_Adult_ASPD_all, po_Adult_AEOD_all, upper_bound = 0.2, lower_bound = -0.002, name = "IMG_results/Adult_all")
+        plot_Pareto_fronts(po_Ger_age_AOD, po_Ger_age_ASPD, po_Ger_age_AEOD, upper_bound = 0.11, lower_bound = -0.002, name = "IMG_results/Ger_age")
+        plot_Pareto_fronts(po_Ger_age_AOD_all, po_Ger_age_ASPD_all, po_Ger_age_AEOD_all, upper_bound = 0.11, lower_bound = -0.002, name = "IMG_results/Ger_age_all")
+        plot_Pareto_fronts(po_Ger_sex_AOD, po_Ger_sex_ASPD, po_Ger_sex_AEOD, upper_bound = 0.1, lower_bound = -0.002, name = "IMG_results/Ger_sex")
+        plot_Pareto_fronts(po_Ger_sex_AOD_all, po_Ger_sex_ASPD_all, po_Ger_sex_AEOD_all, upper_bound = 0.1, lower_bound = -0.002, name = "IMG_results/Ger_sex_all")
+        plot_Pareto_fronts(po_MEPS19_AOD, po_MEPS19_ASPD, po_MEPS19_AEOD, name = "IMG_results/MEPS19")
+        plot_Pareto_fronts(po_MEPS19_AOD_all, po_MEPS19_ASPD_all, po_MEPS19_AEOD_all, name = "IMG_results/MEPS19_all")
+        plot_AUC_Y_AUC_A(name = "IMG_results/AUC_y_A")
+
+        # data, atribute, sensitive, output, privileged_groups, unprivileged_groups = Adult_dataset()
+        # data, atribute, sensitive, output, privileged_groups, unprivileged_groups = german_dataset_age()
+        # data, atribute, sensitive, output, privileged_groups, unprivileged_groups = german_dataset_sex()
+        # data, atribute, sensitive, output, privileged_groups, unprivileged_groups = medical_dataset()
+        # data, atribute, sensitive, output, privileged_groups, unprivileged_groups = Readmission_dataset()
+
+
+        # data_train, data_test, data_val, atribute_train, atribute_val, atribute_test, sensitive_train, sensitive_val, sensitive_test, output_train, output_val, output_test = format_datasets(data, atribute, sensitive, output)
+
+
+        # dataset_train = Dataset_format(atribute_train, sensitive_train, output_train)
+        # dataset_val = Dataset_format(atribute_val, sensitive_val, output_val)
+        # dataset_test = Dataset_format(atribute_test, sensitive_test, output_test)
+
+
+    def ACC_plot():
+        col_AUC_y_val = 1
+        col_AUC_A_val = 8
+
+        add = 3
+
+        aaa = np.logspace(-2, np.log10(5), num = 8)
+
+        points = pd.read_excel("Results/readmission.xls", index_col=0)
+        po_Read_AOD, po_Read_AOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        po_Read_total = Pareto_optimal_total(points.iloc[:,[1, 4, 5, 6, 8, 11, 12, 13]], FAIR=True, name = "Results/Readmission_PO_ACC")
+
+        points = pd.read_excel("Results/Adult.xls", index_col=0)
+        po_Adult_AOD, po_Adult_AOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        po_Adult_total = Pareto_optimal_total(points.iloc[:,[1, 4, 5, 6, 8, 11, 12, 13]], FAIR=True,  name = "Results/Adult_PO_ACC")
+
+        points = pd.read_excel("Results/Ger_age.xls", index_col=0)
+        po_Ger_age_AOD, po_Ger_age_AOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        po_Ger_age_total = Pareto_optimal_total(points.iloc[:,[1, 4, 5, 6, 8, 11, 12, 13]], FAIR=True,  name = "Results/Ger_age_PO_ACC")
+
+        points = pd.read_excel("Results/ger_sex.xlsx", index_col=0)
+        po_Ger_sex_AOD, po_Ger_sex_AOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        po_Ger_sex_total = Pareto_optimal_total(points.iloc[:,[1, 4, 5, 6, 8, 11, 12, 13]], FAIR=True,  name = "Results/Ger_sex_PO_ACC")
+
+        points = pd.read_excel("Results/MEPS19.xls", index_col=0)
+        po_MEPS19_AOD, po_MEPS19_AOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        po_MEPS19_total = Pareto_optimal_total(points.iloc[:,[1, 4, 5, 6, 8, 11, 12, 13]], FAIR=True,  name = "Results/MEPS19_PO_ACC")
+
+        add += 1
+
+        points = pd.read_excel("Results/readmission.xls", index_col=0)
+        po_Read_ASPD, po_Read_ASPD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+
+        points = pd.read_excel("Results/Adult.xls", index_col=0)
+        po_Adult_ASPD, po_Adult_ASPD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+
+        points = pd.read_excel("Results/Ger_age.xls", index_col=0)
+        po_Ger_age_ASPD, po_Ger_age_ASPD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+
+        points = pd.read_excel("Results/ger_sex.xlsx", index_col=0)
+        po_Ger_sex_ASPD, po_Ger_sex_ASPD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+
+        points = pd.read_excel("Results/MEPS19.xls", index_col=0)
+        po_MEPS19_ASPD, po_MEPS19_ASPD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+
+        add += 1
+
+        points = pd.read_excel("Results/readmission.xls", index_col=0)
+        po_Read_AEOD, po_Read_AEOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+
+        points = pd.read_excel("Results/Adult.xls", index_col=0)
+        po_Adult_AEOD, po_Adult_AEOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+
+        points = pd.read_excel("Results/Ger_age.xls", index_col=0)
+        po_Ger_age_AEOD, po_Ger_age_AEOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+
+        points = pd.read_excel("Results/ger_sex.xlsx", index_col=0)
+        po_Ger_sex_AEOD, po_Ger_sex_AEOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+
+        points = pd.read_excel("Results/MEPS19.xls", index_col=0)
+        po_MEPS19_AEOD, po_MEPS19_AEOD_all = Pareto_optimal(points.iloc[:,[col_AUC_y_val,col_AUC_y_val+add,col_AUC_A_val,col_AUC_A_val+add]], FAIR=True)
+        
+
+        plot_Pareto_fronts(po_Read_AOD, po_Read_ASPD, po_Read_AEOD, upper_bound = 0.015, lower_bound = -0.002, name = "IMG_results/Readmission_ACC", acc = True)
+        plot_Pareto_fronts(po_Read_AOD_all, po_Read_ASPD_all, po_Read_AEOD_all, upper_bound = 0.03, lower_bound = -0.002, name = "IMG_results/Readmission_all_ACC", acc = True)
+        plot_Pareto_fronts(po_Adult_AOD, po_Adult_ASPD, po_Adult_AEOD, upper_bound = 0.2, lower_bound = -0.002, name = "IMG_results/Adult_ACC", acc = True)
+        plot_Pareto_fronts(po_Adult_AOD_all, po_Adult_ASPD_all, po_Adult_AEOD_all, upper_bound = 0.2, lower_bound = -0.002, name = "IMG_results/Adult_all_ACC", acc = True)
+        plot_Pareto_fronts(po_Ger_age_AOD, po_Ger_age_ASPD, po_Ger_age_AEOD, upper_bound = 0.15, lower_bound = -0.002, name = "IMG_results/Ger_age_ACC", acc = True)
+        plot_Pareto_fronts(po_Ger_age_AOD_all, po_Ger_age_ASPD_all, po_Ger_age_AEOD_all, upper_bound = 0.15, lower_bound = -0.002, name = "IMG_results/Ger_age_all_ACC", acc = True)
+        plot_Pareto_fronts(po_Ger_sex_AOD, po_Ger_sex_ASPD, po_Ger_sex_AEOD, upper_bound = 0.1, lower_bound = -0.002, name = "IMG_results/Ger_sex_ACC", acc = True)
+        plot_Pareto_fronts(po_Ger_sex_AOD_all, po_Ger_sex_ASPD_all, po_Ger_sex_AEOD_all, upper_bound = 0.1, lower_bound = -0.002, name = "IMG_results/Ger_sex_all_ACC", acc = True)
+        plot_Pareto_fronts(po_MEPS19_AOD, po_MEPS19_ASPD, po_MEPS19_AEOD, name = "IMG_results/MEPS19_ACC", acc=True)
+        plot_Pareto_fronts(po_MEPS19_AOD_all, po_MEPS19_ASPD_all, po_MEPS19_AEOD_all, name = "IMG_results/MEPS19_all_ACC", acc= True)
+        plot_AUC_Y_AUC_A(name = "IMG_results/AUC_y_A")
+
+        # data, atribute, sensitive, output, privileged_groups, unprivileged_groups = Adult_dataset()
+        # data, atribute, sensitive, output, privileged_groups, unprivileged_groups = german_dataset_age()
+        # data, atribute, sensitive, output, privileged_groups, unprivileged_groups = german_dataset_sex()
+        # data, atribute, sensitive, output, privileged_groups, unprivileged_groups = medical_dataset()
+        # data, atribute, sensitive, output, privileged_groups, unprivileged_groups = Readmission_dataset()
+
+
+        # data_train, data_test, data_val, atribute_train, atribute_val, atribute_test, sensitive_train, sensitive_val, sensitive_test, output_train, output_val, output_test = format_datasets(data, atribute, sensitive, output)
+
+
+        # dataset_train = Dataset_format(atribute_train, sensitive_train, output_train)
+        # dataset_val = Dataset_format(atribute_val, sensitive_val, output_val)
+        # dataset_test = Dataset_format(atribute_test, sensitive_test, output_test)
     
+    AUC_plot()
+    ACC_plot()
 
-    plot_Pareto_fronts(po_Read_AOD, po_Read_ASPD, po_Read_AEOD, upper_bound = 0.03, lower_bound = -0.002, name = "IMG_results/Readmission")
-    plot_Pareto_fronts(po_Read_AOD_all, po_Read_ASPD_all, po_Read_AEOD_all, upper_bound = 0.03, lower_bound = -0.002, name = "IMG_results/Readmission_all")
-    plot_Pareto_fronts(po_Adult_AOD, po_Adult_ASPD, po_Adult_AEOD, upper_bound = 0.2, lower_bound = -0.002, name = "IMG_results/Adult")
-    plot_Pareto_fronts(po_Adult_AOD_all, po_Adult_ASPD_all, po_Adult_AEOD_all, upper_bound = 0.2, lower_bound = -0.002, name = "IMG_results/Adult_all")
-    plot_Pareto_fronts(po_Ger_age_AOD, po_Ger_age_ASPD, po_Ger_age_AEOD, upper_bound = 0.11, lower_bound = -0.002, name = "IMG_results/Ger_age")
-    plot_Pareto_fronts(po_Ger_age_AOD_all, po_Ger_age_ASPD_all, po_Ger_age_AEOD_all, upper_bound = 0.11, lower_bound = -0.002, name = "IMG_results/Ger_age_all")
-    plot_Pareto_fronts(po_Ger_sex_AOD, po_Ger_sex_ASPD, po_Ger_sex_AEOD, upper_bound = 0.1, lower_bound = -0.002, name = "IMG_results/Ger_sex")
-    plot_Pareto_fronts(po_Ger_sex_AOD_all, po_Ger_sex_ASPD_all, po_Ger_sex_AEOD_all, upper_bound = 0.1, lower_bound = -0.002, name = "IMG_results/Ger_sex_all")
-    plot_Pareto_fronts(po_MEPS19_AOD, po_MEPS19_ASPD, po_MEPS19_AEOD, name = "IMG_results/MEPS19")
-    plot_Pareto_fronts(po_MEPS19_AOD_all, po_MEPS19_ASPD_all, po_MEPS19_AEOD_all, name = "IMG_results/MEPS19_all")
-    plot_AUC_Y_AUC_A(name = "IMG_results/AUC_y_A")
-
-    # data, atribute, sensitive, output, privileged_groups, unprivileged_groups = Adult_dataset()
-    # data, atribute, sensitive, output, privileged_groups, unprivileged_groups = german_dataset_age()
-    # data, atribute, sensitive, output, privileged_groups, unprivileged_groups = german_dataset_sex()
-    # data, atribute, sensitive, output, privileged_groups, unprivileged_groups = medical_dataset()
-    # data, atribute, sensitive, output, privileged_groups, unprivileged_groups = Readmission_dataset()
-
-
-    # data_train, data_test, data_val, atribute_train, atribute_val, atribute_test, sensitive_train, sensitive_val, sensitive_test, output_train, output_val, output_test = format_datasets(data, atribute, sensitive, output)
-
-
-    # dataset_train = Dataset_format(atribute_train, sensitive_train, output_train)
-    # dataset_val = Dataset_format(atribute_val, sensitive_val, output_val)
-    # dataset_test = Dataset_format(atribute_test, sensitive_test, output_test)
 
 

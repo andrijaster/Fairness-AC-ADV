@@ -114,25 +114,26 @@ class FAIR_betaREP_class():
                 y, A, alfa, beta = self.model(batch_x)
                 dist = torch.distributions.Beta(alfa, beta)
                 w = dist.rsample()
-                
-
                 loss0 = loss(y, batch_y, w) 
                 optimizer_0.zero_grad()
-                
+                loss0.backward()
+                optimizer_0.step()  
+
+                y, A, alfa, beta = self.model(batch_x)
+                dist = torch.distributions.Beta(alfa, beta)
+                w = dist.rsample()                
                 loss2 = loss(A, batch_A, w)                
                 optimizer_2.zero_grad()  
+                loss2.backward()
+                optimizer_2.step()
 
+                y, A, alfa, beta = self.model(batch_x)
+                dist = torch.distributions.Beta(alfa, beta)
+                w = dist.rsample()
                 loss1 = loss_w(A, y, batch_A, batch_y, alpha, beta, w)
                 optimizer_1.zero_grad()
-
-                loss0.backward(retain_graph = True)
-                loss2.backward(retain_graph = True)
                 loss1.backward()               
-                
-                optimizer_0.step()  
-                if e%2 == 0:
-                    optimizer_2.step()
-                    optimizer_1.step()
+                optimizer_1.step()
     
                 
             if e%log_epoch == 0 and log == 1:
