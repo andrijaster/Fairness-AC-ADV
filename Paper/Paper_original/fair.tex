@@ -148,7 +148,7 @@
 
 
 \begin{abstract}
-With growing awareness of societal impact of artificial intelligence, fairness has become an important aspect of machine learning algorithms. The issue is that human biases towards certain groups of population, defined by sensitive features like race and gender, are introduced to the training data through data collection and labeling. Two important directions of fairness ensuring research have focused on (i) instance weighting in order to decrease the impact of more biased instances and (ii) adversarial training in order to construct data representations informative of the target variable, but uninformative of the sensitive attributes. In this paper we propose a Fair Adversarial Instance Re-weighting (FAIR) method, which uses adversarial training to learn instance weighting function that ensures fair predictions. Merging the two paradigms, it inherits desirable  properties from both interpretability of reweighting and end-to-end trainability of adversarial training. We propose four different variants of the method and, among other things, demonstrate how the method can be cast in a fully probabilistic framework. Additionally, theoretical analysis of FAIR models' properties have been studied extensively. We compare FAIR models to six other related and state-of-the-art models and demonstrate that FAIR is able to achieve a better trade-off between accuracy and unfairness. To the best of our knowledge, this is the first model that merges reweighting and adversarial approaches by means of a weighting function that can provide interpretable information about fairness of individual instances.
+With growing awareness of societal impact of artificial intelligence, fairness has become an important aspect of machine learning algorithms. The issue is that human biases towards certain groups of population, defined by sensitive features like race and gender, are introduced to the training data through data collection and labeling. Two important directions of fairness ensuring research have focused on (i) instance weighting in order to decrease the impact of more biased instances and (ii) adversarial training in order to construct data representations informative of the target variable, but uninformative of the sensitive attributes. In this paper we propose a Fair Adversarial Instance Re-weighting (FAIR) method, which uses adversarial training to learn instance weighting function that ensures fair predictions. Merging the two paradigms, it inherits desirable  properties from both interpretability of reweighting and end-to-end trainability of adversarial training. We propose four different variants of the method and, among other things, demonstrate how the method can be cast in a fully probabilistic framework. Additionally, theoretical analysis of FAIR models' properties have been studied extensively. We compare FAIR models to ten other related and state-of-the-art models and demonstrate that FAIR is able to achieve a better trade-off between accuracy and unfairness. To the best of our knowledge, this is the first model that merges reweighting and adversarial approaches by means of a weighting function that can provide interpretable information about fairness of individual instances.
 \end{abstract}
 
 
@@ -225,9 +225,13 @@ The simplest approach is to assign weights to instances so that sums of weights 
 
 \textbf{Adversarial training}. Adversarial training provides a framework for mitigating biases by learning new data representation from which it is possible to predict the target variable, but not possible to predict the sensitive attribute. This approach creates a trade-off between two goal functions and therefore reaches Nash equilibrium \cite{goodfellow2014generative}.
 Adversarial training for fairness was first presented in \cite{zhang2018mitigating}. Similar model was applied to recidivism prediction in order to remove racial bias \cite{wadsworth2018achieving}.
-An important approach of such kind is Fair Adversarial Discriminative model (FAD) \cite{adel2019one}. Moreover, theoretical analysis of the relationship between the label classifier performance and the adversary’s ability to predict the sensitive attribute value is provided. Also, in the same paper, a variation of the adversarial learning procedure is developed to increase diversity among elements of each mini-batch of the gradient descent training, in order to achieve a representation that does not suffer from mode collapse.
+An important approach of such kind is Fair Adversarial Discriminative model (FAD) \cite{adel2019one}. Moreover, theoretical analysis of the relationship between the label classifier performance and the adversary’s ability to predict the sensitive attribute value is provided. Also, in the same paper, a variation of the adversarial learning procedure is developed to increase diversity among elements of each mini-batch of the gradient descent training, in order to achieve a representation that does not suffer from mode collapse. Simmilarly Zhao et. al \cite{zhao2019conditional} presented a algorithm for Conditional Learning of Fair Representations (CLFR) that can simultaneously mitigate two notions of disparity among different subgroups in the classification problems.
 Another theoretical analysis of solving fairness problem via adversarial approach is presented in \cite{madras2018learning}.
-Another adversarial approach focuses on learning to select non-sensitive features on per instance basis \cite{wang2019approaching}. The adversarial approach is employed to minimize the correlation between selected features and sensitive information. While adversarial approach enables end-to-end training it does not provide any interpretable information on the individual fairness of instances.
+Another adversarial approach focuses on learning to select non-sensitive features on per instance basis \cite{wang2019approaching}. 
+Ragonesi et. al \cite{ragonesi2021learning} proposed optimization strategy (LURMI - Learning Unbiased Representations via Mutual Information backpropagation), which simultaneously estimates and minimizes the mutual information between the learned representation and specific data attributes by using adversarial framework.
+Moreover, Cotter et. al \cite{cotter2019optimization} introduced a new algorithms (PYCO) for solving constrainted optimization problem by introducing Langrangian (PYCO\_diff) and proxy-Lagrangian (PYCO\_non\_diff) gradient based min-max based optimization methods for solving differentiable and non-differentiable constraint optimization problems, respectively. It is presented that PYCO can be successfully used in group fairness constraint optimization.
+
+The adversarial approach in general is employed to minimize the correlation between selected features and sensitive information. While adversarial approach enables end-to-end training it does not provide any interpretable information on the individual fairness of instances.
 
 \vspace{2mm}
 Our approach tries to keep the best from both worlds. It provides interpretable information on instance fairness like reweighting approach and allows end-to-end training like adversarial approach.
@@ -466,19 +470,19 @@ The third dataset, named \textit{Hospital Expenditures}, comes from \cite{bellam
 
 As a fourth dataset, we used \textit{German credit} dataset. \textit{German credit} dataset has 1,000 instances where the task is to classify bank account holders into classes good or bad. The total number of attributes used in the dataset, after applying dummy coding is 58, including sensitive attributes. Following the definition of fairness from \cite{kamiran2012decision} for German credit dataset, there are two sensitive attributes, one being Gender and other being Age ($\geq 25$ is considered as privileged class, and $< 25$ as unprivileged class).  Total numbers of instances used in training, validation and testing was 700, 150, and 150, respectively.
 
-\textbf{Models}. \sloppy The results obtained by FAIR models are compared with six related and state-of-the-art algorithms: FAD, reweighing preprocessing technique from~\cite{kamiran2012data} combined with the random forest classifier (Reweighing - RF) and with neural networks (Reweighing - NN), disparity impact remover~\cite{feldman2015certifying} combined with random forest (DI - RF) and neural networks (DI - NN) and prejudice remover~\cite{kamishima2012fairness} (PR). Architecture, number of epochs in early stopping procedure, and learning rates were empirically determined as to optimize the performance of each model, by varying design choices of the architectures described in the literature. Detailed specifications can be found in \ref{app:Architecture}. We did not use explicit regularization in our experiments since, in accordance with the remark after the proof of theorem \ref{pp:infty}, capacity of the models can also be controlled through the choice of architecture.
+\textbf{Models}. \sloppy The results obtained by FAIR models are compared with ten related and state-of-the-art algorithms: FAD, reweighing preprocessing technique from~\cite{kamiran2012data} combined with the random forest classifier (Reweighing - RF) and with neural networks (Reweighing - NN), disparity impact remover~\cite{feldman2015certifying} combined with random forest (DI - RF) and neural networks (DI - NN), prejudice remover~\cite{kamishima2012fairness} (PR), models based on conditonal learning of fair representations~\cite{zhao2019conditional} (CLFR), learning unbiased representation via mutual information~\cite{ragonesi2021learning} (LURMI), optimization model for differentiable and non-differentiable constraints~\cite{cotter2019optimization} (PYCO\_diff and PYCO\_non\_diff). In the case of PYCO\_non\_diff model all fairness metrics were directly optimized, whereas in the case of PYCO\_diff approximation of fairness constraints is used. Architecture, number of epochs in early stopping procedure, and learning rates were empirically determined as to optimize the performance of each model, by varying design choices of the architectures described in the literature. Detailed specifications can be found in \ref{app:Architecture}. We did not use explicit regularization in our experiments since, in accordance with the remark after the proof of theorem \ref{pp:infty}, capacity of the models can also be controlled through the choice of architecture.
 
 \textbf{Optimization}.
 For optimization of all neural network based models we use Adam optimizer \cite{bock2019proof}.
 During optimization of FAIR and FAD models, early stopping was used. In the early stopping procedure, the min and max objectives of adversarial training procedure on validation set were monitored. In case when there were no improvements in either of these two metrics for a given number of epoch (provided in \ref{app:Architecture}), the training procedure is stopped.
 
 \textbf{Metrics}.
-Classification performance of all presented classifiers is quantified by the area under the ROC curve (AUC), which is calculated for the target variable ($\mathbf{y}$) and the sensitive attribute ($\mathbf{s}$). Therefore, we present $AUC_y$ and $AUC_s$ for the target variable and the sensitive attribute, respectively. If subscript is omitted, then $AUC_y$ is presented. As fairness metrics we use ASD, AEOD, and AOD defined by Eqs. \ref{metric:asd}, \ref{metric:aeod}, and \ref{metric:aod}, respectively. 
+Classification performance of all presented classifiers is quantified by the accuracy (ACC), which is calculated for the target variable ($\mathbf{y}$) and the sensitive attribute ($\mathbf{s}$). Therefore, we present $ACC_y$ and $ACC_s$ for the target variable and the sensitive attribute, respectively. If subscript is omitted, then $ACC_y$ is presented. As fairness metrics we use ASD, AEOD, and AOD defined by Eqs. \ref{metric:asd}, \ref{metric:aeod}, and \ref{metric:aod}, respectively. 
 
-\textbf{Evaluation procedure and presentation of results}. The evaluated models (both FAIR and the baselines) have hyperparameters which affect the trade-off between fairness and predictive performance of the classifiers. Note that such hyperparameters do not control model capacity. Therefore, we do not tune them to obtain maximal perfomance (like one might tune regularization hyperparameters). Instead, we vary them in order to illustrate model behaviour for different trade-offs. The hyperparameters $\alpha$ of FAIR and FAD models were varied in range $[0, 10^{-3}, 10^{-2}, 10^{-1}, 1, 10, 10^{2}, 10^{3}]$, whereas in the case of other models, hyperparameters were varied in range $[0, 10^{-3}, 10^{-2}, 10^{-1}, 1]$ (since $1$ is the maximal value for these methods). For each such value, evlauation metrics were computed. We call a set of models obtained from one model kind (FAD, FAIR, etc.) by varying the fairnes related hyperparamter, a {\em model family}. For instance, all FAD models trained for different values of $\alpha$ constitute a FAD model family.
+\textbf{Evaluation procedure and presentation of results}. The evaluated models (both FAIR and the baselines) have hyperparameters which affect the trade-off between fairness and predictive performance of the classifiers. Note that such hyperparameters do not control model capacity. Therefore, we do not tune them to obtain maximal perfomance (like one might tune regularization hyperparameters). Instead, we vary them in order to illustrate model behaviour for different trade-offs. The hyperparameters $\alpha$ of FAIR, CLFR, LURMI and FAD models were varied in range $[0, 10^{-3}, 10^{-2}, 10^{-1}, 1, 10, 10^{2}, 10^{3}]$, whereas in the case of other models, hyperparameters were varied in range $[0, 10^{-3}, 10^{-2}, 10^{-1}, 1]$ (since $1$ is the maximal value for these methods). For each such value, evlauation metrics were computed. PYCO\_diff and PYCO\_non\_diff models were optimized for each fairness metric separately. We call a set of models obtained from one model kind (FAD, FAIR, etc.) by varying the fairnes related hyperparamter, a {\em model family}. For instance, all FAD models trained for different values of $\alpha$ constitute a FAD model family.
 
 Since the models are evaluated by two criteria (predictive performance of the target variable and fairness), one model can be better than the other according to one criterion and vice-versa. Since both critera are important, instead of privileging one of them we present our results in terms of Pareto fronts. For a set of trained models, Pareto front consists of models which are not dominated by any other models in terms of both predictive performance and fairness \cite{marler2004survey}. Models which are dominated by others in terms of both criteria are obviously irrelevant and should be discarded. Pareto front can be plotted in 2D in terms of metrics for the two criteria used and visually inspected. We base our evaluation on the overall Pareto front which is a Pareto front of all trained models (union of all model familites). Models which yield more points in such Pareto front are better.
-Since FAIR and baseline models do not directly optimize any of the commonly used fairness metrics, we evaluate them using several different fairness metrics. Hence, we present the overall Pareto front of all trained models with respect to AOD, ASD, and AEOD as fairness metrics and AUC as the performance metric.
+Since FAIR and baseline models do not directly optimize any of the commonly used fairness metrics, we evaluate them using several different fairness metrics. Hence, we present the overall Pareto front of all trained models with respect to AOD, ASD, and AEOD as fairness metrics and ACC as the performance metric.
 
 Construction of the Pareto front includes model selection - models are compared according to their performance and some of them are selected. Since evaluation metrics should never be reported on the data on which the selection was performed, we take care to train all models on the training set, to perform selection of the models for the Pareto front on the validation set, and to evaluate selected models on the test set. All results reported in the following section are calculated on the test set.
 
@@ -501,7 +505,7 @@ In this section we present results obtained using the experimental evaluation ou
 	\vskip -0.2in
 \end{figure*}
 
-Firstly, models performances obtained on \textit{Adult income} dataset are illustrated in Fig.~\ref{fig:Adult} by three fairness metrics ($\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$) and classification performance ($\mathbf{AUC_y}$). The models with greater AUC score and lower (un)fairness metric (upper left corner of plots) are preferred. It can be observed that FAIR models dominates Pareto optimal solutions with respect to the all fairness metrics. In addition, Reweighing-NN and FAIR-betaREP models dominate the upper left corner of Pareto fronts for AOD and AEOD, whereas the FAIR-scalar dominates the upper left corner of Pareto front for ASD metric. Moreover, in Table~\ref{tab:Adult} the Pareto optimal solutions obtained for all three fairness metrics and ($\mathbf{AUC_y}$) are presented. Similarly, it can be concluded that the number of FAIR models is larger compared to the other models and FAIR can therefore be considered better then other models.
+Firstly, models performances obtained on \textit{Adult income} dataset are illustrated in Fig.~\ref{fig:Adult} by three fairness metrics ($\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$) and classification performance ($\mathbf{ACC_y}$). The models with greater ACC score and lower (un)fairness metric (upper left corner of plots) are preferred. It can be observed that FAIR models dominates Pareto optimal solutions with respect to the all fairness metrics. In addition, LURMI and FAIR-betaREP models dominate the upper left corner of Pareto fronts for AOD and AEOD, whereas the FAIR-scalar and PYCO\_non\_diff dominate the upper left corner of Pareto front for ASD metric. Moreover, in Table~\ref{tab:Adult} the Pareto optimal solutions obtained for all three fairness metrics and ($\mathbf{ACC_y}$) are presented. Similarly, it can be concluded that the number of FAIR models is larger compared to the other models and FAIR can therefore be considered better then other models.
 
 \begin{table}
 	\centering
@@ -541,7 +545,7 @@ Firstly, models performances obtained on \textit{Adult income} dataset are illus
 	\label{tab:Adult}
 \end{table}
 
-Secondly, the results obtained on \textit{Hospital readmission} dataset are presented in Fig~\ref{fig:Readmission}. It can be noticed that only FAIR models exist on Pareto front and consequently all other models are dominated by them. It can be observed that in the case of AOD and ASD metrics FAIR-scalar is the closest to the upper left corner and can therefore be considered better than others. The letter can be also confirmed in the table~\ref{tab:Readmission} where only FAIR models exist on overall Pareto front.
+Secondly, the results obtained on \textit{Hospital readmission} dataset are presented in Fig~\ref{fig:Readmission}. It can be noticed that only FAIR models exist on Pareto front and consequently all other models are dominated by them. It can be observed that in the case of all three fairness metrics FAIR-betaSF is the closest to the upper left corner and can therefore be considered better than others. The letter can be also confirmed in the table~\ref{tab:Readmission} where only FAIR models exist on overall Pareto front.
 
 \begin{figure}
 	\center
@@ -565,7 +569,7 @@ Secondly, the results obtained on \textit{Hospital readmission} dataset are pres
 	\label{tab:Readmission}%
 \end{table}
 
-Thirdly, models performances obtained on \textit{Hospital expenditures} dataset are illustrated in Fig.~\ref{fig:Adult}. It can be observed that the FAIR models dominates Pareto front in all presented metrics. In the case of ASD metric PR model is the closest to the upper left corner of Pareto front, whereas in the case of AOD and AEOD metrics similarly can be concluded for DI-RF model. However in table~\ref{tab:MEPS-19} where overall Pareto front is presented the FAIR models still dominates Pareto front.
+Thirdly, models performances obtained on \textit{Hospital expenditures} dataset are illustrated in Fig.~\ref{fig:MEPS19}. It can be observed that the FAIR models dominates Pareto front in all presented metrics. In the case of ASD metric FAIR-scalar and PYCO models are the closest to the upper left corner of Pareto front, whereas in the case of AOD metric FAIR-betaSF is the best one and in the case of AEOD metrics similarly can be concluded for PYCO\_non\_diff model. However in table~\ref{tab:MEPS-19} where overall Pareto front is presented the FAIR models still dominates Pareto front.
 
 \begin{figure}
 	\center
@@ -697,13 +701,13 @@ Consequently, in this section all presented results were evaluated on test sets 
 
 \subsection{Discussion}
 
-Model behaviour of FAIR model with respect to change of hyperparameter $\alpha$ is shown in Fig.~\ref{fig:FigResultsAlpha} on \textit{Geman credit} dataset. It can be observed that as $\alpha$ decreases, instances which are unfair (but potentially useful for prediction of target variable) are being discarded, so AUC metrics for both the target variable and sensitive attribute decrease. This is experimental verification of theoretical model properties presented in section~\ref{Sec:FAIR}.
+Model behaviour of FAIR model with respect to change of hyperparameter $\alpha$ is shown in Fig.~\ref{fig:FigResultsAlpha} on \textit{Geman credit} dataset. It can be observed that as $\alpha$ decreases, instances which are unfair (but potentially useful for prediction of target variable) are being discarded, so ACC metrics for both the target variable and sensitive attribute decrease. This is experimental verification of theoretical model properties presented in section~\ref{Sec:FAIR}.
 
 \begin{figure}[h]
 	\center
 	\includegraphics[angle=0, width=0.8\textwidth]{AUC_y_A.png}
 	\captionsetup{justification=centering}
-	\caption{$\mathbf{AUC_y}$ and $\mathbf{AUC_s}$ as functions of the fariness hyperparameter $\alpha$ measured on the  German credit - sex and Readmission datasets ($\mathbf{AUC_y}$ is preferred larger, and $\mathbf{AUC_s}$ smaller)}
+	\caption{$\mathbf{ACC_y}$ and $\mathbf{ACC_s}$ as functions of the fariness hyperparameter $\alpha$ measured on the  German credit - sex and Readmission datasets ($\mathbf{ACC_y}$ is preferred larger, and $\mathbf{ACC_s}$ smaller)}
 	\label{fig:FigResultsAlpha}
 \end{figure}
 
@@ -968,7 +972,8 @@ In all experiments with Reweighing - RF and DI - RF 500 trees were used in the r
 \section{Additional results}
 \label{app:Additional results}
 
-More detailed results of experimental evaluation are given in Figs.~\ref{fig:Adult all}, ~\ref{fig:Readmission all},~\ref{fig:MEPS19 all},~\ref{fig:Ger_age all} and~\ref{fig:Ger_sex all} by presenting Pareto fronts with all dominated and non-dominated models.
+Additional classification performance of all presented classifiers quantified by AUC and fairness metrics are presented in Fig.~\ref{fig:Adult1}, ~\ref{fig:Readmission1}, ~\ref{fig:MEPS191}, ~\ref{fig:Ger-sex-res1} and~\ref{fig:Ger-age-res1}.
+More detailed results of experimental evaluation are given in Figs.~\ref{fig:Adult all-acc}, ~\ref{fig:Readmission all-acc},~\ref{fig:MEPS19 all-acc},~\ref{fig:Ger_age all-acc}, ~\ref{fig:Ger_sex all-acc}, ~\ref{fig:Adult all}, ~\ref{fig:Readmission all},~\ref{fig:MEPS19 all},~\ref{fig:Ger_age all} and~\ref{fig:Ger_sex all} by presenting Pareto fronts with all dominated and non-dominated models.
 
 
 \begin{figure*}
@@ -976,7 +981,7 @@ More detailed results of experimental evaluation are given in Figs.~\ref{fig:Adu
 	\includegraphics[angle=0, width=0.7\textwidth]{Adult.png}
 	\captionsetup{justification=centering}
 	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{Adult income} datasets}
-	\label{fig:Adult}
+	\label{fig:Adult1}
 	\vskip -0.2in
 \end{figure*}
 
@@ -985,7 +990,7 @@ More detailed results of experimental evaluation are given in Figs.~\ref{fig:Adu
 	\includegraphics[angle=0, width=0.7\textwidth]{Readmission.png}
 	\captionsetup{justification=centering}
 	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{Hospital readmission} dataset}
-	\label{fig:Readmission}
+	\label{fig:Readmission1}
 	\vskip -0.2in
 \end{figure}
 
@@ -994,7 +999,7 @@ More detailed results of experimental evaluation are given in Figs.~\ref{fig:Adu
 	\includegraphics[angle=0, width=0.7\textwidth]{MEPS19.png}
 	\captionsetup{justification=centering}
 	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ \textit{Hospital expenditures} dataset}
-	\label{fig:MEPS19}
+	\label{fig:MEPS191}
 	\vskip -0.2in
 \end{figure}
 
@@ -1003,7 +1008,7 @@ More detailed results of experimental evaluation are given in Figs.~\ref{fig:Adu
 	\includegraphics[angle=0, width=0.7\textwidth]{Ger_age.png}
 	\captionsetup{justification=centering}
 	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ \textit{German credit} (age) dataset}
-	\label{fig:Ger-sex-res}
+	\label{fig:Ger-sex-res1}
 	\vskip -0.2in
 \end{figure}
 
@@ -1012,7 +1017,7 @@ More detailed results of experimental evaluation are given in Figs.~\ref{fig:Adu
 	\includegraphics[angle=0, width=0.7\textwidth]{Ger_sex.png}
 	\captionsetup{justification=centering}
 	\caption{Classification performance and fairness of models as measured by $\mathbf{AUC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ \textit{German credit} (sex) dataset}
-	\label{fig:Ger-age-res}
+	\label{fig:Ger-age-res1}
 	\vskip -0.2in
 \end{figure}
 
@@ -1023,7 +1028,7 @@ More detailed results of experimental evaluation are given in Figs.~\ref{fig:Adu
 	\includegraphics[angle=0, width=1\textwidth]{Adult_all_ACC.png}
 	\captionsetup{justification=centering}
 	\caption{Classification performance and fairness of models as measured by $\mathbf{ACC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{Adult income} dataset}
-	\label{fig:Adult all}
+	\label{fig:Adult all-acc}
 	\vskip -0.2in
 \end{figure*}
 
@@ -1032,7 +1037,7 @@ More detailed results of experimental evaluation are given in Figs.~\ref{fig:Adu
 	\includegraphics[angle=0, width=1\textwidth]{Readmission_all_ACC.png}
 	\captionsetup{justification=centering}
 	\caption{Classification performance and fairness of models as measured by $\mathbf{ACC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{Hospital readmission} dataset}
-	\label{fig:Readmission all}
+	\label{fig:Readmission all-acc}
 	\vskip -0.2in
 \end{figure*}
 
@@ -1041,7 +1046,7 @@ More detailed results of experimental evaluation are given in Figs.~\ref{fig:Adu
 	\includegraphics[angle=0, width=1\textwidth]{MEPS19_all_ACC.png}
 	\captionsetup{justification=centering}
 	\caption{Classification performance and fairness of models as measured by $\mathbf{ACC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{Hospital expenditures} dataset}
-	\label{fig:MEPS19 all}
+	\label{fig:MEPS19 all-acc}
 	\vskip -0.2in
 \end{figure*}
 
@@ -1050,7 +1055,7 @@ More detailed results of experimental evaluation are given in Figs.~\ref{fig:Adu
 	\includegraphics[angle=0, width=1\textwidth]{Ger_age_all_ACC.png}
 	\captionsetup{justification=centering}
 	\caption{Classification performance and fairness of models as measured by $\mathbf{ACC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{German credit} (age) dataset}
-	\label{fig:Ger_age all}
+	\label{fig:Ger_age all-acc}
 	\vskip -0.2in
 \end{figure*}
 
@@ -1059,7 +1064,7 @@ More detailed results of experimental evaluation are given in Figs.~\ref{fig:Adu
 	\includegraphics[angle=0, width=1\textwidth]{Ger_sex_all_ACC.png}
 	\captionsetup{justification=centering}
 	\caption{Classification performance and fairness of models as measured by $\mathbf{ACC_y}$ and $\mathbf{AOD}$, $\mathbf{ASD}$ or $\mathbf{AEOD}$ on the \textit{German credit} (sex) dataset}
-	\label{fig:Ger_sex all}
+	\label{fig:Ger_sex all-acc}
 	\vskip -0.2in
 \end{figure*}
 
