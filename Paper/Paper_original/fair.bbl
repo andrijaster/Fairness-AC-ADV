@@ -181,6 +181,24 @@ B.~H. Zhang, B.~Lemoine, M.~Mitchell, Mitigating unwanted biases with
   adversarial learning, in: Proceedings of the 2018 AAAI/ACM Conference on AI,
   Ethics, and Society, ACM, 2018, pp. 335--340.
 
+\bibitem{zhao2019conditional}
+H.~Zhao, A.~Coston, T.~Adel, G.~J. Gordon, Conditional learning of fair
+  representations, arXiv preprint arXiv:1910.07162 (2019).
+
+\bibitem{ragonesi2021learning}
+R.~Ragonesi, R.~Volpi, J.~Cavazza, V.~Murino, Learning unbiased representations
+  via mutual information backpropagation, in: Proceedings of the IEEE/CVF
+  Conference on Computer Vision and Pattern Recognition, 2021, pp. 2729--2738.
+
+\bibitem{cotter2019optimization}
+A.~Cotter, H.~Jiang, M.~R. Gupta, S.~Wang, T.~Narayan, S.~You, K.~Sridharan,
+  Optimization with non-differentiable constraints with applications to
+  fairness, recall, churn, and other goals., J. Mach. Learn. Res. 20~(172)
+  (2019) 1--59.
+
+\bibitem{tadelis2013game}
+S.~Tadelis, Game theory: an introduction, Princeton university press, 2013.
+
 \bibitem{shah2015empirical}
 A.~Shah, D.~Knowles, Z.~Ghahramani, An empirical study of stochastic
   variational inference algorithms for the beta bernoulli process, in:
