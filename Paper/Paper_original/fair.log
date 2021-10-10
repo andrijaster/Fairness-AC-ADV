@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7140 64-bit) (preloaded format=pdflatex 2019.7.31)  17 APR 2021 11:15
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7140 64-bit) (preloaded format=pdflatex 2019.7.31)  20 JUL 2021 23:05
 entering extended mode
 **./fair.tex
 (fair.tex
@@ -914,6 +914,12 @@ Package hyperref Info: Option `colorlinks' set `true' on input line 91.
 
 LaTeX Warning: Label `Table:tab1' multiply defined.
 
+
+LaTeX Warning: Label `Table:tab1' multiply defined.
+
+
+LaTeX Warning: Label `Table:tab1' multiply defined.
+
 )
 \openout1 = `fair.aux'.
 
@@ -1053,15 +1059,15 @@ LaTeX Info: Redefining \nameref on input line 105.
 \@outlinefile=\write5
 \openout5 = `fair.out'.
 
-LaTeX Font Info:    Try loading font information for U+msa on input line 166.
+LaTeX Font Info:    Try loading font information for U+msa on input line 167.
  ("C:\Program Files\MiKTeX 2.9\tex/latex/amsfonts\umsa.fd"
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 166.
+LaTeX Font Info:    Try loading font information for U+msb on input line 167.
  ("C:\Program Files\MiKTeX 2.9\tex/latex/amsfonts\umsb.fd"
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Try loading font information for T2A+cmtt on input line 166
+LaTeX Font Info:    Try loading font information for T2A+cmtt on input line 167
 .
 
 ("C:\Program Files\MiKTeX 2.9\tex/latex/cyrillic\t2acmtt.fd"
@@ -1075,42 +1081,35 @@ Overfull \hbox (2.61049pt too wide) has occurred while \output is active
 
 
 {C:/Users/Andri/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}] [2]
-[3] [4] [5] [6]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 189.
+
+
+("C:\Program Files\MiKTeX 2.9\tex/latex/base\omscmr.fd"
+File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 189.
+ [3] [4] [5] [6]
 
 pdfTeX warning: pdflatex.exe (file ./Fig1.pdf): PDF inclusion: found PDF versio
 n <1.7>, but at most version <1.5> allowed
-<Fig1.pdf, id=218, 557.43456pt x 231.2088pt>
+<Fig1.pdf, id=206, 557.43456pt x 231.2088pt>
 File: Fig1.pdf Graphic file (type pdf)
 <use Fig1.pdf>
-Package pdftex.def Info: Fig1.pdf  used on input line 278.
+Package pdftex.def Info: Fig1.pdf  used on input line 254.
 (pdftex.def)             Requested size: 557.43318pt x 231.20822pt.
-[7] [8 <./Fig1.pdf>]
-Overfull \hbox (5.60919pt too wide) in paragraph at lines 304--307
+[7 <./Fig1.pdf>]
+Overfull \hbox (5.60919pt too wide) in paragraph at lines 281--284
 \T2A/cmr/m/n/12 and the cor-re-spond-ing ad-ver-sar-ial prob-lem is $\OT1/cmr/m
 /n/12 (\OML/cmm/m/it/12 []; [];  []\OT1/cmr/m/n/12 ) = [] [][] [][] \OMS/cmsy
 /m/n/12 L[]\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 ; ;  \OT1/cmr/m/n/12 )$
  []
 
-[9]
+[8]
 Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
-put line 343.
- [10]
-
-pdfTeX warning: pdflatex.exe (file ./Fig2.pdf): PDF inclusion: found PDF versio
-n <1.7>, but at most version <1.5> allowed
-<Fig2.pdf, id=403, 420.42572pt x 277.81894pt>
-File: Fig2.pdf Graphic file (type pdf)
-<use Fig2.pdf>
-Package pdftex.def Info: Fig2.pdf  used on input line 410.
-(pdftex.def)             Requested size: 430.00462pt x 284.16005pt.
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-[11] [12 <./Fig2.pdf>] [13]
-Overfull \hbox (4.1139pt too wide) in paragraph at lines 512--515
+put line 320.
+ [9] [10]
+Overfull \hbox (4.1139pt too wide) in paragraph at lines 395--398
 [][]\T2A/cmr/bx/n/12 Theorem 2. []\T2A/cmr/m/it/12 For each in-stance $\OT1/cmr
 /m/n/12 (\OT1/cmr/bx/n/12 x\OML/cmm/m/it/12 ; \OT1/cmr/bx/n/12 y\OML/cmm/m/it/1
 2 ; \OT1/cmr/bx/n/12 s\OT1/cmr/m/n/12 )$\T2A/cmr/m/it/12 , it holds $\OML/cmm/m
@@ -1119,134 +1118,196 @@ cmr/m/n/12 = 0$ \T2A/cmr/m/it/12 or $\OML/cmm/m/it/12  [] P[]\OT1/cmr/m/n/12 (
 \OT1/cmr/bx/n/12 s\OMS/cmsy/m/n/12 j\OT1/cmr/bx/n/12 x\OT1/cmr/m/n/12 ) =
  []
 
-[14] [15] [16] [17]
-<Adult.png, id=568, 650.43pt x 867.24pt>
-File: Adult.png Graphic file (type png)
-<use Adult.png>
-Package pdftex.def Info: Adult.png  used on input line 625.
+[11] [12] [13] [14] [15]
+<Adult_ACC.png, id=459, 650.43pt x 867.24pt>
+File: Adult_ACC.png Graphic file (type png)
+<use Adult_ACC.png>
+Package pdftex.def Info: Adult_ACC.png  used on input line 509.
 (pdftex.def)             Requested size: 650.4284pt x 867.2379pt.
- [18] [19 <./Adult.png>]
-<Readmission.png, id=588, 650.43pt x 867.24pt>
-File: Readmission.png Graphic file (type png)
-<use Readmission.png>
-Package pdftex.def Info: Readmission.png  used on input line 668.
+ [16] [17 <./Adult_ACC.png>] [18]
+<Readmission_ACC.png, id=482, 650.43pt x 867.24pt>
+File: Readmission_ACC.png Graphic file (type png)
+<use Readmission_ACC.png>
+Package pdftex.def Info: Readmission_ACC.png  used on input line 560.
 (pdftex.def)             Requested size: 650.4284pt x 867.2379pt.
- [20] [21 <./Readmission.png>]
-<MEPS19.png, id=603, 650.43pt x 867.24pt>
-File: MEPS19.png Graphic file (type png)
-<use MEPS19.png>
-Package pdftex.def Info: MEPS19.png  used on input line 695.
+<MEPS19_ACC.png, id=485, 650.43pt x 867.24pt>
+File: MEPS19_ACC.png Graphic file (type png)
+<use MEPS19_ACC.png>
+Package pdftex.def Info: MEPS19_ACC.png  used on input line 584.
 (pdftex.def)             Requested size: 650.4284pt x 867.2379pt.
-<Ger_age.png, id=614, 650.43pt x 867.24pt>
-File: Ger_age.png Graphic file (type png)
-<use Ger_age.png>
-Package pdftex.def Info: Ger_age.png  used on input line 736.
+<Ger_age_ACC.png, id=494, 650.43pt x 867.24pt>
+File: Ger_age_ACC.png Graphic file (type png)
+<use Ger_age_ACC.png>
+Package pdftex.def Info: Ger_age_ACC.png  used on input line 628.
 (pdftex.def)             Requested size: 650.4284pt x 867.2379pt.
-<Ger_sex.png, id=615, 650.43pt x 867.24pt>
-File: Ger_sex.png Graphic file (type png)
-<use Ger_sex.png>
-Package pdftex.def Info: Ger_sex.png  used on input line 745.
+<Ger_sex_ACC.png, id=495, 650.43pt x 867.24pt>
+File: Ger_sex_ACC.png Graphic file (type png)
+<use Ger_sex_ACC.png>
+Package pdftex.def Info: Ger_sex_ACC.png  used on input line 637.
 (pdftex.def)             Requested size: 650.4284pt x 867.2379pt.
-<AUC_y_A.png, id=619, 650.43pt x 578.16pt>
+ [19] [20 <./Readmission_ACC.png>] [21 <./MEPS19_ACC.png>] [22] [23 <./Ger_age_
+ACC.png>] [24 <./Ger_sex_ACC.png>] [25] [26]
+<AUC_y_A.png, id=545, 650.43pt x 578.16pt>
 File: AUC_y_A.png Graphic file (type png)
 <use AUC_y_A.png>
-Package pdftex.def Info: AUC_y_A.png  used on input line 809.
+Package pdftex.def Info: AUC_y_A.png  used on input line 720.
 (pdftex.def)             Requested size: 650.4284pt x 578.15858pt.
+ [27 <./AUC_y_A.png>] [28] (fair.bbl [29] [30] [31]
+[32]) [33]
+
+pdfTeX warning: pdflatex.exe (file ./Fig2.pdf): PDF inclusion: found PDF versio
+n <1.7>, but at most version <1.5> allowed
+<Fig2.pdf, id=590, 420.42572pt x 277.81894pt>
+File: Fig2.pdf Graphic file (type pdf)
+<use Fig2.pdf>
+Package pdftex.def Info: Fig2.pdf  used on input line 821.
+(pdftex.def)             Requested size: 430.00462pt x 284.16005pt.
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 
-LaTeX Warning: `h' float specifier changed to `ht'.
+LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[22] [23 <./MEPS19.png>] [24] [25 <./Ger_age.png>] [26 <./Ger_sex.png>]
-[27] [28 <./AUC_y_A.png>] [29] (fair.bbl [30] [31] [32]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 196.
-
-
-("C:\Program Files\MiKTeX 2.9\tex/latex/base\omscmr.fd"
-File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
-)
-LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 196.
- [33])
-Overfull \hbox (2.74522pt too wide) in paragraph at lines 906--906
- []|\T2A/cmr/m/n/12 464/232/232/232| 
+[34]
+Overfull \hbox (17.02643pt too wide) in paragraph at lines 887--887
+ []|\T2A/cmr/bx/n/12 PYCO_non_diff| 
  []
 
 
-LaTeX Warning: Float too large for page by 14.8045pt on input line 919.
+LaTeX Warning: Float too large for page by 14.80428pt on input line 896.
 
 
-LaTeX Warning: Float too large for page by 14.8045pt on input line 971.
+Overfull \hbox (14.49236pt too wide) in paragraph at lines 915--915
+ []|\T2A/cmr/m/n/12 412/274/182/121/1| 
+ []
 
 
-Underfull \hbox (badness 1383) in paragraph at lines 1008--1009
+Overfull \hbox (14.49236pt too wide) in paragraph at lines 921--921
+ []|\T2A/cmr/m/n/12 929/619/412/274/1| 
+ []
+
+
+Overfull \hbox (37.98662pt too wide) in paragraph at lines 925--925
+ []|\T2A/cmr/m/n/12 929/619/412/274/182/1| 
+ []
+
+
+Overfull \hbox (17.02643pt too wide) in paragraph at lines 927--927
+ []|\T2A/cmr/bx/n/12 PYCO_non_diff| 
+ []
+
+
+Overfull \hbox (14.49236pt too wide) in paragraph at lines 927--927
+ []|\T2A/cmr/m/n/12 929/619/412/274/1| 
+ []
+
+
+Overfull \hbox (2.74522pt too wide) in paragraph at lines 929--929
+ []|\T2A/cmr/m/n/12 929/619/412/274| 
+ []
+
+
+LaTeX Warning: Float too large for page by 14.80428pt on input line 937.
+
+
+Overfull \hbox (17.02643pt too wide) in paragraph at lines 968--968
+ []|\T2A/cmr/bx/n/12 PYCO_non_diff| 
+ []
+
+
+Overfull \hbox (2.74522pt too wide) in paragraph at lines 972--972
+ []|\T2A/cmr/m/n/12 137/91/60/40/26| 
+ []
+
+
+LaTeX Warning: Float too large for page by 14.80428pt on input line 977.
+
+
+Overfull \hbox (17.02643pt too wide) in paragraph at lines 1007--1007
+ []|\T2A/cmr/bx/n/12 PYCO_non_diff| 
+ []
+
+
+LaTeX Warning: Float too large for page by 14.80428pt on input line 1016.
+
+
+Overfull \hbox (17.02643pt too wide) in paragraph at lines 1046--1046
+ []|\T2A/cmr/bx/n/12 PYCO_non_diff| 
+ []
+
+
+LaTeX Warning: Float too large for page by 45.2455pt on input line 1055.
+
+
+Underfull \hbox (badness 1371) in paragraph at lines 1061--1063
 []\T2A/cmr/m/n/12 More de-tailed re-sults of ex-per-i-men-tal eval-u-a-tion are
- given in Figs. [][]B.9[][],
+ given in Figs. [][]C.9[][],
  []
 
-<Adult_all.png, id=696, 650.43pt x 867.24pt>
-File: Adult_all.png Graphic file (type png)
-<use Adult_all.png>
-Package pdftex.def Info: Adult_all.png  used on input line 1012.
+<Adult_all_ACC.png, id=612, 650.43pt x 867.24pt>
+File: Adult_all_ACC.png Graphic file (type png)
+<use Adult_all_ACC.png>
+Package pdftex.def Info: Adult_all_ACC.png  used on input line 1114.
 (pdftex.def)             Requested size: 650.4284pt x 867.2379pt.
 
-LaTeX Warning: Float too large for page by 37.41586pt on input line 1017.
+LaTeX Warning: Float too large for page by 37.41586pt on input line 1119.
 
-<Readmission_all.png, id=697, 650.43pt x 867.24pt>
-File: Readmission_all.png Graphic file (type png)
-<use Readmission_all.png>
-Package pdftex.def Info: Readmission_all.png  used on input line 1021.
+<Readmission_all_ACC.png, id=613, 650.43pt x 867.24pt>
+File: Readmission_all_ACC.png Graphic file (type png)
+<use Readmission_all_ACC.png>
+Package pdftex.def Info: Readmission_all_ACC.png  used on input line 1123.
 (pdftex.def)             Requested size: 650.4284pt x 867.2379pt.
 
-LaTeX Warning: Float too large for page by 37.41586pt on input line 1026.
+LaTeX Warning: Float too large for page by 37.41586pt on input line 1128.
 
-<MEPS19_all.png, id=698, 650.43pt x 867.24pt>
-File: MEPS19_all.png Graphic file (type png)
-<use MEPS19_all.png>
-Package pdftex.def Info: MEPS19_all.png  used on input line 1030.
+<MEPS19_all_ACC.png, id=614, 650.43pt x 867.24pt>
+File: MEPS19_all_ACC.png Graphic file (type png)
+<use MEPS19_all_ACC.png>
+Package pdftex.def Info: MEPS19_all_ACC.png  used on input line 1132.
 (pdftex.def)             Requested size: 650.4284pt x 867.2379pt.
 
-LaTeX Warning: Float too large for page by 37.41586pt on input line 1035.
+LaTeX Warning: Float too large for page by 37.41586pt on input line 1137.
 
-<Ger_age_all.png, id=699, 650.43pt x 867.24pt>
-File: Ger_age_all.png Graphic file (type png)
-<use Ger_age_all.png>
-Package pdftex.def Info: Ger_age_all.png  used on input line 1039.
+<Ger_age_all_ACC.png, id=615, 650.43pt x 867.24pt>
+File: Ger_age_all_ACC.png Graphic file (type png)
+<use Ger_age_all_ACC.png>
+Package pdftex.def Info: Ger_age_all_ACC.png  used on input line 1141.
 (pdftex.def)             Requested size: 650.4284pt x 867.2379pt.
 
-LaTeX Warning: Float too large for page by 37.41586pt on input line 1044.
+LaTeX Warning: Float too large for page by 37.41586pt on input line 1146.
 
-<Ger_sex_all.png, id=700, 650.43pt x 867.24pt>
-File: Ger_sex_all.png Graphic file (type png)
-<use Ger_sex_all.png>
-Package pdftex.def Info: Ger_sex_all.png  used on input line 1048.
+<Ger_sex_all_ACC.png, id=616, 650.43pt x 867.24pt>
+File: Ger_sex_all_ACC.png Graphic file (type png)
+<use Ger_sex_all_ACC.png>
+Package pdftex.def Info: Ger_sex_all_ACC.png  used on input line 1150.
 (pdftex.def)             Requested size: 650.4284pt x 867.2379pt.
 
-LaTeX Warning: Float too large for page by 37.41586pt on input line 1053.
+LaTeX Warning: Float too large for page by 37.41586pt on input line 1155.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1058.
-[34] [35] [36] [37] [38 <./Adult_all.png>] [39 <./Readmission_all.png>]
-[40 <./MEPS19_all.png>] [41 <./Ger_age_all.png>] [42 <./Ger_sex_all.png>]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1058.
-
-(fair.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1058.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1058.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1211.
+[35 <./Fig2.pdf>] [36] [37] [38] [39] [40] [41 <./Adult_all_ACC.png>] [42 <./Re
+admission_all_ACC.png>] [43 <./MEPS19_all_ACC.png>] [44 <./Ger_age_all_ACC.png>
+] [45 <./Ger_sex_all_ACC.png>] [46]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1211.
+ (fair.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1211.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1211.
 
 Package rerunfilecheck Info: File `fair.out' has not changed.
-(rerunfilecheck)             Checksum: 44C02C37DBFCE09A2F3C35ED12FED7F9;1146.
+(rerunfilecheck)             Checksum: 53CE3C5DA4D62C1B5F32A19022FAF93E;1028.
 
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 13885 strings out of 492895
- 207209 string characters out of 3133479
- 427034 words of memory out of 3000000
- 17330 multiletter control sequences out of 15000+200000
+ 13883 strings out of 492895
+ 207346 string characters out of 3133479
+ 443863 words of memory out of 3000000
+ 17327 multiletter control sequences out of 15000+200000
  27775 words of font info for 74 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 36i,20n,77p,2061b,610s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 36i,20n,77p,2061b,590s stack positions out of 5000i,500n,10000p,200000b,50000s
  <C:\Users\Andri\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/lh/lh-t2a/dpi600\la
 tt1200.pk> <C:\Users\Andri\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/lh/lh-t2a/d
 pi600\larm1000.pk> <C:\Users\Andri\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/lh/
@@ -1258,25 +1319,24 @@ l\MiKTeX\2.9\fonts/pk/ljfour/lh/lh-t2a/dpi600\lati0700.pk> <C:\Users\Andri\AppD
 ata\Local\MiKTeX\2.9\fonts/pk/ljfour/lh/lh-t2a/dpi600\larm0800.pk> <C:\Users\An
 dri\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/lh/lh-t2a/dpi600\larm1200.pk> <C:\
 Users\Andri\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/lh/lh-t2a/dpi600\larm1728.
-pk><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/P
-rogram Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program F
-iles/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx6.pfb><C:/Program Files/MiKT
-eX 2.9/fonts/type1/public/amsfonts/cm/cmbx7.pfb><C:/Program Files/MiKTeX 2.9/fo
-nts/type1/public/amsfonts/cm/cmbx8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1
-/public/amsfonts/cm/cmex10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/
-amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts
-/cm/cmmi12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi
-6.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:
-/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program 
-Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiK
-TeX 2.9/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Program Files/MiKTeX 2.9/fo
-nts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type
-1/public/amsfonts/cm/cmsy6.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/
-amsfonts/cm/cmsy8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/
-symbols/msbm10.pfb>
-Output written on fair.pdf (42 pages, 2524917 bytes).
+pk><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/P
+rogram Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx6.pfb><C:/Program Fi
+les/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx7.pfb><C:/Program Files/MiKTe
+X 2.9/fonts/type1/public/amsfonts/cm/cmbx8.pfb><C:/Program Files/MiKTeX 2.9/fon
+ts/type1/public/amsfonts/cm/cmex10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1
+/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/
+amsfonts/cm/cmmi12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts
+/cm/cmmi6.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi7
+.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/
+Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program F
+iles/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Program Files/MiKTe
+X 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fo
+nts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1
+/public/amsfonts/cm/cmsy8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/a
+msfonts/symbols/msbm10.pfb>
+Output written on fair.pdf (46 pages, 2602130 bytes).
 PDF statistics:
- 1224 PDF objects out of 1440 (max. 8388607)
- 170 named destinations out of 1000 (max. 500000)
- 202 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1237 PDF objects out of 1440 (max. 8388607)
+ 171 named destinations out of 1000 (max. 500000)
+ 186 words of extra memory for PDF output out of 10000 (max. 10000000)
 
