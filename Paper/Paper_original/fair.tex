@@ -219,20 +219,23 @@ where $TPR$ represents true positive rate (recall) of the prediction model. Reca
 \end{equation}
 where $FPR$ represent false positive rate (probability of false alarm), and $TPR$ true positive rate (recall). Values of $\mathbf{AOD}$ close to zero are preferred.
 
-Regarding fairness-aware machine learning algorithms, interested readers are referred to an extensive reviews presented in \cite{friedler2019comparative} and \cite{corbett2018measure}. A naive approach to ensuring fairness would be to eliminate sensitive features from the dataset. However, the information contained in the sensitive features can often be approximated from other input features. For example, location of residence correlates with race, although it is not obviously sensitive itself. Therefore, more sophisticated approaches are needed. We focus on two families of methods relevant for our work.
+Regarding fairness-aware machine learning algorithms, interested readers are referred to an extensive reviews presented in \cite{friedler2019comparative, bacelar2021monitoring, corbett2018measure, caton2020fairness}. A naive approach to ensuring fairness would be to eliminate sensitive features from the dataset. However, the information contained in the sensitive features can often be approximated from other input features. For example, location of residence correlates with race, although it is not obviously sensitive itself. Therefore, more sophisticated approaches are needed. We focus on two families of methods relevant for our work.
 
 \textbf{Instance Reweighting}. Instance reweighting has shown impressive results, although the idea is relatively simple \cite{feldman2015certifying, krasanakis2018adaptive, ren2018learning, shu2019meta, jiang2018mentornet}. As a preprocessing technique, it was traditionally used for the class imbalance problem by assigning larger weights to instances of a  lower cardinality class, so that the learning algorithm gives more importance to that class. This idea can be applied to the fairness problem as well -- it assigns lower importance to unfair examples or removes them from the learning process. More specifically, those examples will have a lower impact on the likelihood function one tries to optimize.
 The simplest approach is to assign weights to instances so that sums of weights per value of a  sensitive feature is the same and all instances from a group have the same weight \cite{kamiran2012data}. That approach was improved in \cite{krasanakis2018adaptive} by utilizing adaptive sensitive reweighting procedure. One can use variational fair auto encoder with Maximum Mean Discrepancy \cite{louizos2015variational} which calculates distances between distributions using kernels. It is worth noticing that instance reweighting has shown to have lower disparate impact \cite{feldman2015certifying} compared to not applying any instance weighting strategy. An advantage of this class of methods is that the weights can be interpreted as indicators of individual instance fairness. However, the training is not end-to-end. To apply some instance reweighting strategy one needs to perform a two step procedure -- first to obtain instance weights, and then to use the weights by the learning algorithm. This is a drawback of this approach since the weighting procedure is oblivious of the model representation and learning algorithm and therefore might choose suboptimal weights for them. 
 
+Recently, Han et. al~\cite{han2021balancing} proposed a very simple but highly effective method for countering bias using instance reweighting, based on the frequency of both task labels and author demographics. Similarly, Hayat~\cite{hayat2021towards} presented two distinct ways for bias mitagation based on reweighting procedure: cluster reweighting method and sample reweighting method. The idea of incorporating an outer optimizer for adaptively selecting mini batch sizes for the purpose of improving model fairness is presented in~\cite{roh2020fairbatch}.
+
 Our approach considerably differs from these approaches in that the weight estimation is integrated in the one step end-to-end learning procedure. Also, in our method the weights are not plain scalars, but the outputs of a neural network. Hence, for purposes of interpretability, such weights can also be estimated for new instances which were not included in the training without retraining the whole system.
 
-\textbf{Adversarial training}. Adversarial training provides a framework for mitigating biases by learning new data representation from which it is possible to predict the target variable, but not possible to predict the sensitive attribute. This approach creates a trade-off between two goal functions and therefore reaches Nash equilibrium \cite{goodfellow2014generative}.
-Adversarial training for fairness was first presented in \cite{zhang2018mitigating}. Similar model was applied to recidivism prediction in order to remove racial bias \cite{wadsworth2018achieving}.
-A theoretical analysis of solving fairness problem via adversarial approach is presented in \cite{madras2018learning}.
-An important approach of such kind is Fair Adversarial Discriminative model (FAD) \cite{adel2019one}. Moreover, theoretical analysis of the relationship between the label classifier performance and the adversary’s ability to predict the sensitive attribute value is provided. Also, in the same paper, a variation of the adversarial learning procedure is developed to increase diversity among elements of each mini-batch of the gradient descent training, in order to achieve a representation that does not suffer from mode collapse. Similarly, Zhao et. al~\cite{zhao2019conditional} presented a algorithm for Conditional Learning of Fair Representations (CLFR) that can simultaneously mitigate two notions of disparity among different subgroups in the classification problems.
+\textbf{Adversarial training}. Adversarial training provides a framework for mitigating biases by learning new data representation from which it is possible to predict the target variable, but not possible to predict the sensitive attribute. This approach creates a trade-off between two goal functions and therefore reaches Nash equilibrium \cite{goodfellow2014generative}. Adversarial training can be applied for achieving fairness by generating informative and fair datasets~\cite{rajabi2021tabfairgan, choi2020fair}. The generated fair data can be further used to enhance fair classification performances \cite{jang2021constructing}. The main pros and cons of fair data generation process with generative adversarial networks are presented in~\cite{kenfack2021fairness}.
+Adversarial training for directly solving fair classification problem without data generation procedure was first presented in \cite{zhang2018mitigating}. Similar model was applied to recidivism prediction in order to remove racial bias \cite{wadsworth2018achieving, teo2021measuring}.
+A theoretical analysis of solving fairness problem via adversarial approach is presented in \cite{madras2018learning}. 
+An important approach of such kind is Fair Adversarial Discriminative model (FAD) \cite{adel2019one}. Moreover, theoretical analysis of the relationship between the label classifier performance and the adversary’s ability to predict the sensitive attribute value is provided. Also, in the same paper, a variation of the adversarial learning procedure is developed to increase diversity among elements of each mini-batch of the gradient descent training, in order to achieve a representation that does not suffer from mode collapse. Similarly, Zhao et. al~\cite{zhao2019conditional} presented a algorithm for Conditional Learning of Fair Representations (CLFR) that can simultaneously mitigate two notions of disparity among different subgroups in the classification problems. In addition \cite{celis2021fair} presented an optimization framework to learn fair classifiers in the adversarial setting that comes with provable guarantees on accuracy and fairness.
 Another adversarial approach focuses on learning to select non-sensitive features on per instance basis \cite{wang2019approaching}. 
 Ragonesi et. al~\cite{ragonesi2021learning} proposed optimization strategy (LURMI - Learning Unbiased Representations via Mutual Information backpropagation), which simultaneously estimates and minimizes the mutual information between the learned representation and specific data attributes by using adversarial framework.
-Cotter et. al~\cite{cotter2019optimization} introduced an interesting new approach (PYCO) for solving constrainted optimization problem by introducing Langrangian (PYCO\_diff) and proxy-Lagrangian (PYCO\_non\_diff) based min-max optimization methods for solving differentiable and non-differentiable constraint optimization problems, respectively. It is demonstrated that PYCO can be successfully used for solving group fairness constraint optimization problems.
+Cotter et. al~\cite{cotter2019optimization} introduced an interesting new approach (PYCO) for solving constrainted optimization problem by introducing Langrangian (PYCO\_diff) and proxy-Lagrangian (PYCO\_non\_diff) based min-max optimization methods for solving differentiable and non-differentiable constraint optimization problems, respectively. It is demonstrated that PYCO can be successfully used for solving group fairness constraint optimization problems. 
+
 
 The adversarial approach in general is employed to minimize the correlation between selected features and sensitive information. While adversarial approach enables end-to-end training it does not provide any interpretable information on the individual fairness of instances. Our approach differs from these approaches in that it provides interpretable information on instance fairness like reweighting approaches do. That way it tries to keep the best from both worlds.
 
@@ -490,7 +493,7 @@ Classification performance of all presented classifiers is quantified by the acc
 \textbf{Evaluation procedure and presentation of results}. The evaluated models (both FAIR and the baselines) have hyperparameters which affect the trade-off between fairness and predictive performance of the classifiers. Note that such hyperparameters do not control model capacity. Therefore, we do not tune them to obtain maximal perfomance (like one might tune regularization hyperparameters). Instead, we vary them in order to illustrate model behaviour for different trade-offs. The hyperparameters $\alpha$ of FAIR, CLFR, LURMI and FAD models were varied in range $[0, 10^{-3}, 10^{-2}, 10^{-1}, 1, 10, 10^{2}, 10^{3}]$, whereas in the case of other models, hyperparameters were varied in range $[0, 10^{-3}, 10^{-2}, 10^{-1}, 1]$ (since $1$ is the maximal value for these methods). For each such value, evlauation metrics were computed. PYCO\_diff and PYCO\_non\_diff models were optimized for each fairness metric separately. We call a set of models obtained from one model kind (FAD, FAIR, etc.) by varying the fairnes related hyperparamter, a {\em model family}. For instance, all FAD models trained for different values of $\alpha$ constitute a FAD model family.
 
 Since the models are evaluated by two criteria (predictive performance of the target variable and fairness), one model can be better than the other according to one criterion and vice-versa. Since both critera are important, instead of privileging one of them we present our results in terms of Pareto fronts. For a set of trained models, Pareto front consists of models which are not dominated by any other models in terms of both predictive performance and fairness \cite{marler2004survey}. Models which are dominated by others in terms of both criteria are obviously irrelevant and should be discarded. Pareto front can be plotted in 2D in terms of metrics for the two criteria used and visually inspected. We base our evaluation on the overall Pareto front which is a Pareto front of all trained models (union of all model familites). Models which yield more points in such Pareto front are better.
-Since FAIR and baseline models do not directly optimize any of the commonly used fairness metrics, we evaluate them using several different fairness metrics. Hence, we present the overall Pareto front of all trained models with respect to AOD, ASD, and AEOD as fairness metrics and ACC as the performance metric.
+Since FAIR and baseline models do not directly optimize any of the commonly used fairness metrics, we evaluate them using several different fairness metrics. Hence, in~\ref{app:Additional_results} we present the overall Pareto front of all trained models with respect to AOD, ASD, and AEOD as fairness metrics and ACC as the performance metric.
 
 Construction of the Pareto front includes model selection - models are compared according to their performance and some of them are selected. Since evaluation metrics should never be reported on the data on which the selection was performed, we take care to train all models on the training set, to perform selection of the models for the Pareto front on the validation set, and to evaluate selected models on the test set. All results reported in the following section are calculated on the test set.
 
@@ -504,6 +507,10 @@ In this section we provide experimental results following the above described se
 
 In this section we present results obtained using the experimental evaluation outlined above.
 
+
+
+Firstly, model performances obtained on the \textit{Adult income} dataset are illustrated in Fig.~\ref{fig:Adult} by three fairness metrics (AOD, ASD or AEOD) and classification performance (ACC$_\mathbf{y}$). The models with greater ACC score and lower (un)fairness metric (upper left corner of plots) are preferred. It can be observed that FAIR models dominates Pareto optimal solutions with respect to the all fairness metrics. In addition, FAIR-beta and LURMI models dominate the upper left corner of Pareto fronts for AOD and AEOD, whereas the FAIR-scalar and PYCO\_non\_diff dominate the upper left corner of Pareto front for ASD metric. 
+
 \begin{figure*}
 	\center
 	\includegraphics[angle=0, width=0.7\textwidth]{Adult_ACC.png}
@@ -513,47 +520,7 @@ In this section we present results obtained using the experimental evaluation ou
 	\vskip -0.2in
 \end{figure*}
 
-Firstly, model performances obtained on the \textit{Adult income} dataset are illustrated in Fig.~\ref{fig:Adult} by three fairness metrics (AOD, ASD or AEOD) and classification performance (ACC$_\mathbf{y}$). The models with greater ACC score and lower (un)fairness metric (upper left corner of plots) are preferred. It can be observed that FAIR models dominates Pareto optimal solutions with respect to the all fairness metrics. In addition, FAIR-beta and LURMI models dominate the upper left corner of Pareto fronts for AOD and AEOD, whereas the FAIR-scalar and PYCO\_non\_diff dominate the upper left corner of Pareto front for ASD metric. Moreover, in Table~\ref{tab:Adult}, the Pareto optimal solutions obtained for all three fairness metrics and (ACC$_\mathbf{y}$) are presented. Similarly, it can be concluded that the number of FAIR models is larger compared to the other models and FAIR can therefore be considered better then other models.
-
-\begin{table}
-	\centering
-	\caption{Pareto optimal solutions - \textit{Adult income} dataset}
-	\begin{tabular}{|c|c|c|c|c|}
-		\hline
-		\textbf{model}           & \textbf{ACC} & \textbf{AOD} & \textbf{ASD} & \textbf{AEOD} \\ \hline
-		\textbf{PR}              & 0.7450       & 0.0000       & 0.0000       & 0.0000        \\ \hline
-		\textbf{Reweighing-NN}   & 0.7927       & 0.0182       & 0.1517       & 0.0222        \\ \hline
-		\textbf{Reweighing-NN}   & 0.8031       & 0.0200       & 0.1231       & 0.0052        \\ \hline
-		\textbf{Reweighing-NN}   & 0.7963       & 0.0396       & 0.0918       & 0.1170        \\ \hline
-		\textbf{FAIR-scalar}     & 0.8622       & 0.1151       & 0.0922       & 0.1544        \\ \hline
-		\textbf{FAIR-scalar}     & 0.8050       & 0.0151       & 0.1105       & 0.0640        \\ \hline
-		\textbf{FAIR-scalar}     & 0.8649       & 0.0939       & 0.1736       & 0.1236        \\ \hline
-		\textbf{FAIR-scalar}     & 0.8630       & 0.0848       & 0.1672       & 0.1087        \\ \hline
-		\textbf{FAIR-scalar}     & 0.7559       & 0.0090       & 0.0164       & 0.0161        \\ \hline
-		\textbf{FAIR-scalar}     & 0.8110       & 0.0996       & 0.0654       & 0.1955        \\ \hline
-		\textbf{FAIR-scalar}     & 0.8076       & 0.1466       & 0.0565       & 0.2841        \\ \hline
-		\textbf{FAIR-betaSF}     & 0.8397       & 0.0607       & 0.1456       & 0.0627        \\ \hline
-		\textbf{FAIR-betaSF}     & 0.8431       & 0.0551       & 0.1421       & 0.0676        \\ \hline
-		\textbf{FAIR-betaREP}    & 0.8333       & 0.0550       & 0.1741       & 0.0390        \\ \hline
-		\textbf{FAIR-betaREP}    & 0.8308       & 0.0475       & 0.1588       & 0.0287        \\ \hline
-		\textbf{LURMI}           & 0.8212       & 0.0397       & 0.1420       & 0.0259        \\ \hline
-		\textbf{LURMI}           & 0.7577       & 0.0157       & 0.0112       & 0.0286        \\ \hline
-		\textbf{LURMI}           & 0.7653       & 0.0491       & 0.0860       & 0.0742        \\ \hline
-		\textbf{PYCO\_diff}      & 0.8068       & 0.0984       & 0.0596       & 0.1917        \\ \hline
-		\textbf{PYCO\_diff}      & 0.7810       & 0.0915       & 0.0233       & 0.1785        \\ \hline
-		\textbf{PYCO\_diff}      & 0.8135       & 0.0824       & 0.1000       & 0.1490        \\ \hline
-		\textbf{PYCO\_diff}      & 0.8162       & 0.1206       & 0.0780       & 0.2349        \\ \hline
-		\textbf{PYCO\_diff}      & 0.8272       & 0.0925       & 0.1408       & 0.1487        \\ \hline
-		\textbf{PYCO\_non\_diff} & 0.7802       & 0.5744       & 0.0097       & 0.3087        \\ \hline
-		\textbf{PYCO\_non\_diff} & 0.7974       & 0.0828       & 0.0626       & 0.1496        \\ \hline
-		\textbf{PYCO\_non\_diff} & 0.8016       & 0.2105       & 0.0081       & 0.3506        \\ \hline
-		\textbf{PYCO\_non\_diff} & 0.8138       & 0.0707       & 0.1084       & 0.1199        \\ \hline
-		\textbf{PYCO\_non\_diff} & 0.8231       & 0.0836       & 0.1192       & 0.1408        \\ \hline
-	\end{tabular}
-	\label{tab:Adult}
-\end{table}
-
-Secondly, the results obtained on the \textit{Hospital readmission} dataset are presented in Fig.~\ref{fig:Readmission}. It can be noticed that only FAIR models exist on Pareto front and consequently all other models are dominated by them. It can be observed that in the case of all three fairness metrics FAIR-betaSF is the closest to the upper left corner and can therefore be considered better than others. The letter can be also confirmed in the Table~\ref{tab:Readmission} where only FAIR models exist on overall Pareto front.
+Secondly, the results obtained on the \textit{Hospital readmission} dataset are presented in Fig.~\ref{fig:Readmission}. It can be noticed that only FAIR models exist on Pareto front and consequently all other models are dominated by them. It can be observed that in the case of all three fairness metrics FAIR-betaSF is the closest to the upper left corner and can therefore be considered better than others. 
 
 \begin{figure}
 	\center
@@ -564,20 +531,7 @@ Secondly, the results obtained on the \textit{Hospital readmission} dataset are 
 	\vskip -0.2in
 \end{figure}
 
-\begin{table}
-	\centering
-	\caption{Pareto optimal solutions - \textit{Hospital readmission} dataset}
-	\begin{tabular}{|c|c|c|c|c|}
-		\hline
-		\textbf{model}          & \textbf{ACC} & \textbf{AOD} & \textbf{ASD} & \textbf{AEOD} \\ \hline
-		\textbf{FAIR-scalar}    & 0.8559     & 0.0001     & 0.0000     & 0.0002      \\ \hline
-		\textbf{FAIR-betaSF}    & 0.8654     & 0.0002     & 0.0008     & 0.0008      \\ \hline
-		\textbf{FAIR-Bernoulli} & 0.8550     & 0.0000            & 0.0000            & 0.0000             \\ \hline
-	\end{tabular}
-	\label{tab:Readmission}%
-\end{table}
-
-Thirdly, models performances obtained on the \textit{Hospital expenditures} dataset are illustrated in Fig.~\ref{fig:MEPS19}. It can be observed that the FAIR models dominate Pareto front in all presented metrics. In the case of ASD metric FAIR-scalar and PYCO models are the closest to the upper left corner of Pareto front, whereas in the case of AOD metric FAIR-betaSF is the best one and in the case of AEOD metrics it is the PYCO\_non\_diff model. Table~\ref{tab:MEPS-19} where overall Pareto front is presented, the FAIR models still dominate Pareto front.
+Thirdly, models performances obtained on the \textit{Hospital expenditures} dataset are illustrated in Fig.~\ref{fig:MEPS19}. It can be observed that the FAIR models dominate Pareto front in all presented metrics. In the case of ASD metric FAIR-scalar and PYCO models are the closest to the upper left corner of Pareto front, whereas in the case of AOD metric FAIR-betaSF is the best one and in the case of AEOD metrics it is the PYCO\_non\_diff model. 
 
 \begin{figure}
 	\center
@@ -588,39 +542,9 @@ Thirdly, models performances obtained on the \textit{Hospital expenditures} data
 	\vskip -0.2in
 \end{figure}
 
-\begin{table}
-	\centering
-	\caption{Pareto optimal solutions - \textit{Hospital expenditures} dataset}
-	\begin{tabular}{|c|c|c|c|c|}
-		\hline
-		\textbf{model}           & \textbf{ACC} & \textbf{AOD} & \textbf{ASD} & \textbf{AEOD} \\ \hline
-		\textbf{PR}              & 0.8573       & 0.0334       & 0.0426       & 0.0589        \\ \hline
-		\textbf{PR}              & 0.8291       & 0.0000       & 0.0000       & 0.0000        \\ \hline
-		\textbf{DI-NN}           & 0.8459       & 0.0125       & 0.0324       & 0.0533        \\ \hline
-		\textbf{Reweighing-NN}   & 0.8371       & 0.0107       & 0.0351       & 0.0078        \\ \hline
-		\textbf{Reweighing-RF}   & 0.8644       & 0.0399       & 0.0653       & 0.0566        \\ \hline
-		\textbf{FAIR-scalar}     & 0.8703       & 0.0574       & 0.0844       & 0.0801        \\ \hline
-		\textbf{FAIR-scalar}     & 0.8657       & 0.0562       & 0.0837       & 0.0755        \\ \hline
-		\textbf{FAIR-scalar}     & 0.8522       & 0.0276       & 0.0205       & 0.0512        \\ \hline
-		\textbf{FAIR-scalar}     & 0.8484       & 0.0426       & 0.0099       & 0.0816        \\ \hline
-		\textbf{FAIR-betaSF}     & 0.8615       & 0.0030       & 0.0502       & 0.0127        \\ \hline
-		\textbf{FAIR-betaSF}     & 0.8636       & 0.0130       & 0.0520       & 0.0075        \\ \hline
-		\textbf{FAIR-betaSF}     & 0.8611       & 0.0115       & 0.0545       & 0.0021        \\ \hline
-		\textbf{FAIR-Bernoulli}  & 0.8648       & 0.0560       & 0.0866       & 0.0705        \\ \hline
-		\textbf{FAIR-betaREP}    & 0.8623       & 0.0116       & 0.0534       & 0.0024        \\ \hline
-		\textbf{FAIR-betaREP}    & 0.8619       & 0.0067       & 0.0519       & 0.0076        \\ \hline
-		\textbf{FAIR-betaREP}    & 0.8581       & 0.0110       & 0.0556       & 0.0027        \\ \hline
-		\textbf{FAIR-betaREP}    & 0.8564       & 0.0099       & 0.0575       & 0.0035        \\ \hline
-		\textbf{PYCO\_diff}      & 0.8488       & 0.0845       & 0.0063       & 0.1556        \\ \hline
-		\textbf{PYCO\_non\_diff} & 0.8319       & 0.0446       & 0.0160       & 0.0785        \\ \hline
-		\textbf{PYCO\_non\_diff} & 0.8463       & 0.0541       & 0.0014       & 0.0983        \\ \hline
-		\textbf{PYCO\_non\_diff} & 0.8661       & 0.0265       & 0.1038       & 0.0025        \\ \hline
-		\textbf{PYCO\_non\_diff} & 0.8640       & 0.0335       & 0.0839       & 0.0344        \\ \hline
-	\end{tabular}
-	\label{tab:MEPS-19}%
-\end{table}
 
-Eventually, model performances obtained of \textit{German credit} dataset for age and sex as sensitive attributes are presented in Figs.~\ref{fig:Ger-age-res} and~\ref{fig:Ger-sex-res}, respectively. Similarly as in previous datasets, overall Pareto fronts, for age and sex as sensitive attributes, are presented in Tables~\ref{tab:Ger-age} and~\ref{tab:Ger-sex}. It can be observed that in  Fig.~\ref{fig:Ger-sex-res} all models are equally represented, whereas in  Fig.~\ref{fig:Ger-age-res} FAIR models dominate the Pareto front in all cases. Similar conclusion can be made in the case of overall Pareto fronts that are presented in Tables~\ref{tab:Ger-age} and~\ref{tab:Ger-sex}. 
+
+Eventually, model performances obtained of \textit{German credit} dataset for age and sex as sensitive attributes are presented in Figs.~\ref{fig:Ger-age-res} and~\ref{fig:Ger-sex-res}, respectively. It can be observed that in  Fig.~\ref{fig:Ger-sex-res} all models are equally represented, whereas in  Fig.~\ref{fig:Ger-age-res} FAIR models dominate the Pareto front in all cases. 
 %In Table~\ref{tab:Ger-age} it can be observed that all models are equally represented in Pareto fronts, whereas in Table~\ref{tab:Ger-sex} the most dominant models are Reweighing-RF and FAD.
 
 \begin{figure}
@@ -641,77 +565,13 @@ Eventually, model performances obtained of \textit{German credit} dataset for ag
 	\vskip -0.2in
 \end{figure}
 
-\begin{table}
-	\centering
-	\caption{Pareto optimal solutions - \textit{German credit} - age dataset}
-	\begin{tabular}{|c|c|c|c|c|}
-		\hline
-		\textbf{model}          & \textbf{ACC} & \textbf{AOD} & \textbf{ASD} & \textbf{AEOD} \\ \hline
-		\textbf{DI-NN}          & 0.7800       & 0.0254       & 0.0537       & 0.1000        \\ \hline
-		\textbf{DI-NN}          & 0.7700       & 0.0421       & 0.0427       & 0.1333        \\ \hline
-		\textbf{DI-NN}          & 0.7700       & 0.0471       & 0.0134       & 0.0333        \\ \hline
-		\textbf{DI-RF}          & 0.6900       & 0.0167       & 0.0110       & 0.0333        \\ \hline
-		\textbf{DI-RF}          & 0.6900       & 0.0167       & 0.0110       & 0.0333        \\ \hline
-		\textbf{DI-RF}          & 0.6900       & 0.0167       & 0.0110       & 0.0333        \\ \hline
-		\textbf{Reweighing-NN}  & 0.7900       & 0.0410       & 0.1087       & 0.0000        \\ \hline
-		\textbf{Reweighing-RF}  & 0.7000       & 0.0333       & 0.0220       & 0.0667        \\ \hline
-		\textbf{FAIR-scalar}    & 0.6800       & 0.0000       & 0.0000       & 0.0000        \\ \hline
-		\textbf{FAIR-scalar}    & 0.7500       & 0.0008       & 0.0867       & 0.1000        \\ \hline
-		\textbf{FAIR-scalar}    & 0.7800       & 0.0852       & 0.1026       & 0.0333        \\ \hline
-		\textbf{FAIR-betaSF}    & 0.6800       & 0.0000       & 0.0000       & 0.0000        \\ \hline
-		\textbf{FAIR-Bernoulli} & 0.7600       & 0.2260       & 0.0024       & 0.5667        \\ \hline
-		\textbf{FAIR-betaREP}   & 0.6900       & 0.0167       & 0.0110       & 0.0333        \\ \hline
-		\textbf{FAIR-betaREP}   & 0.7800       & 0.1977       & 0.0366       & 0.4000        \\ \hline
-		\textbf{PYCO\_diff}     & 0.7400       & 0.0224       & 0.0410       & 0.0278        \\ \hline
-		\textbf{PYCO\_diff}     & 0.7067       & 3.4655       & 0.0117       & 0.2444        \\ \hline
-		\textbf{PYCO\_diff}     & 0.7067       & 0.0251       & 0.0269       & 0.0211        \\ \hline
-	\end{tabular}
-	\label{tab:Ger-age}
-\end{table}
-
-\begin{table}
-	\centering
-	\caption{Pareto optimal solutions - \textit{German credit} - sex dataset}
-	\begin{tabular}{|c|c|c|c|c|}
-		\hline
-		\textbf{model}           & \textbf{ACC} & \textbf{AOD} & \textbf{ASD} & \textbf{AEOD} \\ \hline
-		\textbf{PR}              & 0.6800       & 0.0000       & 0.0000       & 0.0000        \\ \hline
-		\textbf{DI-RF}           & 0.7000       & 0.0167       & 0.0233       & 0.0333        \\ \hline
-		\textbf{DI-RF}           & 0.7000       & 0.0178       & 0.0041       & 0.0167        \\ \hline
-		\textbf{Reweighing-NN}   & 0.7300       & 0.0017       & 0.0208       & 0.1167        \\ \hline
-		\textbf{Reweighing-RF}   & 0.7000       & 0.0167       & 0.0233       & 0.0333        \\ \hline
-		\textbf{Reweighing-RF}   & 0.7800       & 0.0184       & 0.0771       & 0.0833        \\ \hline
-		\textbf{Reweighing-RF}   & 0.7500       & 0.0289       & 0.0715       & 0.0667        \\ \hline
-		\textbf{FAD}             & 0.7100       & 0.0154       & 0.0046       & 0.1667        \\ \hline
-		\textbf{FAIR-scalar}     & 0.7600       & 0.0300       & 0.0619       & 0.1167        \\ \hline
-		\textbf{FAIR-scalar}     & 0.7467       & 0.3124       & 0.0114       & 0.4643        \\ \hline
-		\textbf{FAIR-betaSF}     & 0.6800       & 0.0000       & 0.0000       & 0.0000        \\ \hline
-		\textbf{FAIR-betaSF}     & 0.8000       & 0.0050       & 0.0812       & 0.0000        \\ \hline
-		\textbf{FAIR-betaREP}    & 0.7000       & 0.0101       & 0.0112       & 0.1333        \\ \hline
-		\textbf{FAIR-betaREP}    & 0.6900       & 0.0006       & 0.0025       & 0.1333        \\ \hline
-		\textbf{FAIR-betaREP}    & 0.8100       & 0.2228       & 0.2704       & 0.3500        \\ \hline
-		\textbf{CLFR}            & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
-		\textbf{CLFR}            & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
-		\textbf{CLFR}            & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
-		\textbf{CLFR}            & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
-		\textbf{LURMI}           & 0.7000       & 0.0151       & 0.0210       & 0.0960        \\ \hline
-		\textbf{LURMI}           & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
-		\textbf{LURMI}           & 0.7000       & 0.0273       & 0.0094       & 0.0152        \\ \hline
-		\textbf{PYCO\_diff}      & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
-		\textbf{PYCO\_non\_diff} & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
-		\textbf{PYCO\_non\_diff} & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
-		\textbf{PYCO\_non\_diff} & 0.7133       & 0.0334       & 0.0022       & 0.0502        \\ \hline
-		\textbf{PYCO\_non\_diff} & 0.7533       & 0.1361       & 0.0251       & 0.2083        \\ \hline
-	\end{tabular}
-	\label{tab:Ger-sex}%
-\end{table}
 
 Additional results can be found in~\ref{app:Additional_results}. 
 
 \subsection{Discussion and qualitative study}
 
 To summarize, FAIR variants often perform better than other methods, but of course the other methods can outperform them. Therefore we conclude that FAIR is roughly equal or better to the state-of-the-art methods. Most notable baselines seem to be PYCO methods. Among the FAIR variants, FAIR-beta seems to be most promising in terms of discussed accuracy and fairness metrics.
-A relevant question regarding FAIR models is which variant shows most promise and which one should be used in practice. The reason for introduction of probabilistic variants was the guaranteed existence of mixed Nash equilibrium, which is important since the existence of pure Nash equilibrium is not guaranteed for $\min-\max$ problems and therefore FAIR-scalar might not converge to a mathematicaly meaningful solution \cite{tadelis2013game}. The fact that FAIR-beta achieves somehwaht better performance might be casued by such issue. On the other hand, the the advantage of FAIR-beta is not drastic and the simplicity of FAIR-scalar might make it a more appealing approach in practice if one can tollerate small drops in performance metrics. 
+A relevant question regarding FAIR models is which variant shows most promise and which one should be used in practice. The reason for introduction of probabilistic variants was the guaranteed existence of mixed Nash equilibrium, which is important since the existence of pure Nash equilibrium is not guaranteed for $\min-\max$ problems and therefore FAIR-scalar might not converge to a mathematically meaningful solution \cite{tadelis2013game}. The fact that FAIR-beta achieves somewhat better performance might be caused by such issue. On the other hand, the the advantage of FAIR-beta is not drastic and the simplicity of FAIR-scalar might make it a more appealing approach in practice if one can tolerate small drops in performance metrics. 
 
 Model behaviour of FAIR model with respect to change of hyperparameter $\alpha$ is shown in Fig.~\ref{fig:FigResultsAlpha} on the \textit{Geman credit} dataset. It can be observed that as $\alpha$ decreases, instances which are unfair (but potentially useful for prediction of target variable) are being discarded, so ACC metrics for both the target variable and sensitive attribute decrease. This is experimental verification of theoretical model properties presented in section~\ref{Sec:FAIR}.
 
@@ -1058,8 +918,159 @@ In all experiments with Reweighing - RF and DI - RF 500 trees were used in the r
 \label{app:Additional_results}
 
 %Additional classification performance of all presented classifiers quantified by AUC and fairness metrics are presented in Fig.~\ref{fig:Adult1}, ~\ref{fig:Readmission1}, ~\ref{fig:MEPS191}, ~\ref{fig:Ger-sex-res1} and~\ref{fig:Ger-age-res1}.
-More detailed results of experimental evaluation are given in Figs.~\ref{fig:Adult all-acc}, ~\ref{fig:Readmission all-acc},~\ref{fig:MEPS19 all-acc},~\ref{fig:Ger_age all-acc}, ~\ref{fig:Ger_sex all-acc}, which present Pareto fronts with all dominated and non-dominated models.
-%~\ref{fig:Adult all}, ~\ref{fig:Readmission all},~\ref{fig:MEPS19 all},~\ref{fig:Ger_age all} and~\ref{fig:Ger_sex all} 
+More detailed results of experimental evaluation are given in Figs.~\ref{fig:Adult all-acc}, ~\ref{fig:Readmission all-acc},~\ref{fig:MEPS19 all-acc},~\ref{fig:Ger_age all-acc}, ~\ref{fig:Ger_sex all-acc}, which present Pareto fronts with all dominated and non-dominated models. 
+
+Additionally, in Table~\ref{tab:Adult}, the Pareto optimal solutions obtained for all three fairness metrics and (ACC$_\mathbf{y}$) are presented for \textit{Adult income} dataset.It can be concluded that the number of FAIR models is larger compared to the other models and FAIR can therefore be considered better then other models. Simmilar conclusion can be confirmed for \textit{Hospital readmission} in the Table~\ref{tab:Readmission} where only FAIR models exist on overall Pareto front. In the case of \textit{Hospital expenditures} dataset, in Table~\ref{tab:MEPS-19} where overall Pareto front is presented, the FAIR models still dominate Pareto front. The same can be stated in the case of \textit{German credit} dataset, where overall Pareto fronts that are presented in Tables~\ref{tab:Ger-age} and~\ref{tab:Ger-sex} for age and sex sensitive attributes, respectively. 
+
+
+\begin{table}
+	\centering
+	\caption{Pareto optimal solutions - \textit{Adult income} dataset}
+	\begin{tabular}{|c|c|c|c|c|}
+		\hline
+		\textbf{model}           & \textbf{ACC} & \textbf{AOD} & \textbf{ASD} & \textbf{AEOD} \\ \hline
+		\textbf{PR}              & 0.7450       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{Reweighing-NN}   & 0.7927       & 0.0182       & 0.1517       & 0.0222        \\ \hline
+		\textbf{Reweighing-NN}   & 0.8031       & 0.0200       & 0.1231       & 0.0052        \\ \hline
+		\textbf{Reweighing-NN}   & 0.7963       & 0.0396       & 0.0918       & 0.1170        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8622       & 0.1151       & 0.0922       & 0.1544        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8050       & 0.0151       & 0.1105       & 0.0640        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8649       & 0.0939       & 0.1736       & 0.1236        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8630       & 0.0848       & 0.1672       & 0.1087        \\ \hline
+		\textbf{FAIR-scalar}     & 0.7559       & 0.0090       & 0.0164       & 0.0161        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8110       & 0.0996       & 0.0654       & 0.1955        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8076       & 0.1466       & 0.0565       & 0.2841        \\ \hline
+		\textbf{FAIR-betaSF}     & 0.8397       & 0.0607       & 0.1456       & 0.0627        \\ \hline
+		\textbf{FAIR-betaSF}     & 0.8431       & 0.0551       & 0.1421       & 0.0676        \\ \hline
+		\textbf{FAIR-betaREP}    & 0.8333       & 0.0550       & 0.1741       & 0.0390        \\ \hline
+		\textbf{FAIR-betaREP}    & 0.8308       & 0.0475       & 0.1588       & 0.0287        \\ \hline
+		\textbf{LURMI}           & 0.8212       & 0.0397       & 0.1420       & 0.0259        \\ \hline
+		\textbf{LURMI}           & 0.7577       & 0.0157       & 0.0112       & 0.0286        \\ \hline
+		\textbf{LURMI}           & 0.7653       & 0.0491       & 0.0860       & 0.0742        \\ \hline
+		\textbf{PYCO\_diff}      & 0.8068       & 0.0984       & 0.0596       & 0.1917        \\ \hline
+		\textbf{PYCO\_diff}      & 0.7810       & 0.0915       & 0.0233       & 0.1785        \\ \hline
+		\textbf{PYCO\_diff}      & 0.8135       & 0.0824       & 0.1000       & 0.1490        \\ \hline
+		\textbf{PYCO\_diff}      & 0.8162       & 0.1206       & 0.0780       & 0.2349        \\ \hline
+		\textbf{PYCO\_diff}      & 0.8272       & 0.0925       & 0.1408       & 0.1487        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.7802       & 0.5744       & 0.0097       & 0.3087        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.7974       & 0.0828       & 0.0626       & 0.1496        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.8016       & 0.2105       & 0.0081       & 0.3506        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.8138       & 0.0707       & 0.1084       & 0.1199        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.8231       & 0.0836       & 0.1192       & 0.1408        \\ \hline
+	\end{tabular}
+	\label{tab:Adult}
+\end{table}
+
+\begin{table}
+	\centering
+	\caption{Pareto optimal solutions - \textit{Hospital readmission} dataset}
+	\begin{tabular}{|c|c|c|c|c|}
+		\hline
+		\textbf{model}          & \textbf{ACC} & \textbf{AOD} & \textbf{ASD} & \textbf{AEOD} \\ \hline
+		\textbf{FAIR-scalar}    & 0.8559     & 0.0001     & 0.0000     & 0.0002      \\ \hline
+		\textbf{FAIR-betaSF}    & 0.8654     & 0.0002     & 0.0008     & 0.0008      \\ \hline
+		\textbf{FAIR-Bernoulli} & 0.8550     & 0.0000            & 0.0000            & 0.0000             \\ \hline
+	\end{tabular}
+	\label{tab:Readmission}%
+\end{table}
+
+\begin{table}
+	\centering
+	\caption{Pareto optimal solutions - \textit{Hospital expenditures} dataset}
+	\begin{tabular}{|c|c|c|c|c|}
+		\hline
+		\textbf{model}           & \textbf{ACC} & \textbf{AOD} & \textbf{ASD} & \textbf{AEOD} \\ \hline
+		\textbf{PR}              & 0.8573       & 0.0334       & 0.0426       & 0.0589        \\ \hline
+		\textbf{PR}              & 0.8291       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{DI-NN}           & 0.8459       & 0.0125       & 0.0324       & 0.0533        \\ \hline
+		\textbf{Reweighing-NN}   & 0.8371       & 0.0107       & 0.0351       & 0.0078        \\ \hline
+		\textbf{Reweighing-RF}   & 0.8644       & 0.0399       & 0.0653       & 0.0566        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8703       & 0.0574       & 0.0844       & 0.0801        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8657       & 0.0562       & 0.0837       & 0.0755        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8522       & 0.0276       & 0.0205       & 0.0512        \\ \hline
+		\textbf{FAIR-scalar}     & 0.8484       & 0.0426       & 0.0099       & 0.0816        \\ \hline
+		\textbf{FAIR-betaSF}     & 0.8615       & 0.0030       & 0.0502       & 0.0127        \\ \hline
+		\textbf{FAIR-betaSF}     & 0.8636       & 0.0130       & 0.0520       & 0.0075        \\ \hline
+		\textbf{FAIR-betaSF}     & 0.8611       & 0.0115       & 0.0545       & 0.0021        \\ \hline
+		\textbf{FAIR-Bernoulli}  & 0.8648       & 0.0560       & 0.0866       & 0.0705        \\ \hline
+		\textbf{FAIR-betaREP}    & 0.8623       & 0.0116       & 0.0534       & 0.0024        \\ \hline
+		\textbf{FAIR-betaREP}    & 0.8619       & 0.0067       & 0.0519       & 0.0076        \\ \hline
+		\textbf{FAIR-betaREP}    & 0.8581       & 0.0110       & 0.0556       & 0.0027        \\ \hline
+		\textbf{FAIR-betaREP}    & 0.8564       & 0.0099       & 0.0575       & 0.0035        \\ \hline
+		\textbf{PYCO\_diff}      & 0.8488       & 0.0845       & 0.0063       & 0.1556        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.8319       & 0.0446       & 0.0160       & 0.0785        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.8463       & 0.0541       & 0.0014       & 0.0983        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.8661       & 0.0265       & 0.1038       & 0.0025        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.8640       & 0.0335       & 0.0839       & 0.0344        \\ \hline
+	\end{tabular}
+	\label{tab:MEPS-19}%
+\end{table}
+
+
+\begin{table}
+	\centering
+	\caption{Pareto optimal solutions - \textit{German credit} - age dataset}
+	\begin{tabular}{|c|c|c|c|c|}
+		\hline
+		\textbf{model}          & \textbf{ACC} & \textbf{AOD} & \textbf{ASD} & \textbf{AEOD} \\ \hline
+		\textbf{DI-NN}          & 0.7800       & 0.0254       & 0.0537       & 0.1000        \\ \hline
+		\textbf{DI-NN}          & 0.7700       & 0.0421       & 0.0427       & 0.1333        \\ \hline
+		\textbf{DI-NN}          & 0.7700       & 0.0471       & 0.0134       & 0.0333        \\ \hline
+		\textbf{DI-RF}          & 0.6900       & 0.0167       & 0.0110       & 0.0333        \\ \hline
+		\textbf{DI-RF}          & 0.6900       & 0.0167       & 0.0110       & 0.0333        \\ \hline
+		\textbf{DI-RF}          & 0.6900       & 0.0167       & 0.0110       & 0.0333        \\ \hline
+		\textbf{Reweighing-NN}  & 0.7900       & 0.0410       & 0.1087       & 0.0000        \\ \hline
+		\textbf{Reweighing-RF}  & 0.7000       & 0.0333       & 0.0220       & 0.0667        \\ \hline
+		\textbf{FAIR-scalar}    & 0.6800       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{FAIR-scalar}    & 0.7500       & 0.0008       & 0.0867       & 0.1000        \\ \hline
+		\textbf{FAIR-scalar}    & 0.7800       & 0.0852       & 0.1026       & 0.0333        \\ \hline
+		\textbf{FAIR-betaSF}    & 0.6800       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{FAIR-Bernoulli} & 0.7600       & 0.2260       & 0.0024       & 0.5667        \\ \hline
+		\textbf{FAIR-betaREP}   & 0.6900       & 0.0167       & 0.0110       & 0.0333        \\ \hline
+		\textbf{FAIR-betaREP}   & 0.7800       & 0.1977       & 0.0366       & 0.4000        \\ \hline
+		\textbf{PYCO\_diff}     & 0.7400       & 0.0224       & 0.0410       & 0.0278        \\ \hline
+		\textbf{PYCO\_diff}     & 0.7067       & 3.4655       & 0.0117       & 0.2444        \\ \hline
+		\textbf{PYCO\_diff}     & 0.7067       & 0.0251       & 0.0269       & 0.0211        \\ \hline
+	\end{tabular}
+	\label{tab:Ger-age}
+\end{table}
+
+\begin{table}
+	\centering
+	\caption{Pareto optimal solutions - \textit{German credit} - sex dataset}
+	\begin{tabular}{|c|c|c|c|c|}
+		\hline
+		\textbf{model}           & \textbf{ACC} & \textbf{AOD} & \textbf{ASD} & \textbf{AEOD} \\ \hline
+		\textbf{PR}              & 0.6800       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{DI-RF}           & 0.7000       & 0.0167       & 0.0233       & 0.0333        \\ \hline
+		\textbf{DI-RF}           & 0.7000       & 0.0178       & 0.0041       & 0.0167        \\ \hline
+		\textbf{Reweighing-NN}   & 0.7300       & 0.0017       & 0.0208       & 0.1167        \\ \hline
+		\textbf{Reweighing-RF}   & 0.7000       & 0.0167       & 0.0233       & 0.0333        \\ \hline
+		\textbf{Reweighing-RF}   & 0.7800       & 0.0184       & 0.0771       & 0.0833        \\ \hline
+		\textbf{Reweighing-RF}   & 0.7500       & 0.0289       & 0.0715       & 0.0667        \\ \hline
+		\textbf{FAD}             & 0.7100       & 0.0154       & 0.0046       & 0.1667        \\ \hline
+		\textbf{FAIR-scalar}     & 0.7600       & 0.0300       & 0.0619       & 0.1167        \\ \hline
+		\textbf{FAIR-scalar}     & 0.7467       & 0.3124       & 0.0114       & 0.4643        \\ \hline
+		\textbf{FAIR-betaSF}     & 0.6800       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{FAIR-betaSF}     & 0.8000       & 0.0050       & 0.0812       & 0.0000        \\ \hline
+		\textbf{FAIR-betaREP}    & 0.7000       & 0.0101       & 0.0112       & 0.1333        \\ \hline
+		\textbf{FAIR-betaREP}    & 0.6900       & 0.0006       & 0.0025       & 0.1333        \\ \hline
+		\textbf{FAIR-betaREP}    & 0.8100       & 0.2228       & 0.2704       & 0.3500        \\ \hline
+		\textbf{CLFR}            & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{CLFR}            & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{CLFR}            & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{CLFR}            & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{LURMI}           & 0.7000       & 0.0151       & 0.0210       & 0.0960        \\ \hline
+		\textbf{LURMI}           & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{LURMI}           & 0.7000       & 0.0273       & 0.0094       & 0.0152        \\ \hline
+		\textbf{PYCO\_diff}      & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.6600       & 0.0000       & 0.0000       & 0.0000        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.7133       & 0.0334       & 0.0022       & 0.0502        \\ \hline
+		\textbf{PYCO\_non\_diff} & 0.7533       & 0.1361       & 0.0251       & 0.2083        \\ \hline
+	\end{tabular}
+	\label{tab:Ger-sex}%
+\end{table}
 
 \iffalse
 \begin{figure*}
