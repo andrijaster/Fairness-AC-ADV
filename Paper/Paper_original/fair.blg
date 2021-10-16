@@ -1,22 +1,7 @@
 This is BibTeX, Version 0.99dThe top-level auxiliary file: fair.aux
 The style file: elsarticle-num.bst
 Database file #1: literatura.bib
-Repeated entry---line 279 of file literatura.bib
- : @article{wadsworth2018achieving
- :                                ,
-I'm skipping whatever remains of this entry
-Repeated entry---line 293 of file literatura.bib
- : @article{wang2019approaching
- :                             ,
-I'm skipping whatever remains of this entry
-Repeated entry---line 300 of file literatura.bib
- : @article{madras2018learning
- :                            ,
-I'm skipping whatever remains of this entry
-Repeated entry---line 314 of file literatura.bib
- : @inproceedings{adel2019one
- :                           ,
-I'm skipping whatever remains of this entry
 Warning--empty journal in domadiya2019review
 Warning--empty pages in adel2019one
-(There were 4 error messages)
+Warning--can't use both volume and number fields in jang2021constructing
+(There were 3 warnings)

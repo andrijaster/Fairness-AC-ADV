@@ -141,9 +141,17 @@ S.~A. Friedler, C.~Scheidegger, S.~Venkatasubramanian, S.~Choudhary, E.~P.
   machine learning, in: Proceedings of the Conference on Fairness,
   Accountability, and Transparency, ACM, 2019, pp. 329--338.
 
+\bibitem{bacelar2021monitoring}
+M.~Bacelar, Monitoring bias and fairness in machine learning models: A review,
+  ScienceOpen Preprints (2021).
+
 \bibitem{corbett2018measure}
 S.~Corbett-Davies, S.~Goel, The measure and mismeasure of fairness: A critical
   review of fair machine learning, arXiv preprint arXiv:1808.00023 (2018).
+
+\bibitem{caton2020fairness}
+S.~Caton, C.~Haas, Fairness in machine learning: A survey, arXiv preprint
+  arXiv:2010.04053 (2020).
 
 \bibitem{feldman2015certifying}
 M.~Feldman, S.~A. Friedler, J.~Moeller, C.~Scheidegger, S.~Venkatasubramanian,
@@ -176,14 +184,53 @@ L.~Jiang, Z.~Zhou, T.~Leung, L.-J. Li, L.~Fei-Fei, Mentornet: Learning
 C.~Louizos, K.~Swersky, Y.~Li, M.~Welling, R.~Zemel, The variational fair
   autoencoder, arXiv preprint arXiv:1511.00830 (2015).
 
+\bibitem{han2021balancing}
+X.~Han, T.~Baldwin, T.~Cohn, Balancing out bias: Achieving fairness through
+  training reweighting, arXiv preprint arXiv:2109.08253 (2021).
+
+\bibitem{hayat2021towards}
+G.~Hayat, Towards detection and mitigation of dataset bias through adaptive
+  reweighting, Master's thesis, ETH Zurich (2021).
+
+\bibitem{roh2020fairbatch}
+Y.~Roh, K.~Lee, S.~E. Whang, C.~Suh, Fairbatch: Batch selection for model
+  fairness, arXiv preprint arXiv:2012.01696 (2020).
+
+\bibitem{rajabi2021tabfairgan}
+A.~Rajabi, O.~O. Garibay, Tabfairgan: Fair tabular data generation with
+  generative adversarial networks, arXiv preprint arXiv:2109.00666 (2021).
+
+\bibitem{choi2020fair}
+K.~Choi, A.~Grover, T.~Singh, R.~Shu, S.~Ermon, Fair generative modeling via
+  weak supervision, in: International Conference on Machine Learning, PMLR,
+  2020, pp. 1887--1898.
+
+\bibitem{jang2021constructing}
+T.~Jang, F.~Zheng, X.~Wang, Constructing a fair classifier with generated fair
+  data, in: Proceedings of the AAAI Conference on Artificial Intelligence,
+  Vol.~35, 2021, pp. 7908--7916.
+
+\bibitem{kenfack2021fairness}
+P.~J. Kenfack, D.~D. Arapovy, R.~Hussain, S.~Kazmi, A.~M. Khan, On the fairness
+  of generative adversarial networks (gans), arXiv preprint arXiv:2103.00950
+  (2021).
+
 \bibitem{zhang2018mitigating}
 B.~H. Zhang, B.~Lemoine, M.~Mitchell, Mitigating unwanted biases with
   adversarial learning, in: Proceedings of the 2018 AAAI/ACM Conference on AI,
   Ethics, and Society, ACM, 2018, pp. 335--340.
 
+\bibitem{teo2021measuring}
+C.~T. Teo, N.-M. Cheung, Measuring fairness in generative models, arXiv
+  preprint arXiv:2107.07754 (2021).
+
 \bibitem{zhao2019conditional}
 H.~Zhao, A.~Coston, T.~Adel, G.~J. Gordon, Conditional learning of fair
   representations, arXiv preprint arXiv:1910.07162 (2019).
+
+\bibitem{celis2021fair}
+L.~E. Celis, A.~Mehrotra, N.~K. Vishnoi, Fair classification with adversarial
+  perturbations, arXiv preprint arXiv:2106.05964 (2021).
 
 \bibitem{ragonesi2021learning}
 R.~Ragonesi, R.~Volpi, J.~Cavazza, V.~Murino, Learning unbiased representations
