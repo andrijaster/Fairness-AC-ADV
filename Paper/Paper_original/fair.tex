@@ -492,7 +492,7 @@ By the empirical risk minimization theory \cite{Vapnik,Shalev}, given a sufficie
 $$\left|\frac{P_\alpha(\mathbf{s}=0|\mathbf{x})}{P_\alpha(\mathbf{s}=0)}-\frac{P_\alpha(\mathbf{s}=1|\mathbf{x})}{P_\alpha(\mathbf{s}=1)}\right|$$
 goes to $0$ as $\alpha$ goes to $\alpha_0$ and thus $P_\alpha(\mathbf{s})$ and $P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$ (and hence $P_\alpha(\mathbf{s}|\mathbf{x})$) approach ${\cal B}\left(\frac{1}{2}\right)$. This completes the proof.
 \end{proof}
-The motivation for our work is the observation that the data is often not fair and that the weighting should be used in order to learn from fair instances. What the theorem intuitively states is that the $ASD$ of the data from which the optimal classifier is learned can actually be controlled by the hyperparameter $\alpha$. Note that the value $\alpha_0$ would be arbitrarily close to $0$ for sufficiently large regularization hyperparameter value $\lambda$.
+The motivation for our work is the observation that the data is often not fair and that the weighting should be used in order to learn from fair instances. What the theorem intuitively states is that the $ASD$ of the distribution from which the optimal classifier is learned can actually be controlled by the hyperparameter $\alpha$, that way mitigating the bias in the data. Note that the value $\alpha_0$ would be arbitrarily close to $0$ for sufficiently large regularization hyperparameter value $\lambda$.
 
 \subsection{Intuitive discussion of theoretical properties}
 
