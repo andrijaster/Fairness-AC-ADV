@@ -390,7 +390,7 @@ depend on instances from ${\cal D}_\alpha$. Denote $P_\alpha(\mathbf{x},\mathbf{
 on ${\cal D}_\alpha$ (set to $0$ for points outside ${\cal D}_\alpha$ and normalized). Then, the following theorem
 describes the behaviour of fairness of distribution $P_\alpha(\mathbf{x},\mathbf{y},\mathbf{s})$ with respect to ASD measure.
 \begin{theorem}
-If $\lambda$ is finite, the $ASD_\alpha=|P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=0)-P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=1)|$ to $0$ as $\alpha$ decreases.
+If $\lambda$ is finite, the $ASD_\alpha=|P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=0)-P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=1)|$ decreases to $0$ as $\alpha$ decreases.
 \end{theorem}
 The motivation for our work is the observation that the data is often not fair and that the weighting should be used in order to learn from fair instances. What the theorem intuitively states is that the $ASD$ of the distribution from which the optimal classifier is learned can actually be controlled by the hyperparameter $\alpha$, that way mitigating the bias in the data. 
 
@@ -729,7 +729,7 @@ In Fig.~\ref{fig:Fig2} graphical representation of FAIR-betaSF with baseline is 
 \end{proof}
 
 \begin{theorem}
-If $\lambda$ is finite, the $ASD_\alpha=|P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=0)-P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=1)|$ to $0$ as $\alpha$ decreases.
+If $\lambda$ is finite, the $ASD_\alpha=|P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=0)-P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=1)|$ decreases to $0$ as $\alpha$ decreases.
 \end{theorem}
 \begin{proof}
 It holds
