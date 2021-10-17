@@ -361,138 +361,38 @@ Now we theoretically analyze the behaviour of our method. The focus of the analy
 	\item the predictive performance of predictive and sensitive networks for a specific instance as measured by $\log P_{\phi}(\mathbf{y}|\mathbf{x})$ and $\log P_{\psi}(\mathbf{s}|\mathbf{x})$, which are related to instance predictive quality and its fairness,
 	\item the hyperparameter $\alpha$, 
 \end{itemize}
-and their interdependence. The interdependence is most easily observed with respect to variation of the hyperparameter $\alpha$, which is under direct control of the user. However, the interaction of all elements is relevant for the understanding of the method. First, we focus on how the variation of the hyperparamter reflects on the trade-off between fairness and the quality of prediction of the target variable. In a nutshell, extreme case $\alpha=0$ represents extreme emphasis on fairness and $\alpha\rightarrow\infty$ represents extreme emphasis on quality of prediction and disregard for fairness. Please note that a superficial glance at the adversarial problem would suggest vice versa, but we stress that it is not the case. Second, we aim to understand how the hyperparameter $\alpha$ affects the optimal weights assigned to the instances. It turns out that under some (reasonable) conditions the optimal weights will tend to $0$ and $1$ and that the value of $\alpha$ controls the proportion of the two limiting values. The effect of $\alpha$ on the weights and thus on model behvaiour is mediated by the ratio of performance of predictive and sensitive networks. These elements of the formal analysis also provide better intuitive understanding of the method. Finally, we prove that by decreasing the hyperparameter $\alpha$, the fairness of the reweighted distributuon from which the optimal classifier is learned increases (ASD metric decreases). Further intuitive discussion is provided after the theoretical results.
+and their interdependence. The interdependence is most easily observed with respect to variation of the hyperparameter $\alpha$, which is under direct control of the user. However, the interaction of all elements is relevant for the understanding of the method. First, we focus on how the variation of the hyperparamter reflects on the trade-off between fairness and the quality of prediction of the target variable. In a nutshell, extreme case $\alpha=0$ represents extreme emphasis on fairness and $\alpha\rightarrow\infty$ represents extreme emphasis on quality of prediction and disregard for fairness. Please note that a superficial glance at the adversarial problem would suggest vice versa, but we stress that it is not the case. Second, we aim to understand how the hyperparameter $\alpha$ affects the optimal weights assigned to the instances. It turns out that under some (reasonable) conditions the optimal weights will tend to $0$ and $1$ and that the value of $\alpha$ controls the proportion of the two limiting values. The effect of $\alpha$ on the weights and thus on model behvaiour is mediated by the ratio of performance of predictive and sensitive networks. These elements of the formal analysis also provide better intuitive understanding of the method. Finally, we prove that by decreasing the hyperparameter $\alpha$, the fairness of the reweighted distributuon from which the optimal classifier is learned increases (ASD metric decreases). Further intuitive discussion is provided after the theoretical results. The proofs of all propositions are provided in \ref{app:proofs}.
 
-\begin{lemma}
-	If $\lambda$ is finite, there exist strictly negative constants
-	$c_\phi$, $c'_\phi$, $c_\psi$, and $c'_\psi$ such that it holds
-	$c_\phi\leq \log P_\phi(\mathbf{y}|\mathbf{x})\leq c'_\phi$ and
-	$c_\psi\leq \log P_\phi(\mathbf{s}|\mathbf{x})\leq c'_\psi$ for
-	any $\mathbf{x}$, $\mathbf{y}$, and $\mathbf{s}$, and any
-	$\phi$ and $\psi$ which satisfy regularization condition \ref{Eq:Loss-scalar-new}.
-	\label{pp:bounded}
-\end{lemma}
-\begin{proof}
-	Denote ${\cal B}$ the ball defined by $\|\theta\|^2_2+\|\phi\|^2_2+\|\psi\|^2_2\leq \lambda$, representing the set of feasible solutions of the optimization problem.
-	Denote $\bar{g}_\phi(\mathbf{x})$ the network $g_\phi(\mathbf{x})$ modelling $\mathbf{y}$ with sigmoid function at the output removed and $\bar{h}_\psi(\mathbf{x})$ the network $h_\psi(\mathbf{x})$ modelling $\mathbf{s}$ with sigmoid at the output removed. Since ${\cal B}$ is a compact set and $\bar{g}_\phi(\mathbf{x})$ and $\bar{h}_\psi(\mathbf{x})$ are continuous functions, they both attain their finite minimal and maximal values within ${\cal B}$. Since $\log P_\psi(\mathbf{s}|\mathbf{x})$ and $\log P_\phi(\mathbf{y}|\mathbf{x})$ are continuous functions of  $\bar{h}_\psi(\mathbf{x})$ and $\bar{g}_\phi(\mathbf{x})$, respectively, which map the range of $\bar{h}_\psi$ and $\bar{g}_\phi$ from $(-\infty,\infty)$ to $(-\infty, 0)$, functions $\log P_\psi(\mathbf{s}|\mathbf{x})$ and $\log P_\phi(\mathbf{y}|\mathbf{x})$ attain their strictly negative and finite minimal and maximal values within ${\cal B}$. Therefore, the required constants exist, by which the lemma is proven.
-\end{proof}
-
-\begin{theorem}
-	If $\lambda$ is finite, for $\alpha=0$ it holds $\mathbf{w}^*=\mathbf{0}$.
-	\label{pp:zero}
-\end{theorem}
-\begin{proof}
-	By Lemma \ref{pp:bounded}, $P_{\psi}(\mathbf{s}|\mathbf{x})$ is bounded, so for $\alpha=0$ it holds:
-	\begin{align}
-	\begin{split}
-	(\mathbf{w}^*,\phi^*,\psi^*)&=\arg\min_{\mathbf{w},\phi}\max_{\psi}{\cal L}_\alpha(\mathbf{w},\phi,\psi)\\
-	&=\arg\min_{\mathbf{w},\phi}- \sum_{(\mathbf{x},\mathbf{y},\mathbf{s})\in D} w_\mathbf{x} \cdot \log P_{\phi}(\mathbf{y}|\mathbf{x})
-	\end{split}
-	\end{align}
-	By Lema \ref{pp:bounded}, $\log P_{\phi}(\mathbf{y}|\mathbf{x})$ is strictly negative, so $- \sum_{(\mathbf{x},\mathbf{y},\mathbf{s})\in D} w_\mathbf{x} \cdot \log P_{\phi}(\mathbf{y}|\mathbf{x})$ is zero or positive. Therefore its minimal value is $0$ for $\mathbf{w}=\mathbf{0}$ regardless of $\phi$.
-	Therefore, it holds $\mathbf{w}^*=\mathbf{0}$.
-\end{proof}
-
+The following theorem establishes an important property of the optimal weights. 
 \begin{theorem}
 	For each instance $(\mathbf{x},\mathbf{y},\mathbf{s})$, it holds
 	$w_{\mathbf{x}}^*= 1$ or $w_{\mathbf{x}}^*= 0$ or $\alpha\log P_{\psi^*}(\mathbf{s}|\mathbf{x})=\log P_{\phi^*}(\mathbf{y}|\mathbf{x})$.
 	\label{pp:anypoint}
 \end{theorem}
-\iffalse
-\begin{proof}
-	Consider a partial derivative of ${\cal L}_\alpha$ for fixed but arbitrary $\phi$ and $\psi$:
-	$$\frac{\partial{\cal L}_\alpha}{\partial w_\mathbf{x}}(\mathbf{w},\phi,\psi)=\alpha\log P_{\psi}(\mathbf{s}|\mathbf{x})-\log P_{\phi}(\mathbf{y}|\mathbf{x})$$
-	This derivative can be equal to $0$ (in which case it holds $\alpha\log P_{\psi}(\mathbf{s}|\mathbf{x})=\log P_{\phi}(\mathbf{y}|\mathbf{x})$), negative, or positive.
-	If the derivative is negative, for those fixed $\phi$ and $\psi$, ${\cal L}_\alpha(\mathbf{w},\phi,\psi)$ is a strictly decreasing function of $w_\mathbf{x}$, so its minimum is attained for $w_\mathbf{x}=1$. If this derivative is positive, minimal value is attained for $w_\mathbf{x}=0$. Therefore, for arbitrary fixed $\phi$ and $\psi$, it either holds $\alpha\log P_{\psi}(\mathbf{s}|\mathbf{x})=\log P_{\phi}(\mathbf{y}|\mathbf{x})$ or it holds that the minimum is attained for $w_\mathbf{x}=1$ or for $w_\mathbf{x}=0$. Since this holds for arbitrary $\phi$ and $\psi$, it also holds for optimal choices $\phi^*$, $\psi^*$, by which the theorem is proven.
-\end{proof}
-\fi
+Moreover, the proof shows that an optimal weight is $1$ if it holds $\alpha\log P_{\psi^*}(\mathbf{s}|\mathbf{x})<\log P_{\phi^*}(\mathbf{y}|\mathbf{x})$ and that it is $0$ if it holds $\alpha\log P_{\psi^*}(\mathbf{s}|\mathbf{x})>\log P_{\phi^*}(\mathbf{y}|\mathbf{x})$. This property will be relevant for the intuitive discussion of the results.
 
-\begin{proof}
-	Consider a partial derivative in the optimal solution:
-	\begin{equation}
-	\frac{\partial{\cal L}_\alpha}{\partial w_\mathbf{x}}(\mathbf{w}^*,\phi^*,\psi^*)=\alpha\log P_{\psi^*}(\mathbf{s}|\mathbf{x})-\log P_{\phi^*}(\mathbf{y}|\mathbf{x})
-	\end{equation}
-	If the derivative is negative, then there exists $d>0$ such that it holds
-	\begin{equation}{\cal L}_\alpha(\mathbf{w}^*+d\mathbf{e}_{\mathbf{x}},\phi^*,\psi^*) < {\cal L}_\alpha(\mathbf{w}^*,\phi^*,\psi^*)
-	\end{equation}
-	where $\mathbf{e}_\mathbf{x}=(0,\ldots,1,\ldots,0)\in\mathbb{R}^{|D|}$ where $1$ is at the coordinate corresponding to $w_\mathbf{x}$.
-	Therefore, if it holds $w_\mathbf{x}^*< 1$, $w_\mathbf{x}^*$ can be increased in order to decrease the loss and $(\mathbf{w}^*,\phi^*,\psi^*)$ is not an optimal solution, which is a contradiction. Therefore, it has to hold $w_\mathbf{x}^*=1$.
-	If the derivative is positive, $w_\mathbf{x}^*=0$ is proven in an analogous manner.
-	If the derivative is $0$, the theorem holds due to its third case.
-\end{proof}
+The following theorem establishes the behaviour of the optimal weights at one extreme of the range of the hypermarameter $\alpha$.
+\begin{theorem}
+	If $\lambda$ is finite, for $\alpha=0$ it holds $\mathbf{w}^*=\mathbf{0}$.
+	\label{pp:zero}
+\end{theorem}
 
-
-In the following propositions, we explicitly denote dependence of the optimal solution on $\alpha$.
-
-\begin{lemma}
-	If $\lambda$ is finite, for each instance $(\mathbf{x},\mathbf{y},\mathbf{s})\in D$ it holds
-	\begin{equation}
-	\frac{\partial{\cal L}_\alpha}{\partial w_\mathbf{x}}(\mathbf{w}^*_\alpha,\phi^*_\alpha,\psi^*_\alpha)\rightarrow -\infty\hspace{5mm}\text{as}\hspace{5mm}\alpha\rightarrow\infty
-	\end{equation}
-	\label{pp:regularization}
-\end{lemma}
-\begin{proof}
-	Consider a partial derivative with respect to $w_\mathbf{x}$ in an optimum:
-	\begin{equation}
-	\frac{\partial{\cal L}_\alpha}{\partial w_\mathbf{x}}(\mathbf{w}^*_\alpha,\phi^*_\alpha,\psi^*_\alpha)=\alpha\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})-\log P_{\phi^*_\alpha}(\mathbf{y}|\mathbf{x})
-	\end{equation}
-	According to Lemma \ref{pp:bounded}, for any feasible $\psi$ and $\phi$ there exists constants $c'_\psi<0$ and $c_\phi$ such that it holds $\log P_{\psi}(\mathbf{s}|\mathbf{x})\leq c'_\psi$ and $\log P_{\phi}(\mathbf{y}|\mathbf{x})\geq c_\phi$. Therefore, the first term goes to $-\infty$ as $\alpha\rightarrow\infty$ and the second term is bounded, so the limit of the partial derivative is $-\infty$.
-\end{proof}
+The following theorem establishes the behaviour of the optimal weights at another extreme of the range of the hypermarameter $\alpha$. We explicitly denote dependence of the optimal solution on $\alpha$.
 
 \begin{theorem}
 	If $\lambda$ is finite, for each instance $(\mathbf{x},\mathbf{y},\mathbf{s})\in D$, it holds $w_{\mathbf{x},\alpha}^*\rightarrow 1$ as $\alpha\rightarrow\infty$.
 	\label{pp:infty}
 \end{theorem}
-\begin{proof}
-	According to Lemma \ref{pp:regularization},
-	the limit of the values of the partial derivative $\frac{\partial{\cal L}_\alpha}{\partial w_\mathbf{x}}(\mathbf{w}^*_\alpha,\phi^*_\alpha,\psi^*_\alpha)$ in optima as $\alpha\rightarrow\infty$ is negative. Then, by the definition of the limit, there exists $\alpha_0\in \mathbb{R}$ such that for all $\alpha>\alpha_0$ it holds:
-	\begin{equation}
-	\frac{\partial{\cal L}_\alpha}{\partial w_\mathbf{x}}(\mathbf{w}^*_\alpha,\phi^*_\alpha,\psi^*_\alpha)<0
-	\end{equation}
-	For each such $\alpha$, since derivative with respect to $w_\mathbf{x}$ is negative, by the same argument as in the proof of Theorem \ref{pp:anypoint}, it holds $w^*_{\mathbf{x},\alpha}=1$. Hence, we can conclude that for each $\varepsilon>0$, there exists $\alpha_0$ such that for all $\alpha>\alpha_0$ it holds $w^*_{\mathbf{x},\alpha}>1-\varepsilon$  (since $w^*_{\mathbf{x},\alpha}=1$). Therefore, by the definition of the limit, we conclude that it holds $w^*_{\mathbf{x},\alpha}\rightarrow 1$ as $\alpha\rightarrow\infty$.
-\end{proof}
 
 Denote ${\cal D}_\alpha$ the set of all instances $(\mathbf{x},\mathbf{y},\mathbf{s})$ which satisfy the condition
-$\alpha\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})-\log P_{\phi^*_\alpha}(\mathbf{y}|\mathbf{x})\leq 0$. By Theorem \ref{pp:anypoint}, for other instances it holds $w^*_{\mathbf{x},\alpha}=0$. Therefore the optimal solutions $\phi^*$ and $\psi^*$
+$\alpha\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})-\log P_{\phi^*_\alpha}(\mathbf{y}|\mathbf{x})\leq 0$. For other instances it holds $w^*_{\mathbf{x},\alpha}=0$ (see Theorem \ref{pp:anypoint} and the comment bellow its statement). Therefore the optimal solutions $\phi^*$ and $\psi^*$
 depend on instances from ${\cal D}_\alpha$. Denote $P_\alpha(\mathbf{x},\mathbf{y},\mathbf{s})$ the restriction of $P(\mathbf{x},\mathbf{y},\mathbf{s})$ 
 on ${\cal D}_\alpha$ (set to $0$ for points outside ${\cal D}_\alpha$ and normalized). Then, the following theorem
 describes the behaviour of fairness of distribution $P_\alpha(\mathbf{x},\mathbf{y},\mathbf{s})$ with respect to ASD measure.
 \begin{theorem}
-The $ASD_\alpha=|P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=0)-P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=1)|$ decreases to $0$
-as $\alpha$ decreases.
+If $\lambda$ is finite, the $ASD_\alpha=|P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=0)-P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=1)|$ to $0$ as $\alpha$ decreases.
 \end{theorem}
-\begin{proof}
-It holds
-\begin{flalign*}
-ASD_\alpha&=|P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=0)-P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=1)|\\
-		  &=\left|\int P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})P_\alpha(\mathbf{x}|\mathbf{s}=0)d\mathbf{x}-\int P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})P_\alpha(\mathbf{x}|\mathbf{s}=1)d\mathbf{x}\right|\\
-		  &\leq\int|P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})P_\alpha(\mathbf{x}|\mathbf{s}=0)-P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})P_\alpha(\mathbf{x}|\mathbf{s}=1)|d\mathbf{x}\\
-		  &=\int P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})|P_\alpha(\mathbf{x}|\mathbf{s}=0)-P_\alpha(\mathbf{x}|\mathbf{s}=1)|d\mathbf{x}\\
-		  &=\int P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})\left|\frac{P_\alpha(\mathbf{s}=0|\mathbf{x})P_\alpha(\mathbf{x})}{P_\alpha(\mathbf{s}=0)}-\frac{P_\alpha(\mathbf{s}=1|\mathbf{x})P_\alpha(\mathbf{x})}{P_\alpha(\mathbf{s}=1)}\right|d\mathbf{x}\\
-		  &=\int P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})\left|\frac{P_\alpha(\mathbf{s}=0|\mathbf{x})}{P_\alpha(\mathbf{s}=0)}-\frac{P_\alpha(\mathbf{s}=1|\mathbf{x})}{P_\alpha(\mathbf{s}=1)}\right|P_\alpha(\mathbf{x})d\mathbf{x}\\
-\end{flalign*}
-where the first transition is due to the fact that the predictions of $\mathbf{y}$ are made by $P_{\psi^*}(\mathbf{y}|\mathbf{x})$
-and that the prediction function does not take $\mathbf{s}$ as an argument. Transition to the fifth line is due to Bayes theorem.
-The proof will follow by showing that the difference under the absolute value goes to $0$ as $\alpha$ goes to $0$.
-
-For all instances of ${\cal D}_\alpha$ it holds $\alpha\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})-\log P_{\phi^*_\alpha}(\mathbf{y}|\mathbf{x})\leq 0$. Then it also holds
-$\alpha\mathbb{E}[\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]\leq\mathbb{E}[\log P_{\phi^*_\alpha}(\mathbf{y}|\mathbf{x})]$, 
-where the expectations are with respect to $P_\alpha(\mathbf{x},\mathbf{y},\mathbf{s})$.
-Given that by the Lemma \ref{pp:bounded}, it holds $\log P_{\phi^*_\alpha}(\mathbf{y}|\mathbf{x})\leq c'_\phi$ for all instances, 
-it also holds
-$\alpha\mathbb{E}[\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]\leq c'_\phi$ (where $c'_\phi$ is a negative constant)
-and hence $\alpha\mathbb{E}[-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]\geq -c'_\phi$.
-To keep the intequality, it must hold that as $\alpha$ decreases, the expected negative log likelihood $\mathbb{E}[-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]$ increases. The maximal value of
-$\mathbb{E}[-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]$ is the entropy $H$ of the distribution $P_\alpha(\mathbf{s})$.
-Namely, if $\mathbb{E}[-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]$ would be greater than $H$,
-the classifier would be predicting the opposite class better than random guessing, so the classifier predicting the opposite class of $P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$ would have lower expected negative log liklelihood (and therefore, greater expected log likelihood). Such classifier is also representable by a neural network of the same architecture and therefore, $P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$ would not be optimal. Hence, the maximal value of $\mathbb{E}[-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]$ is $H$.
-Since it holds $-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})>-\frac{c'_\phi}{\alpha}$ for all points from ${\cal D}_\alpha$, for the expectation to be less or equal than $H$, as $\alpha$ decreases, $-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$ converges to $H$ for all points from ${\cal D}_\alpha$ (except on a set of probability $0$). The maximal value of $H$ is $\log2$ and is reached if $P_\alpha(\mathbf{s})$ is a uniform bernouli distributon ${\cal B}\left(\frac{1}{2}\right)$. In that case it also holds $-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})=\log 2$ for all points from ${\cal D}_\alpha$, meaning that $P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$ is also ${\cal B}\left(\frac{1}{2}\right)$. This means, that for sufficiently small $\alpha$, denoted $\alpha_0$, the optimal weights select instances so that it holds $P_\alpha(\mathbf{s}=1)=P_\alpha(\mathbf{s}=0)=\frac{1}{2}$ and $P_{\psi^*_\alpha}(\mathbf{s}=1|\mathbf{x})=P_{\psi^*_\alpha}(\mathbf{s}=0|\mathbf{x})$.
-
-By the empirical risk minimization theory \cite{Vapnik1998,shalev2014}, given a sufficiently high capacity of the hypothesis space for $P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$ and sufficient sample size, the optimal $P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$, approximates the distribution $P_\alpha(\mathbf{s}|\mathbf{x})$ arbitrarilly well. Thus,
-$$\left|\frac{P_\alpha(\mathbf{s}=0|\mathbf{x})}{P_\alpha(\mathbf{s}=0)}-\frac{P_\alpha(\mathbf{s}=1|\mathbf{x})}{P_\alpha(\mathbf{s}=1)}\right|$$
-goes to $0$ as $\alpha$ goes to $\alpha_0$ and thus $P_\alpha(\mathbf{s})$ and $P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$ (and hence $P_\alpha(\mathbf{s}|\mathbf{x})$) approach ${\cal B}\left(\frac{1}{2}\right)$. This completes the proof.
-\end{proof}
-The motivation for our work is the observation that the data is often not fair and that the weighting should be used in order to learn from fair instances. What the theorem intuitively states is that the $ASD$ of the distribution from which the optimal classifier is learned can actually be controlled by the hyperparameter $\alpha$, that way mitigating the bias in the data. Note that the value $\alpha_0$ would be arbitrarily close to $0$ for sufficiently large regularization hyperparameter value $\lambda$.
+The motivation for our work is the observation that the data is often not fair and that the weighting should be used in order to learn from fair instances. What the theorem intuitively states is that the $ASD$ of the distribution from which the optimal classifier is learned can actually be controlled by the hyperparameter $\alpha$, that way mitigating the bias in the data. 
 
 \subsection{Intuitive discussion of theoretical properties}
 
@@ -506,7 +406,6 @@ intuitively, the instance is fair enough considering its ``predictiveness'' (wit
 Besides this central insight, other aspects of the tehoretical analysis merit a comment. In case of infinite $\lambda$, overfitting might falsify our proof of Lemma \ref{pp:bounded} and in that case for some instance $\mathbf{x}$ it might hold $w^*_{\mathbf{x},\alpha}\rightarrow 0$ as $\alpha\rightarrow\infty$. However, this suggests an interesting diagnostic property -- if for ever larger values of $\alpha$ one obtains $w_\mathbf{x}=0$ for some $\mathbf{x}$, one has reasons to suspect overfitting. Also, finite capacity of the network might make regularization unnecessary in practice. However, theoretical analysis was easier under the assumption of explicit regularization.
 
 Also note that the model of instance weights does not need allow values $0$ and $1$. Nevertheless, the provided theorems inform us that the gradients will push the weights towards these values. Still, our probabilistic approaches might provide additional regularization by giving nonzero probability to other weight values except the optimal ones.
-
 
 
 \section{Experimental Setup}
@@ -672,7 +571,7 @@ This work was supported in part by the ONR/ONR Global under Grant N62909-19-1-20
 
 \appendix
 
-\section{FAIR-Bernoulli and FAIR-betaSF with baselines}
+\section{FAIR-Bernoulli and FAIR-betaSF with Baselines}
 \label{app:baselines}
 
 Baseline functions are a commonly used tool to reduce the variance of the estimate of the gradient in reinforcement learning algorithms. It is shown that introducing a baseline in loss function does not introduce additional bias into the model \cite{sutton2018reinforcement}. Here we explain how these techniques can be incorporated in FAIR models. These modifications are not included in experimental evaluation since the technique is already known and our main goal is to compare basic FAIR variants against existing baselines, but we still derive algorithms with baselines as they might be of practical importance.
@@ -749,6 +648,121 @@ In Fig.~\ref{fig:Fig2} graphical representation of FAIR-betaSF with baseline is 
 	\end{algorithmic}
 \end{algorithm}
 
+
+\section{Proofs of Theoretic Results}
+\label{app:proofs}
+
+\setcounter{theorem}{0}
+
+\begin{theorem}
+	For each instance $(\mathbf{x},\mathbf{y},\mathbf{s})$, it holds
+	$w_{\mathbf{x}}^*= 1$ or $w_{\mathbf{x}}^*= 0$ or $\alpha\log P_{\psi^*}(\mathbf{s}|\mathbf{x})=\log P_{\phi^*}(\mathbf{y}|\mathbf{x})$.
+\end{theorem}
+\begin{proof}
+	Consider a partial derivative in the optimal solution:
+	\begin{equation}
+	\frac{\partial{\cal L}_\alpha}{\partial w_\mathbf{x}}(\mathbf{w}^*,\phi^*,\psi^*)=\alpha\log P_{\psi^*}(\mathbf{s}|\mathbf{x})-\log P_{\phi^*}(\mathbf{y}|\mathbf{x})
+	\end{equation}
+	If the derivative is negative, then there exists $d>0$ such that it holds
+	\begin{equation}{\cal L}_\alpha(\mathbf{w}^*+d\mathbf{e}_{\mathbf{x}},\phi^*,\psi^*) < {\cal L}_\alpha(\mathbf{w}^*,\phi^*,\psi^*)
+	\end{equation}
+	where $\mathbf{e}_\mathbf{x}=(0,\ldots,1,\ldots,0)\in\mathbb{R}^{|D|}$ where $1$ is at the coordinate corresponding to $w_\mathbf{x}$.
+	Therefore, if it holds $w_\mathbf{x}^*< 1$, $w_\mathbf{x}^*$ can be increased in order to decrease the loss and $(\mathbf{w}^*,\phi^*,\psi^*)$ is not an optimal solution, which is a contradiction. Therefore, it has to hold $w_\mathbf{x}^*=1$.
+	If the derivative is positive, $w_\mathbf{x}^*=0$ is proven in an analogous manner.
+	If the derivative is $0$, the theorem holds due to its third case.
+\end{proof}
+
+\begin{lemma}
+	If $\lambda$ is finite, there exist strictly negative constants
+	$c_\phi$, $c'_\phi$, $c_\psi$, and $c'_\psi$ such that it holds
+	$c_\phi\leq \log P_\phi(\mathbf{y}|\mathbf{x})\leq c'_\phi$ and
+	$c_\psi\leq \log P_\phi(\mathbf{s}|\mathbf{x})\leq c'_\psi$ for
+	any $\mathbf{x}$, $\mathbf{y}$, and $\mathbf{s}$, and any
+	$\phi$ and $\psi$ which satisfy regularization condition \ref{Eq:Loss-scalar-new}.
+	\label{pp:bounded}
+\end{lemma}
+\begin{proof}
+	Denote ${\cal B}$ the ball defined by $\|\theta\|^2_2+\|\phi\|^2_2+\|\psi\|^2_2\leq \lambda$, representing the set of feasible solutions of the optimization problem.
+	Denote $\bar{g}_\phi(\mathbf{x})$ the network $g_\phi(\mathbf{x})$ modelling $\mathbf{y}$ with sigmoid function at the output removed and $\bar{h}_\psi(\mathbf{x})$ the network $h_\psi(\mathbf{x})$ modelling $\mathbf{s}$ with sigmoid at the output removed. Since ${\cal B}$ is a compact set and $\bar{g}_\phi(\mathbf{x})$ and $\bar{h}_\psi(\mathbf{x})$ are continuous functions, they both attain their finite minimal and maximal values within ${\cal B}$. Since $\log P_\psi(\mathbf{s}|\mathbf{x})$ and $\log P_\phi(\mathbf{y}|\mathbf{x})$ are continuous functions of  $\bar{h}_\psi(\mathbf{x})$ and $\bar{g}_\phi(\mathbf{x})$, respectively, which map the range of $\bar{h}_\psi$ and $\bar{g}_\phi$ from $(-\infty,\infty)$ to $(-\infty, 0)$, functions $\log P_\psi(\mathbf{s}|\mathbf{x})$ and $\log P_\phi(\mathbf{y}|\mathbf{x})$ attain their strictly negative and finite minimal and maximal values within ${\cal B}$. Therefore, the required constants exist, by which the lemma is proven.
+\end{proof}
+
+\begin{theorem}
+	If $\lambda$ is finite, for $\alpha=0$ it holds $\mathbf{w}^*=\mathbf{0}$.
+\end{theorem}
+\begin{proof}
+	By Lemma \ref{pp:bounded}, $P_{\psi}(\mathbf{s}|\mathbf{x})$ is bounded, so for $\alpha=0$ it holds:
+	\begin{align}
+	\begin{split}
+	(\mathbf{w}^*,\phi^*,\psi^*)&=\arg\min_{\mathbf{w},\phi}\max_{\psi}{\cal L}_\alpha(\mathbf{w},\phi,\psi)\\
+	&=\arg\min_{\mathbf{w},\phi}- \sum_{(\mathbf{x},\mathbf{y},\mathbf{s})\in D} w_\mathbf{x} \cdot \log P_{\phi}(\mathbf{y}|\mathbf{x})
+	\end{split}
+	\end{align}
+	By Lema \ref{pp:bounded}, $\log P_{\phi}(\mathbf{y}|\mathbf{x})$ is strictly negative, so $- \sum_{(\mathbf{x},\mathbf{y},\mathbf{s})\in D} w_\mathbf{x} \cdot \log P_{\phi}(\mathbf{y}|\mathbf{x})$ is zero or positive. Therefore its minimal value is $0$ for $\mathbf{w}=\mathbf{0}$ regardless of $\phi$.
+	Therefore, it holds $\mathbf{w}^*=\mathbf{0}$.
+\end{proof}
+
+\begin{lemma}
+	If $\lambda$ is finite, for each instance $(\mathbf{x},\mathbf{y},\mathbf{s})\in D$ it holds
+	\begin{equation}
+	\frac{\partial{\cal L}_\alpha}{\partial w_\mathbf{x}}(\mathbf{w}^*_\alpha,\phi^*_\alpha,\psi^*_\alpha)\rightarrow -\infty\hspace{5mm}\text{as}\hspace{5mm}\alpha\rightarrow\infty
+	\end{equation}
+	\label{pp:regularization}
+\end{lemma}
+\begin{proof}
+	Consider a partial derivative with respect to $w_\mathbf{x}$ in an optimum:
+	\begin{equation}
+	\frac{\partial{\cal L}_\alpha}{\partial w_\mathbf{x}}(\mathbf{w}^*_\alpha,\phi^*_\alpha,\psi^*_\alpha)=\alpha\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})-\log P_{\phi^*_\alpha}(\mathbf{y}|\mathbf{x})
+	\end{equation}
+	According to Lemma \ref{pp:bounded}, for any feasible $\psi$ and $\phi$ there exists constants $c'_\psi<0$ and $c_\phi$ such that it holds $\log P_{\psi}(\mathbf{s}|\mathbf{x})\leq c'_\psi$ and $\log P_{\phi}(\mathbf{y}|\mathbf{x})\geq c_\phi$. Therefore, the first term goes to $-\infty$ as $\alpha\rightarrow\infty$ and the second term is bounded, so the limit of the partial derivative is $-\infty$.
+\end{proof}
+
+\begin{theorem}
+	If $\lambda$ is finite, for each instance $(\mathbf{x},\mathbf{y},\mathbf{s})\in D$, it holds $w_{\mathbf{x},\alpha}^*\rightarrow 1$ as $\alpha\rightarrow\infty$.
+\end{theorem}
+\begin{proof}
+	According to Lemma \ref{pp:regularization},
+	the limit of the values of the partial derivative $\frac{\partial{\cal L}_\alpha}{\partial w_\mathbf{x}}(\mathbf{w}^*_\alpha,\phi^*_\alpha,\psi^*_\alpha)$ in optima as $\alpha\rightarrow\infty$ is negative. Then, by the definition of the limit, there exists $\alpha_0\in \mathbb{R}$ such that for all $\alpha>\alpha_0$ it holds:
+	\begin{equation}
+	\frac{\partial{\cal L}_\alpha}{\partial w_\mathbf{x}}(\mathbf{w}^*_\alpha,\phi^*_\alpha,\psi^*_\alpha)<0
+	\end{equation}
+	For each such $\alpha$, since derivative with respect to $w_\mathbf{x}$ is negative, by the same argument as in the proof of Theorem \ref{pp:anypoint}, it holds $w^*_{\mathbf{x},\alpha}=1$. Hence, we can conclude that for each $\varepsilon>0$, there exists $\alpha_0$ such that for all $\alpha>\alpha_0$ it holds $w^*_{\mathbf{x},\alpha}>1-\varepsilon$  (since $w^*_{\mathbf{x},\alpha}=1$). Therefore, by the definition of the limit, we conclude that it holds $w^*_{\mathbf{x},\alpha}\rightarrow 1$ as $\alpha\rightarrow\infty$.
+\end{proof}
+
+\begin{theorem}
+If $\lambda$ is finite, the $ASD_\alpha=|P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=0)-P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=1)|$ to $0$ as $\alpha$ decreases.
+\end{theorem}
+\begin{proof}
+It holds
+\begin{flalign*}
+ASD_\alpha&=|P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=0)-P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=1)|\\
+		  &=\left|\int P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})P_\alpha(\mathbf{x}|\mathbf{s}=0)d\mathbf{x}-\int P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})P_\alpha(\mathbf{x}|\mathbf{s}=1)d\mathbf{x}\right|\\
+		  &\leq\int|P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})P_\alpha(\mathbf{x}|\mathbf{s}=0)-P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})P_\alpha(\mathbf{x}|\mathbf{s}=1)|d\mathbf{x}\\
+		  &=\int P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})|P_\alpha(\mathbf{x}|\mathbf{s}=0)-P_\alpha(\mathbf{x}|\mathbf{s}=1)|d\mathbf{x}\\
+		  &=\int P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})\left|\frac{P_\alpha(\mathbf{s}=0|\mathbf{x})P_\alpha(\mathbf{x})}{P_\alpha(\mathbf{s}=0)}-\frac{P_\alpha(\mathbf{s}=1|\mathbf{x})P_\alpha(\mathbf{x})}{P_\alpha(\mathbf{s}=1)}\right|d\mathbf{x}\\
+		  &=\int P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})\left|\frac{P_\alpha(\mathbf{s}=0|\mathbf{x})}{P_\alpha(\mathbf{s}=0)}-\frac{P_\alpha(\mathbf{s}=1|\mathbf{x})}{P_\alpha(\mathbf{s}=1)}\right|P_\alpha(\mathbf{x})d\mathbf{x}\\
+\end{flalign*}
+where the first transition is due to the fact that the predictions of $\mathbf{y}$ are made by $P_{\psi^*}(\mathbf{y}|\mathbf{x})$
+and that the prediction function does not take $\mathbf{s}$ as an argument. Transition to the fifth line is due to Bayes theorem.
+The proof will follow by showing that the difference under the absolute value goes to $0$ as $\alpha$ goes to $0$.
+
+For all instances of ${\cal D}_\alpha$ it holds $\alpha\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})-\log P_{\phi^*_\alpha}(\mathbf{y}|\mathbf{x})\leq 0$. Then it also holds
+$\alpha\mathbb{E}[\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]\leq\mathbb{E}[\log P_{\phi^*_\alpha}(\mathbf{y}|\mathbf{x})]$, 
+where the expectations are with respect to $P_\alpha(\mathbf{x},\mathbf{y},\mathbf{s})$.
+Given that by the Lemma \ref{pp:bounded}, it holds $\log P_{\phi^*_\alpha}(\mathbf{y}|\mathbf{x})\leq c'_\phi$ for all instances, 
+it also holds
+$\alpha\mathbb{E}[\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]\leq c'_\phi$ (where $c'_\phi$ is a negative constant)
+and hence $\alpha\mathbb{E}[-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]\geq -c'_\phi$.
+To keep the intequality, it must hold that as $\alpha$ decreases, the expected negative log likelihood $\mathbb{E}[-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]$ increases. The maximal value of
+$\mathbb{E}[-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]$ is the entropy $H$ of the distribution $P_\alpha(\mathbf{s})$.
+Namely, if $\mathbb{E}[-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]$ would be greater than $H$,
+the classifier would be predicting the opposite class better than random guessing, so the classifier predicting the opposite class of $P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$ would have lower expected negative log liklelihood (and therefore, greater expected log likelihood). Such classifier is also representable by a neural network of the same architecture and therefore, $P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$ would not be optimal. Hence, the maximal value of $\mathbb{E}[-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]$ is $H$.
+Since it holds $-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})>-\frac{c'_\phi}{\alpha}$ for all points from ${\cal D}_\alpha$, for the expectation to be less or equal than $H$, as $\alpha$ decreases, $-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$ converges to $H$ for all points from ${\cal D}_\alpha$ (except on a set of probability $0$). The maximal value of $H$ is $\log2$ and is reached if $P_\alpha(\mathbf{s})$ is a uniform bernouli distributon ${\cal B}\left(\frac{1}{2}\right)$. In that case it also holds $-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})=\log 2$ for all points from ${\cal D}_\alpha$, meaning that $P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$ is also ${\cal B}\left(\frac{1}{2}\right)$. This means, that for sufficiently small $\alpha$, denoted $\alpha_0$, the optimal weights select instances so that it holds $P_\alpha(\mathbf{s}=1)=P_\alpha(\mathbf{s}=0)=\frac{1}{2}$ and $P_{\psi^*_\alpha}(\mathbf{s}=1|\mathbf{x})=P_{\psi^*_\alpha}(\mathbf{s}=0|\mathbf{x})$.
+
+By the empirical risk minimization theory \cite{Vapnik1998,shalev2014}, given a sufficiently high capacity of the hypothesis space for $P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$ and sufficient sample size, the optimal $P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$, approximates the distribution $P_\alpha(\mathbf{s}|\mathbf{x})$ arbitrarilly well. Thus,
+$$\left|\frac{P_\alpha(\mathbf{s}=0|\mathbf{x})}{P_\alpha(\mathbf{s}=0)}-\frac{P_\alpha(\mathbf{s}=1|\mathbf{x})}{P_\alpha(\mathbf{s}=1)}\right|$$
+goes to $0$ as $\alpha$ goes to $\alpha_0$ and thus $P_\alpha(\mathbf{s})$ and $P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$ (and hence $P_\alpha(\mathbf{s}|\mathbf{x})$) approach ${\cal B}\left(\frac{1}{2}\right)$. This completes the proof.
+\end{proof}
+Note that the value $\alpha_0$ would be arbitrarily close to $0$ for sufficiently large regularization hyperparameter value $\lambda$.
 
 \section{Model architecture}
 \label{app:Architecture}

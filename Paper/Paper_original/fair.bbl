@@ -293,4 +293,11 @@ R.~T. Marler, J.~S. Arora, Survey of multi-objective optimization methods for
 R.~S. Sutton, A.~G. Barto, Reinforcement learning: An introduction, MIT press,
   2018.
 
+\bibitem{Vapnik1998}
+V.~N. Vapnik, Statistical Learning Theory, Wiley-Interscience, 1998.
+
+\bibitem{shalev2014}
+S.~Shalev-Shwartz, S.~Ben-David, Understanding Machine Learning: From Theory to
+  Algorithms, Cambridge University Press, 2014.
+
 \end{thebibliography}
