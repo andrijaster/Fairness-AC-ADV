@@ -361,7 +361,7 @@ Now we theoretically analyze the behaviour of our method. The focus of the analy
 	\item the predictive performance of predictive and sensitive networks for a specific instance as measured by $\log P_{\phi}(\mathbf{y}|\mathbf{x})$ and $\log P_{\psi}(\mathbf{s}|\mathbf{x})$, which are related to instance predictive quality and its fairness,
 	\item the hyperparameter $\alpha$, 
 \end{itemize}
-and their interdependence. The interdependence is most easily observed with respect to variation of the hyperparameter $\alpha$, which is under direct control of the user. However, the interaction of all elements is relevant for the understanding of the method. First, we focus on how the variation of the hyperparamter reflects on the trade-off between fairness and the quality of prediction of the target variable. In a nutshell, extreme case $\alpha=0$ represents extreme emphasis on fairness and $\alpha\rightarrow\infty$ represents extreme emphasis on quality of prediction and disregard for fairness. Please note that a superficial glance at the adversarial problem would suggest vice versa, but we stress that it is not the case. Second, we aim to understand how the hyperparameter $\alpha$ affects the optimal weights assigned to the instances. It turns out that under some (reasonable) conditions the optimal weights will tend to $0$ and $1$ and that the value of $\alpha$ controls the proportion of the two limiting values. The effect of $\alpha$ on the weights and thus on model behvaiour is mediated by the ratio of performance of predictive and sensitive networks. These elements of the formal analysis also provide better intuitive understanding of the method. We provide such discussion after the theoretical results.
+and their interdependence. The interdependence is most easily observed with respect to variation of the hyperparameter $\alpha$, which is under direct control of the user. However, the interaction of all elements is relevant for the understanding of the method. First, we focus on how the variation of the hyperparamter reflects on the trade-off between fairness and the quality of prediction of the target variable. In a nutshell, extreme case $\alpha=0$ represents extreme emphasis on fairness and $\alpha\rightarrow\infty$ represents extreme emphasis on quality of prediction and disregard for fairness. Please note that a superficial glance at the adversarial problem would suggest vice versa, but we stress that it is not the case. Second, we aim to understand how the hyperparameter $\alpha$ affects the optimal weights assigned to the instances. It turns out that under some (reasonable) conditions the optimal weights will tend to $0$ and $1$ and that the value of $\alpha$ controls the proportion of the two limiting values. The effect of $\alpha$ on the weights and thus on model behvaiour is mediated by the ratio of performance of predictive and sensitive networks. These elements of the formal analysis also provide better intuitive understanding of the method. Finally, we prove that by decreasing the hyperparameter $\alpha$, the fairness of the reweighted distributuon from which the optimal classifier is learned increases (ASD metric decreases). Further intuitive discussion is provided after the theoretical results.
 
 \begin{lemma}
 	If $\lambda$ is finite, there exist strictly negative constants
@@ -451,6 +451,48 @@ In the following propositions, we explicitly denote dependence of the optimal so
 	\end{equation}
 	For each such $\alpha$, since derivative with respect to $w_\mathbf{x}$ is negative, by the same argument as in the proof of Theorem \ref{pp:anypoint}, it holds $w^*_{\mathbf{x},\alpha}=1$. Hence, we can conclude that for each $\varepsilon>0$, there exists $\alpha_0$ such that for all $\alpha>\alpha_0$ it holds $w^*_{\mathbf{x},\alpha}>1-\varepsilon$  (since $w^*_{\mathbf{x},\alpha}=1$). Therefore, by the definition of the limit, we conclude that it holds $w^*_{\mathbf{x},\alpha}\rightarrow 1$ as $\alpha\rightarrow\infty$.
 \end{proof}
+
+Denote ${\cal D}_\alpha$ the set of all instances $(\mathbf{x},\mathbf{y},\mathbf{s})$ which satisfy the condition
+$\alpha\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})-\log P_{\phi^*_\alpha}(\mathbf{y}|\mathbf{x})\leq 0$. By Theorem \ref{pp:anypoint}, for other instances it holds $w^*_{\mathbf{x},\alpha}=0$. Therefore the optimal solutions $\phi^*$ and $\psi^*$
+depend on instances from ${\cal D}_\alpha$. Denote $P_\alpha(\mathbf{x},\mathbf{y},\mathbf{s})$ the restriction of $P(\mathbf{x},\mathbf{y},\mathbf{s})$ 
+on ${\cal D}_\alpha$ (set to $0$ for points outside ${\cal D}_\alpha$ and normalized). Then, the following theorem
+describes the behaviour of fairness of distribution $P_\alpha(\mathbf{x},\mathbf{y},\mathbf{s})$ with respect to ASD measure.
+\begin{theorem}
+The $ASD_\alpha=|P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=0)-P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=1)|$ decreases to $0$
+as $\alpha$ decreases.
+\end{theorem}
+\begin{proof}
+It holds
+\begin{flalign*}
+ASD_\alpha&=|P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=0)-P_\alpha(\hat{\mathbf{y}}=1|\mathbf{s}=1)|\\
+		  &=\left|\int P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})P_\alpha(\mathbf{x}|\mathbf{s}=0)d\mathbf{x}-\int P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})P_\alpha(\mathbf{x}|\mathbf{s}=1)d\mathbf{x}\right|\\
+		  &\leq\int|P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})P_\alpha(\mathbf{x}|\mathbf{s}=0)-P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})P_\alpha(\mathbf{x}|\mathbf{s}=1)|d\mathbf{x}\\
+		  &=\int P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})|P_\alpha(\mathbf{x}|\mathbf{s}=0)-P_\alpha(\mathbf{x}|\mathbf{s}=1)|d\mathbf{x}\\
+		  &=\int P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})\left|\frac{P_\alpha(\mathbf{s}=0|\mathbf{x})P_\alpha(\mathbf{x})}{P_\alpha(\mathbf{s}=0)}-\frac{P_\alpha(\mathbf{s}=1|\mathbf{x})P_\alpha(\mathbf{x})}{P_\alpha(\mathbf{s}=1)}\right|d\mathbf{x}\\
+		  &=\int P_{\psi^*_\alpha}(\mathbf{y}=1|\mathbf{x})\left|\frac{P_\alpha(\mathbf{s}=0|\mathbf{x})}{P_\alpha(\mathbf{s}=0)}-\frac{P_\alpha(\mathbf{s}=1|\mathbf{x})}{P_\alpha(\mathbf{s}=1)}\right|P_\alpha(\mathbf{x})d\mathbf{x}\\
+\end{flalign*}
+where the first transition is due to the fact that the predictions of $\mathbf{y}$ are made by $P_{\psi^*}(\mathbf{y}|\mathbf{x})$
+and that the prediction function does not take $\mathbf{s}$ as an argument. Transition to the fifth line is due to Bayes theorem.
+The proof will follow by showing that the difference under the absolute value goes to $0$ as $\alpha$ goes to $0$.
+
+For all instances of ${\cal D}_\alpha$ it holds $\alpha\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})-\log P_{\phi^*_\alpha}(\mathbf{y}|\mathbf{x})\leq 0$. Then it also holds
+$\alpha\mathbb{E}[\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]\leq\mathbb{E}[\log P_{\phi^*_\alpha}(\mathbf{y}|\mathbf{x})]$, 
+where the expectations are with respect to $P_\alpha(\mathbf{x},\mathbf{y},\mathbf{s})$.
+Given that by the Lemma \ref{pp:bounded}, it holds $\log P_{\phi^*_\alpha}(\mathbf{y}|\mathbf{x})\leq c'_\phi$ for all instances, 
+it also holds
+$\alpha\mathbb{E}[\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]\leq c'_\phi$ (where $c'_\phi$ is a negative constant)
+and hence $\alpha\mathbb{E}[-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]\geq -c'_\phi$.
+To keep the intequality, it must hold that as $\alpha$ decreases, the expected negative log likelihood $\mathbb{E}[-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]$ increases. The maximal value of
+$\mathbb{E}[-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]$ is the entropy $H$ of the distribution $P_\alpha(\mathbf{s})$.
+Namely, if $\mathbb{E}[-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]$ would be greater than $H$,
+the classifier would be predicting the opposite class better than random guessing, so the classifier predicting the opposite class of $P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$ would have lower expected negative log liklelihood (and therefore, greater expected log likelihood). Such classifier is also representable by a neural network of the same architecture and therefore, $P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$ would not be optimal. Hence, the maximal value of $\mathbb{E}[-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})]$ is $H$.
+Since it holds $-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})>-\frac{c'_\phi}{\alpha}$ for all points from ${\cal D}_\alpha$, for the expectation to be less or equal than $H$, as $\alpha$ decreases, $-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$ converges to $H$ for all points from ${\cal D}_\alpha$ (except on a set of probability $0$). The maximal value of $H$ is $\log2$ and is reached if $P_\alpha(\mathbf{s})$ is a uniform bernouli distributon ${\cal B}\left(\frac{1}{2}\right)$. In that case it also holds $-\log P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})=\log 2$ for all points from ${\cal D}_\alpha$, meaning that $P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$ is also ${\cal B}\left(\frac{1}{2}\right)$. This means, that for sufficiently small $\alpha$, denoted $\alpha_0$, the optimal weights select instances so that it holds $P_\alpha(\mathbf{s}=1)=P_\alpha(\mathbf{s}=0)=\frac{1}{2}$ and $P_{\psi^*_\alpha}(\mathbf{s}=1|\mathbf{x})=P_{\psi^*_\alpha}(\mathbf{s}=0|\mathbf{x})$.
+
+By the empirical risk minimization theory \cite{Vapnik,Shalev}, given a sufficiently high capacity of the hypothesis space for $P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$ and sufficient sample size, the optimal $P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$, approximates the distribution $P_\alpha(\mathbf{s}|\mathbf{x})$ arbitrarilly well. Thus,
+$$\left|\frac{P_\alpha(\mathbf{s}=0|\mathbf{x})}{P_\alpha(\mathbf{s}=0)}-\frac{P_\alpha(\mathbf{s}=1|\mathbf{x})}{P_\alpha(\mathbf{s}=1)}\right|$$
+goes to $0$ as $\alpha$ goes to $\alpha_0$ and thus $P_\alpha(\mathbf{s})$ and $P_{\psi^*_\alpha}(\mathbf{s}|\mathbf{x})$ (and hence $P_\alpha(\mathbf{s}|\mathbf{x})$) approach ${\cal B}\left(\frac{1}{2}\right)$. This completes the proof.
+\end{proof}
+The motivation for our work is the observation that the data is often not fair and that the weighting should be used in order to learn from fair instances. What the theorem intuitively states is that the $ASD$ of the data from which the optimal classifier is learned can actually be controlled by the hyperparameter $\alpha$. Note that the value $\alpha_0$ would be arbitrarily close to $0$ for sufficiently large regularization hyperparameter value $\lambda$.
 
 \subsection{Intuitive discussion of theoretical properties}
 
